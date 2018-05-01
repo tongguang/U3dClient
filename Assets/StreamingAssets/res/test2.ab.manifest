@@ -1,0 +1,31 @@
+ManifestFileVersion: 0
+CRC: 78460889
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 28d6cb09e718da2c4c3f8dfabd602895
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 7947fc38ea891e9d90546fdc21c7522d
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+Assets:
+- Assets/Resource/Res/Test2/Hi_icon2.png
+- Assets/Resource/Res/Test2/Hi_icon1.png
+- Assets/Resource/Res/Test2/Image.prefab
+Dependencies:
+- D:/Learn/LearnU3D/U3dClient/Assets/AssetBundles/res/test1.ab
