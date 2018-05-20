@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,8 +11,13 @@ namespace U3dClient
         Loading,
         Loaded,
     }
-    public static class ResourceManager
+    public class ResourceManager
     {
+        public AssetRefCounter AssetRefCount;
 
+        public ResourceManager(AssetRefCounter assetRefC)
+        {
+            AssetRefCount = new AssetRefCounter();
+        }
     }
 }

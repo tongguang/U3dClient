@@ -26,12 +26,12 @@ namespace U3dClient
         }
     }
 
-    public class AssetRefCount
+    public class AssetRefCounter
     {
         private long m_NowIndex; 
         private Dictionary<long, AssetRefData> m_IndexToRefDatas;
         private Dictionary<string, Dictionary<string, AssetRefData>> m_NameToRefDatas;
-        public AssetRefCount()
+        public AssetRefCounter()
         {
             m_NowIndex = 0;
             m_IndexToRefDatas = new Dictionary<long, AssetRefData>();
