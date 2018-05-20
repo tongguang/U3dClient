@@ -26,6 +26,7 @@ namespace U3dClient
         {
             State = LoadState.Loaded;
             Asset = asset;
+            LoadRequest = null;
         }
     }
 }

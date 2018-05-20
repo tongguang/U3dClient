@@ -76,6 +76,7 @@ namespace U3dClient
         {
             State = LoadState.Loaded;
             Bundle = assetBundle;
+            LoadRequest = null;
         }
 
         public bool TryLoadAssetSync(string assetName)
