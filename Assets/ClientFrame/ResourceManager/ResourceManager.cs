@@ -14,10 +14,12 @@ namespace U3dClient
     public class ResourceManager
     {
         public AssetRefCounter RefCounter;
+        public IResourceLoader ResourceLoader;
 
         public ResourceManager()
         {
             RefCounter = new AssetRefCounter();
+            ResourceLoader = new AssetBundleLoader();
         }
     }
 }

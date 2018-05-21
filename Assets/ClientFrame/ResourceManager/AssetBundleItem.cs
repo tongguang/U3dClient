@@ -12,37 +12,17 @@ namespace U3dClient
         public AssetBundle Bundle { private set; get; }
         public AssetBundleCreateRequest LoadRequest { private set; get; }
         public Dictionary<string, AssetBundleAssetItem> AssetNameToAssetItem = new Dictionary<string, AssetBundleAssetItem>();
-        public Dictionary<long, string> AssetRefToAssetName = new Dictionary<long, string>();
-        public Dictionary<long, string> DependAssetRef;
+        public List<long> DependAssetRef;
         public AssetBundleItem(string name)
         {
             State = LoadState.Init;
             Name = name;
         }
 
-        #region 引用数据
-        public void AddAssetRef(long requestIndex, string assetName)
-        {
-            if (!AssetNameToAssetItem.ContainsKey(assetName))
-            {
-                AssetNameToAssetItem.Add(assetName, new AssetBundleAssetItem(assetName));
-            }
-            AssetRefToAssetName.Add(requestIndex, assetName);
-        }
-
-        public void RemoveAssetRef(long requestIndex)
-        {
-            if (AssetRefToAssetName.ContainsKey(requestIndex))
-            {
-                AssetRefToAssetName.Remove(requestIndex);
-            }
-        }
-
-        public void SetDependAssetRef(Dictionary<long, string> dependAssetRef)
+        public void SetDependAssetRef(List<long> dependAssetRef)
         {
             DependAssetRef = dependAssetRef;
         }
-        #endregion
 
         #region 加载
 
@@ -115,11 +95,10 @@ namespace U3dClient
             {
                 return false;
             }
-            if (AssetRefToAssetName.Count > 0)
+            if (GameRoot.Instance.ResourceMgr.RefCounter.GetBundleRefNum(Name) > 0)
             {
                 return false;
             }
-
             foreach (var item in AssetNameToAssetItem)
             {
                 if (item.Value.State == LoadState.Loading)

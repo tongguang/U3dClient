@@ -6,8 +6,9 @@ namespace U3dClient
 {
     public class GameRoot : MonoBehaviour
     {
-
         public static GameRoot Instance;
+
+        public ResourceManager ResourceMgr;
 
         private void Awake()
         {
