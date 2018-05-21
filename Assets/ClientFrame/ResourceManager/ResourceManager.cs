@@ -13,11 +13,11 @@ namespace U3dClient
     }
     public class ResourceManager
     {
-        public AssetRefCounter AssetRefCount;
+        public AssetRefCounter RefCounter;
 
-        public ResourceManager(AssetRefCounter assetRefC)
+        public ResourceManager()
         {
-            AssetRefCount = new AssetRefCounter();
+            RefCounter = new AssetRefCounter();
         }
     }
 }
