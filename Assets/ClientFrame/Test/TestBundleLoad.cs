@@ -6,6 +6,7 @@ using U3dClient;
 public class TestBundleLoad : MonoBehaviour {
 
 	// Use this for initialization
+    public GameObject Parent1;
 	IEnumerator Start () {
 		var isLoaded = false;
 		GameRoot.Instance.ResourceMgr.InitResourceLoader(() =>
@@ -16,11 +17,24 @@ public class TestBundleLoad : MonoBehaviour {
 		{
 			yield return null;
 		}
-		Debug.Log("=============");
-	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	    var refIndex = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAssetSync<GameObject>("res/test2.ab", "Image",
+	        o =>
+	        {
+	            Instantiate(o, Parent1.transform);
+	        }, true);
+	    yield return new WaitForSeconds(5);
+        var refIndex2 = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAssetSync<GameObject>("res/test2.ab", "Image",
+            o =>
+            {
+                Instantiate(o, Parent1.transform);
+            }, true);
+        GameRoot.Instance.ResourceMgr.ResourceLoader.UnLoadAsset(refIndex);
+        GameRoot.Instance.ResourceMgr.ResourceLoader.UnLoadAsset(refIndex2);
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 }
