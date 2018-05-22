@@ -61,6 +61,10 @@ namespace U3dClient
 
         public bool TryLoadAssetSync(string assetName)
         {
+            if (!AssetNameToAssetItem.ContainsKey(assetName))
+            {
+                AssetNameToAssetItem.Add(assetName, new AssetBundleAssetItem(assetName));
+            }
             var assetItem = AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Init)
             {

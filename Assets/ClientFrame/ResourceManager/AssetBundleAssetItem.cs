@@ -19,7 +19,7 @@ namespace U3dClient
         public void SetAssetRequest(AssetBundleRequest assetRequest)
         {
             State = LoadState.Loading;
-            LoadRequest = LoadRequest;
+            LoadRequest = assetRequest;
         }
 
         public void SetAsset(System.Object asset)

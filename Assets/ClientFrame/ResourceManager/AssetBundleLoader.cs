@@ -8,18 +8,25 @@ namespace U3dClient
 {
     public class AssetBundleLoader : IResourceLoader
     {
-        private long m_NowIndex = 0;
         private Dictionary<string, AssetBundleItem> m_BundleNameToItem;
-        private AssetBundleManifest m_AssetBundlesManifest;
-        private long m_AssetBundlesManifestRef;
+        private AssetBundleManifest m_BundlesManifest;
+        private long m_BundlesManifestRef;
+        private string m_ManifestBundleName = "AssetBundles";
+        private string m_ManifestAssetName = "AssetBundleManifest";
+        private bool m_Inited = false;
+
+        public AssetBundleLoader()
+        {
+            m_BundleNameToItem = new Dictionary<string, AssetBundleItem>();
+        }
 
         private string[] GetDependABNames(string abName)
         {
-            if (!m_AssetBundlesManifest)
+            if (!m_BundlesManifest)
             {
                 return null;
             }
-            string[] dependencies = m_AssetBundlesManifest.GetAllDependencies(abName);
+            string[] dependencies = m_BundlesManifest.GetAllDependencies(abName);
             return dependencies;
         }
 
@@ -84,7 +91,6 @@ namespace U3dClient
                 yield break;
             }
             var abItem = m_BundleNameToItem[refData.BundleName];
-            var assetItem = abItem.AssetNameToAssetItem[assetName];
             var dependRefs = abItem.DependAssetRef;
             if (isLoadDepend && dependRefs != null)
             {
@@ -109,14 +115,15 @@ namespace U3dClient
                 }
             }
             abItem.TryLoadAssetSync(assetName);
+            var assetItem = abItem.AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Loading)
             {
-                var request = assetItem.LoadRequest;
-                while (!request.isDone)
+                var assetRequest = assetItem.LoadRequest;
+                while (!assetRequest.isDone)
                 {
                     yield return null;
                 }
-                assetItem.SetAsset(request.asset);
+                assetItem.SetAsset(assetRequest.asset);
                 if (TryUnLoadABItemByName(abName))
                 {
                     yield break;
@@ -153,6 +160,22 @@ namespace U3dClient
                 var abItem = m_BundleNameToItem[refData.BundleName];
                 TryUnLoadABItemByName(abItem.Name);
             }
+        }
+
+        // public void Init()
+        // {
+
+        // }
+
+        public void InitSync(Action loadedAction)
+        {
+            m_BundlesManifestRef = LoadAssetSync<AssetBundleManifest>(m_ManifestBundleName, m_ManifestAssetName, 
+            asset=>
+            {
+                m_BundlesManifest = asset;
+                m_Inited = true;
+                loadedAction();
+            }, false);
         }
     }
 }

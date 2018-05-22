@@ -8,7 +8,7 @@ namespace U3dClient
     {
         public static GameRoot Instance;
 
-        public ResourceManager ResourceMgr;
+        public ResourceManager ResourceMgr = new ResourceManager();
 
         private void Awake()
         {
