@@ -8,8 +8,11 @@ public class TestBundleLoad : MonoBehaviour {
 	// Use this for initialization
 	IEnumerator Start () {
 		var isLoaded = false;
-		GameRoot.Instance.ResourceMgr.InitResourceLoader(()=>{});
-		if (!isLoaded)
+		GameRoot.Instance.ResourceMgr.InitResourceLoader(() =>
+		{
+		    isLoaded = true;
+		});
+		while  (!isLoaded)
 		{
 			yield return null;
 		}
