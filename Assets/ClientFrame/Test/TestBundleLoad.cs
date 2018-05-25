@@ -29,6 +29,7 @@ public class TestBundleLoad : MonoBehaviour {
             {
                 Instantiate(o, Parent1.transform);
             }, true);
+		Debug.Log("===============11");
         GameRoot.Instance.ResourceMgr.ResourceLoader.UnLoadAsset(refIndex);
         GameRoot.Instance.ResourceMgr.ResourceLoader.UnLoadAsset(refIndex2);
     }

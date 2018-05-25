@@ -92,7 +92,7 @@ namespace U3dClient
             }
             var abItem = m_BundleNameToItem[refData.BundleName];
             var dependRefs = abItem.DependAssetRef;
-		    Debug.Log("111111111111111");
+		    Debug.Log("111111111111111");                                                                                           
             if (isLoadDepend && dependRefs != null)
             {
                 foreach (var dependItem in dependRefs)
@@ -101,7 +101,7 @@ namespace U3dClient
                     var loadDependAssetEnu = LoadAssetSyncEnumerator<Object>(dependItem, dependRefData.BundleName, "", null, false);
                     while (loadDependAssetEnu.MoveNext())
                     {
-                        yield return null;
+                        yield return loadDependAssetEnu.Current;
                     }
                 }
             }
