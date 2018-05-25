@@ -92,14 +92,20 @@ namespace U3dClient
             }
             var abItem = m_BundleNameToItem[refData.BundleName];
             var dependRefs = abItem.DependAssetRef;
+		    Debug.Log("111111111111111");
             if (isLoadDepend && dependRefs != null)
             {
                 foreach (var dependItem in dependRefs)
                 {
                     var dependRefData = GameRoot.Instance.ResourceMgr.RefCounter.GetRefData(dependItem);
-                    yield return LoadAssetSyncEnumerator<Object>(dependItem, dependRefData.BundleName, "", null, false);
+                    var loadDependAssetEnu = LoadAssetSyncEnumerator<Object>(dependItem, dependRefData.BundleName, "", null, false);
+                    while (loadDependAssetEnu.MoveNext())
+                    {
+                        yield return null;
+                    }
                 }
             }
+		    Debug.Log("222222222222");
             abItem.TryLoadBundleSync();
             if (abItem.State == LoadState.Loading)
             {
@@ -114,6 +120,7 @@ namespace U3dClient
                     yield break;
                 }
             }
+		    Debug.Log("3333333333");
             abItem.TryLoadAssetSync(assetName);
             var assetItem = abItem.AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Loading)
@@ -129,6 +136,7 @@ namespace U3dClient
                     yield break;
                 }
             }
+		    Debug.Log("44444444444");
 
             {
                 refData = GameRoot.Instance.ResourceMgr.RefCounter.GetRefData(refRequest);
@@ -137,7 +145,7 @@ namespace U3dClient
                     loadedAction(assetItem.Asset as T);
                 }
             }
-            
+            yield break;
         }
 
         public long LoadAssetSync<T>(string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
