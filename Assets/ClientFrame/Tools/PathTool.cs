@@ -39,13 +39,8 @@ namespace U3dClient
 
             {
                 var bundlePath = Path.Combine(StreamingAssetsPath, bundleName);
-                if (File.Exists(bundlePath))
-                {
-                    return bundlePath;
-                }
+                return bundlePath;
             }
-
-            return "";
         }
     }
 }
