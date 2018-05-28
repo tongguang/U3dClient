@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 public static class GenABFile
 {
@@ -13,12 +14,13 @@ public static class GenABFile
     private static string _ScriptPath = "Script/Lua";
     private static string _ResouceRootPath = Application.dataPath + "/" + "Resource";
     private static string _AssetBundleDirectory = "Assets/AssetBundles";
+    private static string _AssetBundleTempDirectory = "Assets/TempAssetBundles";
 
     [MenuItem("AB/Test")]
     public static void Test()
     {
         Debug.Log(Application.persistentDataPath);
-        Debug.Log(Application.temporaryCachePath);
+        Debug.Log(Application.streamingAssetsPath);
     }
 
     [MenuItem("AB/GenAllAB")]
@@ -26,6 +28,7 @@ public static class GenABFile
     {
         GenResABName();
         BuildAllAssetBundles();
+        CopyBundleToTempDirectory();
     }
 
     [MenuItem("AB/GenResAB")]
@@ -33,12 +36,14 @@ public static class GenABFile
     {
         GenResABName();
         BuildAllAssetBundles();
+        CopyBundleToTempDirectory();
     }
 
     public static void GenScriptABFiles()
     {
         GenScriptABName();
         BuildAllAssetBundles();
+        CopyBundleToTempDirectory();
     }
 
     public static void GenResABName()
@@ -83,5 +88,75 @@ public static class GenABFile
         BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None,
             EditorUserBuildSettings.activeBuildTarget);
         AssetDatabase.Refresh();
+    }
+
+    [MenuItem("AB/CopyBundleToTempDir")]
+    public static void CopyBundleToTempDirectory()
+    {
+        if (Directory.Exists(_AssetBundleTempDirectory))
+        {
+            Directory.Delete(_AssetBundleTempDirectory, true);
+        }
+        if (!Directory.Exists(_AssetBundleTempDirectory))
+        {
+            Directory.CreateDirectory(_AssetBundleTempDirectory);
+        }
+        CopyFolder(_AssetBundleDirectory, _AssetBundleTempDirectory, "*.ab");
+        AssetDatabase.Refresh();
+        Debug.Log("复制结束。。");
+    }
+
+    [MenuItem("AB/CopyBundleToStreamingAssetsPath")]
+    public static void CopyBundleToStreamingAssetsPath()
+    {
+        if (Directory.Exists(Application.streamingAssetsPath))
+        {
+            Directory.Delete(Application.streamingAssetsPath, true);
+        }
+        if (!Directory.Exists(Application.streamingAssetsPath))
+        {
+            Directory.CreateDirectory(Application.streamingAssetsPath);
+        }
+        CopyFolder(_AssetBundleTempDirectory, Application.streamingAssetsPath, "*.*");
+        AssetDatabase.Refresh();
+        Debug.Log("复制结束。。");
+    }
+
+    public static void CopyFolder(string sourcePath, string destPath, string searchPattern)
+    {
+        if (Directory.Exists(sourcePath))
+        {
+            if (!Directory.Exists(destPath))
+            {
+                //目标目录不存在则创建
+                try
+                {
+                    Directory.CreateDirectory(destPath);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("创建目标目录失败：" + ex.Message);
+                }
+            }
+            //获得源文件下所有文件
+            List<string> files = new List<string>(Directory.GetFiles(sourcePath, searchPattern));
+            files.ForEach(c =>
+            {
+                string destFile = Path.Combine(destPath, Path.GetFileName(c));
+                File.Copy(c, destFile, true);//覆盖模式
+            });
+            //获得源文件下所有目录文件
+            List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
+            folders.ForEach(c =>
+            {
+                string destDir = Path.Combine(destPath, Path.GetFileName(c));
+                //采用递归的方法实现
+                CopyFolder(c, destDir, searchPattern);
+            });
+        }
+        else
+        {
+            throw new DirectoryNotFoundException("源目录不存在！");
+        }
     }
 }
