@@ -81,7 +81,7 @@ public static class GenABFile
         }
 
         BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None,
-            BuildTarget.StandaloneWindows);
+            EditorUserBuildSettings.activeBuildTarget);
         AssetDatabase.Refresh();
     }
 }
