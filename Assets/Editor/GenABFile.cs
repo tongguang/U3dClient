@@ -102,6 +102,7 @@ public static class GenABFile
             Directory.CreateDirectory(_AssetBundleTempDirectory);
         }
         CopyFolder(_AssetBundleDirectory, _AssetBundleTempDirectory, "*.ab");
+        File.Copy(Path.Combine(_AssetBundleDirectory, "AssetBundles"), Path.Combine(_AssetBundleTempDirectory, "AssetBundles"), true);//覆盖模式
         AssetDatabase.Refresh();
         Debug.Log("复制结束。。");
     }
