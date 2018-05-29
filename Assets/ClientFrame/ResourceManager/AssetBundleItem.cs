@@ -31,7 +31,7 @@ namespace U3dClient
             if (State == LoadState.Init)
             {
                 State = LoadState.Loading;
-                var bundlePath = PathTool.GetBundlePath(Name);
+                var bundlePath = FileTool.GetBundlePath(Name);
                 if (bundlePath != "")
                 {
                     var request = AssetBundle.LoadFromFileAsync(bundlePath);
