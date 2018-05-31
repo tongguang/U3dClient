@@ -106,7 +106,7 @@ namespace U3dClient
                 }
             }
 		    Debug.Log("222222222222");
-            abItem.TryLoadBundleSync();
+            abItem.TryLoadBundleAsync();
             if (abItem.State == LoadState.Loading)
             {
                 var request = abItem.LoadRequest;
@@ -121,7 +121,7 @@ namespace U3dClient
                 }
             }
 		    Debug.Log("3333333333");
-            abItem.TryLoadAssetSync(assetName);
+            abItem.TryLoadAssetAsync(assetName);
             var assetItem = abItem.AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Loading)
             {
@@ -175,7 +175,7 @@ namespace U3dClient
 
         // }
 
-        public void InitSync(Action loadedAction)
+        public void InitAsync(Action loadedAction)
         {
             m_BundlesManifestRef = LoadAssetSync<AssetBundleManifest>(m_ManifestBundleName, m_ManifestAssetName, 
             asset=>

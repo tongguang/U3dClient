@@ -26,7 +26,7 @@ namespace U3dClient
 
         #region 加载
 
-        public bool TryLoadBundleSync()
+        public bool TryLoadBundleAsync()
         {
             if (State == LoadState.Init)
             {
@@ -59,7 +59,7 @@ namespace U3dClient
             LoadRequest = null;
         }
 
-        public bool TryLoadAssetSync(string assetName)
+        public bool TryLoadAssetAsync(string assetName)
         {
             if (!AssetNameToAssetItem.ContainsKey(assetName))
             {

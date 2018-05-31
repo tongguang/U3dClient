@@ -24,7 +24,7 @@ namespace U3dClient
 
         public void InitResourceLoader(Action loadedAction)
         {
-            ResourceLoader.InitSync(loadedAction);
+            ResourceLoader.InitAsync(loadedAction);
         }        
     }
 }
