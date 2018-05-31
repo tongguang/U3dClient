@@ -7,6 +7,7 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 public static class GenABFile
 {
@@ -15,35 +16,36 @@ public static class GenABFile
     private static string _ResouceRootPath = Application.dataPath + "/" + "Resource";
     private static string _AssetBundleDirectory = "Assets/AssetBundles";
     private static string _AssetBundleTempDirectory = "Assets/TempAssetBundles";
+    private static string _AssetBundlesName = "AssetBundles";
+    private static string _VersionName = "Version.txt";
 
     [MenuItem("AB/Test")]
     public static void Test()
     {
-        Debug.Log(Application.persistentDataPath);
-        Debug.Log(Application.streamingAssetsPath);
+        var lines = File.ReadAllLines(Path.Combine(_AssetBundleDirectory, _VersionName));
     }
 
-    [MenuItem("AB/GenAllAB")]
-    public static void GenAllABFiles()
+    [MenuItem("AB/GenAllPackDataToTemp")]
+    public static void GenAllPackDataToTempDirectory()
     {
         GenResABName();
         BuildAllAssetBundles();
-        CopyBundleToTempDirectory();
+        GenVersionFile();
+        CopyPackDataToTempDirectory();
+        AssetDatabase.Refresh();
     }
 
-    [MenuItem("AB/GenResAB")]
     public static void GenResABFiles()
     {
         GenResABName();
         BuildAllAssetBundles();
-        CopyBundleToTempDirectory();
     }
 
     public static void GenScriptABFiles()
     {
         GenScriptABName();
         BuildAllAssetBundles();
-        CopyBundleToTempDirectory();
+        CopyPackDataToTempDirectory();
     }
 
     public static void GenResABName()
@@ -90,74 +92,122 @@ public static class GenABFile
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("AB/CopyBundleToTempDir")]
-    public static void CopyBundleToTempDirectory()
+    public static void GenVersionFile()
     {
-        if (Directory.Exists(_AssetBundleTempDirectory))
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.Append(GetVersionInfoStr(Path.Combine(_AssetBundleDirectory, _AssetBundlesName)));
+        var filePaths = Directory.GetFiles(_AssetBundleDirectory,
+            "*.ab", SearchOption.AllDirectories);
+        foreach (var filePath in filePaths)
         {
-            Directory.Delete(_AssetBundleTempDirectory, true);
+            stringBuilder.Append(GetVersionInfoStr(filePath));
         }
-        if (!Directory.Exists(_AssetBundleTempDirectory))
-        {
-            Directory.CreateDirectory(_AssetBundleTempDirectory);
-        }
-        CopyFolder(_AssetBundleDirectory, _AssetBundleTempDirectory, "*.ab");
-        File.Copy(Path.Combine(_AssetBundleDirectory, "AssetBundles"), Path.Combine(_AssetBundleTempDirectory, "AssetBundles"), true);//覆盖模式
+        File.WriteAllText(Path.Combine(_AssetBundleDirectory, _VersionName),stringBuilder.ToString());
+    }
+
+    public static string GetVersionInfoStr(string path)
+    {
+        var newfilePath = path.Replace("\\", "/");
+        var fileInfo = new FileInfo(newfilePath);
+        var fileSize = fileInfo.Length;
+        var md5 = GetFileMD5(newfilePath);
+        return string.Format("{0} {1} {2}\n", newfilePath.Replace(_AssetBundleDirectory + "/", ""), fileSize, md5);
+    }
+
+    public static string GetFileMD5(string path)
+    {
+        if (!File.Exists(path))
+            throw new ArgumentException(string.Format("<{0}>, 不存在", path));
+        FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
+        byte[] buffer = md5Provider.ComputeHash(fs);
+        string resule = BitConverter.ToString(buffer);
+        resule = resule.Replace("-", "");
+        md5Provider.Clear();
+        fs.Close();
+        return resule;
+    }
+
+    [MenuItem("AB/CopyPackDataToTemp")]
+    public static void CopyPackDataToTempDirectory()
+    {
+        DiffCopyPackDatas(_AssetBundleDirectory, _AssetBundleTempDirectory);
         AssetDatabase.Refresh();
         Debug.Log("复制结束。。");
     }
 
-    [MenuItem("AB/CopyBundleToStreamingAssetsPath")]
-    public static void CopyBundleToStreamingAssetsPath()
+    [MenuItem("AB/CopyPackDataToStreamingAssets")]
+    public static void CopyPackDataToStreamingAssetsPath()
     {
-        if (Directory.Exists(Application.streamingAssetsPath))
-        {
-            Directory.Delete(Application.streamingAssetsPath, true);
-        }
-        if (!Directory.Exists(Application.streamingAssetsPath))
-        {
-            Directory.CreateDirectory(Application.streamingAssetsPath);
-        }
-        CopyFolder(_AssetBundleTempDirectory, Application.streamingAssetsPath, "*.*");
+        DiffCopyPackDatas(_AssetBundleTempDirectory, Application.streamingAssetsPath);
         AssetDatabase.Refresh();
-        Debug.Log("复制结束。。");
     }
 
-    public static void CopyFolder(string sourcePath, string destPath, string searchPattern)
+    public static void CopyFile(string sourcePath, string destPath)
     {
-        if (Directory.Exists(sourcePath))
+        var dirName = Path.GetDirectoryName(destPath);
+        if (!File.Exists(dirName))
         {
-            if (!Directory.Exists(destPath))
+            Directory.CreateDirectory(dirName);
+        }
+        File.Copy(sourcePath, destPath, true);
+    }
+
+    public static void DiffCopyPackDatas(string sourcePath, string destPath)
+    {
+        if (!Directory.Exists(destPath))
+        {
+            Directory.CreateDirectory(destPath);
+        }
+        if (!File.Exists(Path.Combine(sourcePath, _VersionName)))
+        {
+            Debug.Log("复制失败");
+            return;
+        }
+
+        CopyFile(Path.Combine(sourcePath, _VersionName), Path.Combine(destPath, _VersionName));//覆盖模式
+
+        string srcVerPath = Path.Combine(destPath, _VersionName);
+        var srcFileInfos = File.ReadAllLines(srcVerPath);
+        var srcFileMD5s = new Dictionary<string, string>();
+        foreach (var destFileInfo in srcFileInfos)
+        {
+            var info = destFileInfo.Split(' ');
+            var fileName = info[0];
+            var md5 = info[2];
+            srcFileMD5s[fileName] = md5;
+        }
+
+        string destVerPath = Path.Combine(sourcePath, _VersionName);
+        string[] destFileInfos = null;
+        var destFileMD5s = new Dictionary<string, string>();
+        if (File.Exists(destVerPath))
+        {
+            destFileInfos = File.ReadAllLines(destVerPath);
+            foreach (var destFileInfo in destFileInfos)
             {
-                //目标目录不存在则创建
-                try
-                {
-                    Directory.CreateDirectory(destPath);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("创建目标目录失败：" + ex.Message);
-                }
+                var info = destFileInfo.Split(' ');
+                var fileName = info[0];
+                var md5 = info[2];
+                destFileMD5s[fileName] = md5;
             }
-            //获得源文件下所有文件
-            List<string> files = new List<string>(Directory.GetFiles(sourcePath, searchPattern));
-            files.ForEach(c =>
-            {
-                string destFile = Path.Combine(destPath, Path.GetFileName(c));
-                File.Copy(c, destFile, true);//覆盖模式
-            });
-            //获得源文件下所有目录文件
-            List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
-            folders.ForEach(c =>
-            {
-                string destDir = Path.Combine(destPath, Path.GetFileName(c));
-                //采用递归的方法实现
-                CopyFolder(c, destDir, searchPattern);
-            });
         }
-        else
+
+        foreach (var srcFileMd5 in srcFileMD5s)
         {
-            throw new DirectoryNotFoundException("源目录不存在！");
+            var name = srcFileMd5.Key;
+            var md5 = srcFileMd5.Value;
+            if (destFileMD5s.ContainsKey(name) && destFileMD5s[name] != md5)
+            {
+                CopyFile(Path.Combine(sourcePath, name), Path.Combine(destPath, name));
+            }
+            else
+            {
+                CopyFile(Path.Combine(sourcePath, name), Path.Combine(destPath, name));
+            }
         }
+        AssetDatabase.Refresh();
+        Debug.Log("复制结束。。");
     }
+
 }
