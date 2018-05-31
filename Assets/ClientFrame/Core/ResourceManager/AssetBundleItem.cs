@@ -32,16 +32,19 @@ namespace U3dClient
             {
                 State = LoadState.Loading;
                 var bundlePath = FileTool.GetBundlePath(Name);
-                if (bundlePath != "")
-                {
-                    var request = AssetBundle.LoadFromFileAsync(bundlePath);
-                    SetAssetBundleCreateRequest(request);
-                }
-                else
-                {
-                    Debug.LogWarning(string.Format("加载不存在的AB {0}", Name));
-                    return false;
-                }
+                var request = AssetBundle.LoadFromFileAsync(bundlePath);
+                SetAssetBundleCreateRequest(request);
+            }
+            return true;
+        }
+
+        public bool TryLoadBundle()
+        {
+            if (State == LoadState.Init)
+            {
+                var bundlePath = FileTool.GetBundlePath(Name);
+                var bundle = AssetBundle.LoadFromFile(bundlePath);
+                SetAssetBundle(bundle);
             }
             return true;
         }
@@ -57,6 +60,10 @@ namespace U3dClient
             State = LoadState.Loaded;
             Bundle = assetBundle;
             LoadRequest = null;
+            if (Bundle == null)
+            {
+                Debug.LogWarning(string.Format("加载不存在的AB {0}", Name));
+            }
         }
 
         public bool TryLoadAssetAsync(string assetName)
@@ -86,6 +93,36 @@ namespace U3dClient
                 }
             }
             
+            return true;
+        }
+
+        public bool TryLoadAsset(string assetName)
+        {
+            if (!AssetNameToAssetItem.ContainsKey(assetName))
+            {
+                AssetNameToAssetItem.Add(assetName, new AssetBundleAssetItem(assetName));
+            }
+            var assetItem = AssetNameToAssetItem[assetName];
+            if (assetItem.State == LoadState.Init)
+            {
+                if (assetName == "")
+                {
+                    assetItem.SetAsset(null);
+                }
+                else
+                {
+                    if (Bundle)
+                    {
+                        var asset = Bundle.LoadAsset(assetName);
+                        assetItem.SetAsset(asset);
+                    }
+                    else
+                    {
+                        assetItem.SetAsset(null);
+                    }
+                }
+            }
+
             return true;
         }
 

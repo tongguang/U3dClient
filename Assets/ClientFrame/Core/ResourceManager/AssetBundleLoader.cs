@@ -92,7 +92,6 @@ namespace U3dClient
             }
             var abItem = m_BundleNameToItem[refData.BundleName];
             var dependRefs = abItem.DependAssetRef;
-		    Debug.Log("111111111111111");                                                                                           
             if (isLoadDepend && dependRefs != null)
             {
                 foreach (var dependItem in dependRefs)
@@ -105,7 +104,6 @@ namespace U3dClient
                     }
                 }
             }
-		    Debug.Log("222222222222");
             abItem.TryLoadBundleAsync();
             if (abItem.State == LoadState.Loading)
             {
@@ -120,7 +118,6 @@ namespace U3dClient
                     yield break;
                 }
             }
-		    Debug.Log("3333333333");
             abItem.TryLoadAssetAsync(assetName);
             var assetItem = abItem.AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Loading)
@@ -136,7 +133,6 @@ namespace U3dClient
                     yield break;
                 }
             }
-		    Debug.Log("44444444444");
 
             {
                 refData = GameRoot.Instance.ResourceMgr.RefCounter.GetRefData(refRequest);
@@ -145,17 +141,35 @@ namespace U3dClient
                     loadedAction(assetItem.Asset as T);
                 }
             }
-            yield break;
         }
 
-        public long LoadAssetAsync<T>(string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
+        // 同一个资源不支持同步和异步加载同时使用
+        public long LoadAsset<T>(string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
         {
             var nowRef = AddAssetRef(abName, assetName);
-            if (isLoadDepend)
+            var refData = GameRoot.Instance.ResourceMgr.RefCounter.GetRefData(nowRef);
+            var abItem = m_BundleNameToItem[refData.BundleName];
+            if (isLoadDepend && abItem.DependAssetRef == null)
             {
-                AddDependAssetRef(abName);
+                var dependAbNames = GetDependABNames(abName);
+                if (dependAbNames != null)
+                {
+                    List<long> dependRefs = new List<long>();
+                    foreach (var dependAbName in dependAbNames)
+                    {
+                        var dependRef = LoadAsset<Object>(dependAbName, "", null, false);
+                        dependRefs.Add(dependRef);
+                    }
+                    abItem.SetDependAssetRef(dependRefs);
+                }
             }
-            GameRoot.Instance.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
+            abItem.TryLoadBundle();
+            abItem.TryLoadAsset(assetName);
+            var assetItem = abItem.AssetNameToAssetItem[assetName];
+            if (loadedAction != null)
+            {
+                loadedAction(assetItem.Asset as T);
+            }
             return nowRef;
         }
 
@@ -170,10 +184,26 @@ namespace U3dClient
             }
         }
 
-        // public void Init()
-        // {
+        public long LoadAssetAsync<T>(string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
+        {
+            var nowRef = AddAssetRef(abName, assetName);
+            if (isLoadDepend)
+            {
+                AddDependAssetRef(abName);
+            }
+            GameRoot.Instance.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
+            return nowRef;
+        }
 
-        // }
+         public void Init()
+         {
+            m_BundlesManifestRef = LoadAsset<AssetBundleManifest>(m_ManifestBundleName, m_ManifestAssetName,
+                asset =>
+                {
+                    m_BundlesManifest = asset;
+                    m_Inited = true;
+                }, false);
+        }
 
         public void InitAsync(Action loadedAction)
         {
