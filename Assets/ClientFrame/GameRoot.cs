@@ -16,6 +16,8 @@ namespace U3dClient
             {
                 Instance = this;
             }
+
+            ResourceMgr.Awake();
         }
 
         // Use this for initialization
