@@ -18,13 +18,13 @@ public class TestBundleLoad : MonoBehaviour {
 			yield return null;
 		}
 
-	    var refIndex = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAssetSync<GameObject>("res/test2.ab", "Image",
+	    var refIndex = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAssetAsync<GameObject>("res/test2.ab", "Image",
 	        o =>
 	        {
 	            Instantiate(o, Parent1.transform);
 	        }, true);
 	    yield return new WaitForSeconds(5);
-        var refIndex2 = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAssetSync<GameObject>("res/test2.ab", "Image",
+        var refIndex2 = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAssetAsync<GameObject>("res/test2.ab", "Image",
             o =>
             {
                 Instantiate(o, Parent1.transform);

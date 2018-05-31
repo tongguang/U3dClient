@@ -83,7 +83,7 @@ namespace U3dClient
             return false;
         }
 
-        private IEnumerator LoadAssetSyncEnumerator<T>(long refRequest, string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
+        private IEnumerator LoadAssetAsyncEnumerator<T>(long refRequest, string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
         {
             var refData = GameRoot.Instance.ResourceMgr.RefCounter.GetRefData(refRequest);
             if (refData == null)
@@ -98,7 +98,7 @@ namespace U3dClient
                 foreach (var dependItem in dependRefs)
                 {
                     var dependRefData = GameRoot.Instance.ResourceMgr.RefCounter.GetRefData(dependItem);
-                    var loadDependAssetEnu = LoadAssetSyncEnumerator<Object>(dependItem, dependRefData.BundleName, "", null, false);
+                    var loadDependAssetEnu = LoadAssetAsyncEnumerator<Object>(dependItem, dependRefData.BundleName, "", null, false);
                     while (loadDependAssetEnu.MoveNext())
                     {
                         yield return loadDependAssetEnu.Current;
@@ -148,14 +148,14 @@ namespace U3dClient
             yield break;
         }
 
-        public long LoadAssetSync<T>(string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
+        public long LoadAssetAsync<T>(string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
         {
             var nowRef = AddAssetRef(abName, assetName);
             if (isLoadDepend)
             {
                 AddDependAssetRef(abName);
             }
-            GameRoot.Instance.StartCoroutine(LoadAssetSyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
+            GameRoot.Instance.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
             return nowRef;
         }
 
@@ -177,7 +177,7 @@ namespace U3dClient
 
         public void InitAsync(Action loadedAction)
         {
-            m_BundlesManifestRef = LoadAssetSync<AssetBundleManifest>(m_ManifestBundleName, m_ManifestAssetName, 
+            m_BundlesManifestRef = LoadAssetAsync<AssetBundleManifest>(m_ManifestBundleName, m_ManifestAssetName, 
             asset=>
             {
                 m_BundlesManifest = asset;
