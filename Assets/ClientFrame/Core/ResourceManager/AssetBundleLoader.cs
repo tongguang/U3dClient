@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -191,7 +192,7 @@ namespace U3dClient
             {
                 AddDependAssetRef(abName);
             }
-            GameRoot.Instance.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
+            MainThreadDispatcher.StartUpdateMicroCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
             return nowRef;
         }
 

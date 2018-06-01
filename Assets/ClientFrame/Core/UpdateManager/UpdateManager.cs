@@ -36,8 +36,7 @@ namespace U3dClient
 
         public void StartUpdate(Action endAction)
         {
-
-            MainThreadDispatcher.SendStartCoroutine(StartUpdateEnumerator(endAction));
+            MainThreadDispatcher.StartUpdateMicroCoroutine(StartUpdateEnumerator(endAction));
         }
 
         private IEnumerator StartUpdateEnumerator(Action endAction)
