@@ -9,7 +9,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
-public static class GenABFile
+public static class CreateBundleEditor
 {
     private static string _ResPath = "Res";
     private static string _ScriptPath = "Script/Lua";
@@ -25,13 +25,13 @@ public static class GenABFile
     private static string _AssetBundlesName = "AssetBundles";
     private static string _VersionName = "Version.txt";
 
-    [MenuItem("AB/Test")]
+    [MenuItem("Bundle/Test")]
     public static void Test()
     {
         var lines = File.ReadAllLines(Path.Combine(_AssetBundleDirectory, _VersionName));
     }
 
-    [MenuItem("AB/GenAllPackDataToTemp")]
+    [MenuItem("Bundle/GenAllPackDataToTemp")]
     public static void GenAllPackDataToTempDirectory()
     {
         GenResABName();
@@ -134,7 +134,7 @@ public static class GenABFile
         return resule;
     }
 
-    [MenuItem("AB/CopyPackDataToTemp")]
+    [MenuItem("Bundle/CopyPackDataToTemp")]
     public static void CopyPackDataToTempDirectory()
     {
         DiffCopyPackDatas(_AssetBundleDirectory, _AssetBundleTempDirectory);
@@ -142,7 +142,7 @@ public static class GenABFile
         Debug.Log("复制结束。。");
     }
 
-    [MenuItem("AB/CopyPackDataToStreamingAssets")]
+    [MenuItem("Bundle/CopyPackDataToStreamingAssets")]
     public static void CopyPackDataToStreamingAssetsPath()
     {
         DiffCopyPackDatas(_AssetBundleTempDirectory, Application.streamingAssetsPath);
