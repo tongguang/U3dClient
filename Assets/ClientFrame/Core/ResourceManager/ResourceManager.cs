@@ -22,9 +22,9 @@ namespace U3dClient
             ResourceLoader = new AssetBundleLoader();
         }
 
-        public void InitResourceLoader(Action loadedAction)
+        public void Awake()
         {
-            ResourceLoader.InitAsync(loadedAction);
-        }        
+            ResourceLoader.Init();
+        }
     }
 }

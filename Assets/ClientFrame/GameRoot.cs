@@ -16,18 +16,42 @@ namespace U3dClient
             {
                 Instance = this;
             }
+            else
+            {
+                Debug.LogError("GameRoot 初始化两次");
+                return;
+            }
+
+            ResourceMgr.Awake();
         }
 
-        // Use this for initialization
-        void Start()
+        private void Start()
         {
 
         }
 
-        // Update is called once per frame
-        void Update()
+        private void Update()
         {
 
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            
+        }
+
+        private void OnDestroy()
+        {
+            
+        }
+       
+        private void OnApplicationQuit()
+        {
         }
     }
 }

@@ -8,17 +8,6 @@ public class TestBundleLoad : MonoBehaviour {
 	// Use this for initialization
     public GameObject Parent1;
 	IEnumerator Start () {
-//        var isLoaded = false;
-//        GameRoot.Instance.ResourceMgr.ResourceLoader.InitAsync(() =>
-//        {
-//            isLoaded = true;
-//        });
-//        while (!isLoaded)
-//        {
-//            yield return null;
-//        }
-
-        GameRoot.Instance.ResourceMgr.ResourceLoader.Init();
         var refIndex = GameRoot.Instance.ResourceMgr.ResourceLoader.LoadAsset<GameObject>("res/test2.ab", "Image",
 	        o =>
 	        {
