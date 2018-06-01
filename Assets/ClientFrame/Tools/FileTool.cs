@@ -7,16 +7,24 @@ namespace U3dClient
 {
     public static class FileTool
     {
-        public static string DataPath { private set; get; }
-        public static string StreamingAssetsPath { private set; get; }
-        public static string PersistentDataPath { private set; get; }
+        public static string DataPath;
+        public static string StreamingAssetsPath;
+        public static string PersistentDataPath;
 
-        public static string WWWDataPath { private set; get; }
-        public static string WWWStreamingAssetsPath { private set; get; }
-        public static string WWWPersistentDataPath { private set; get; }
+        public static string WWWDataPath;
+        public static string WWWStreamingAssetsPath;
+        public static string WWWPersistentDataPath;
+
+        public static string AssetBundlesName;
+        public static string VersionFileName;
+        public static string ResInfoFileExtension;
 
         static FileTool()
         {
+            AssetBundlesName = "AssetBundles";
+            VersionFileName = "Version.txt";
+            ResInfoFileExtension = ".ex";
+
             StreamingAssetsPath = Application.streamingAssetsPath;
 #if UNITY_STANDALONE
             DataPath = Application.dataPath;

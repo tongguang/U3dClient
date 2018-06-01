@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using U3dClient;
 
 public static class CreateBundleEditor
 {
@@ -22,8 +23,8 @@ public static class CreateBundleEditor
 #else
     private static string _AssetBundleTempDirectory = "TempAssetBundles/Ios";
 #endif
-    private static string _AssetBundlesName = "AssetBundles";
-    private static string _VersionName = "Version.txt";
+    private static string _AssetBundlesName = FileTool.AssetBundlesName;
+    private static string _VersionName = FileTool.VersionFileName;
 
     [MenuItem("Bundle/Test")]
     public static void Test()

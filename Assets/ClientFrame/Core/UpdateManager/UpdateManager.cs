@@ -41,10 +41,11 @@ namespace U3dClient
 
         private IEnumerator StartUpdateEnumerator(Action endAction)
         {
-            var exFileExtension = ".ex";
-            var versionName = "Version.txt";
-            var baseVersionData = new Dictionary<string, FileData>();
-            yield return ObservableWWW.GetWWW(Path.Combine(FileTool.WWWStreamingAssetsPath, versionName)).Subscribe(
+            var resInfoFileExten = FileTool.ResInfoFileExtension;
+            var versionFileName = FileTool.VersionFileName;
+
+            var baseVersionDatas = new Dictionary<string, FileData>();
+            yield return ObservableWWW.GetWWW(Path.Combine(FileTool.WWWStreamingAssetsPath, versionFileName)).Subscribe(
                 x =>
                 {
                     var datas = x.text.Split('\n');
@@ -53,12 +54,12 @@ namespace U3dClient
                         var fileData = GetFileData(data);
                         if (fileData != null)
                         {
-                            baseVersionData.Add(fileData.filePath, fileData);
+                            baseVersionDatas.Add(fileData.filePath, fileData);
                         }
                     }
                 });
             var newVersionData = new Dictionary<string, FileData>();
-            yield return ObservableWWW.GetWWW(Path.Combine(ResUrl, versionName)).Subscribe(
+            yield return ObservableWWW.GetWWW(Path.Combine(ResUrl, versionFileName)).Subscribe(
                 x =>
                 {
                     var datas = x.text.Split('\n');
@@ -77,15 +78,15 @@ namespace U3dClient
             {
                 var newFileData = data.Value;
 
-                var oldExFilePath = Path.Combine(FileTool.PersistentDataPath, newFileData.filePath.Replace(".ab", "") + exFileExtension);
+                var oldFileInfoPath = Path.Combine(FileTool.PersistentDataPath, newFileData.filePath.Replace(".ab", "") + resInfoFileExten);
                 FileData oldFileData = null;
-                if (File.Exists(oldExFilePath))
+                if (File.Exists(oldFileInfoPath))
                 {
-                    oldFileData = GetFileData(File.ReadAllText(oldExFilePath));
+                    oldFileData = GetFileData(File.ReadAllText(oldFileInfoPath));
                 }
-                else if (baseVersionData.ContainsKey(newFileData.filePath))
+                else if (baseVersionDatas.ContainsKey(newFileData.filePath))
                 {
-                    oldFileData = baseVersionData[newFileData.filePath];
+                    oldFileData = baseVersionDatas[newFileData.filePath];
                 }
 
                 if (oldFileData != null)
@@ -109,14 +110,14 @@ namespace U3dClient
                     x =>
                     {
                         var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
-                        var fullExFilePath = fullFilePath.Replace(".ab", "") + exFileExtension;
+                        var fullFileInfoPath = fullFilePath.Replace(".ab", "") + resInfoFileExten;
                         var dirName = Path.GetDirectoryName(fullFilePath);
                         if (!Directory.Exists(dirName))
                         {
                             Directory.CreateDirectory(dirName);
                         }
                         File.WriteAllBytes(fullFilePath, x);
-                        File.WriteAllText(fullExFilePath, fileDataStr);
+                        File.WriteAllText(fullFileInfoPath, fileDataStr);
                     });
             }
             if (endAction != null)
