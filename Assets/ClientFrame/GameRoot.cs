@@ -9,6 +9,8 @@ namespace U3dClient
         public static GameRoot Instance;
 
         public ResourceManager ResourceMgr = new ResourceManager();
+        public UpdateManager UpdateMgr = new UpdateManager();
+
 
         private void Awake()
         {
@@ -23,11 +25,13 @@ namespace U3dClient
             }
 
             ResourceMgr.Awake();
+            UpdateMgr.Awake();
         }
 
         private void Start()
         {
-
+            UpdateMgr.SetResUrl("http://111.231.215.248/AssetBundles1/");
+            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }
 
         private void Update()

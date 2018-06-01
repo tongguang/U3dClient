@@ -20,7 +20,7 @@ namespace U3dClient
             StreamingAssetsPath = Application.streamingAssetsPath;
 #if UNITY_STANDALONE
             DataPath = Application.dataPath;
-            PersistentDataPath = Path.Combine(DataPath, "./ResCache");
+            PersistentDataPath = Path.Combine(DataPath, "../ResCache");
             WWWDataPath = "file://" + DataPath;
             WWWStreamingAssetsPath = "file://" + StreamingAssetsPath;
             WWWPersistentDataPath = "file://" + PersistentDataPath;
