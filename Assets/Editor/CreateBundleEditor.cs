@@ -16,7 +16,7 @@ public static class CreateBundleEditor
     private static string _ScriptPath = "Script/Lua";
     private static string _ResouceRootPath = Application.dataPath + "/" + "Resource";
     private static string _AssetBundleDirectory = "Assets/AssetBundles";
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if UNITY_STANDALONE
     private static string _AssetBundleTempDirectory = "TempAssetBundles/Win";
 #elif UNITY_ANDROID
     private static string _AssetBundleTempDirectory = "TempAssetBundles/Android";
