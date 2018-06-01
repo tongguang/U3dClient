@@ -18,7 +18,7 @@ namespace U3dClient
         static FileTool()
         {
             StreamingAssetsPath = Application.streamingAssetsPath;
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE
             DataPath = Application.dataPath;
             PersistentDataPath = Path.Combine(DataPath, "./ResCache");
             WWWDataPath = "file://" + DataPath;

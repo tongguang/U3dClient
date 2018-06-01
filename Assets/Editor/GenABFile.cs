@@ -15,7 +15,13 @@ public static class GenABFile
     private static string _ScriptPath = "Script/Lua";
     private static string _ResouceRootPath = Application.dataPath + "/" + "Resource";
     private static string _AssetBundleDirectory = "Assets/AssetBundles";
-    private static string _AssetBundleTempDirectory = "Assets/TempAssetBundles";
+#if UNITY_EDITOR || UNITY_STANDALONE
+    private static string _AssetBundleTempDirectory = "TempAssetBundles/Win";
+#elif UNITY_ANDROID
+    private static string _AssetBundleTempDirectory = "TempAssetBundles/Android";
+#else
+    private static string _AssetBundleTempDirectory = "TempAssetBundles/Ios";
+#endif
     private static string _AssetBundlesName = "AssetBundles";
     private static string _VersionName = "Version.txt";
 
@@ -146,7 +152,7 @@ public static class GenABFile
     public static void CopyFile(string sourcePath, string destPath)
     {
         var dirName = Path.GetDirectoryName(destPath);
-        if (!File.Exists(dirName))
+        if (!Directory.Exists(dirName))
         {
             Directory.CreateDirectory(dirName);
         }
@@ -165,9 +171,8 @@ public static class GenABFile
             return;
         }
 
-        CopyFile(Path.Combine(sourcePath, _VersionName), Path.Combine(destPath, _VersionName));//覆盖模式
 
-        string srcVerPath = Path.Combine(destPath, _VersionName);
+        string srcVerPath = Path.Combine(sourcePath, _VersionName);
         var srcFileInfos = File.ReadAllLines(srcVerPath);
         var srcFileMD5s = new Dictionary<string, string>();
         foreach (var destFileInfo in srcFileInfos)
@@ -178,7 +183,7 @@ public static class GenABFile
             srcFileMD5s[fileName] = md5;
         }
 
-        string destVerPath = Path.Combine(sourcePath, _VersionName);
+        string destVerPath = Path.Combine(destPath, _VersionName);
         string[] destFileInfos = null;
         var destFileMD5s = new Dictionary<string, string>();
         if (File.Exists(destVerPath))
@@ -197,15 +202,21 @@ public static class GenABFile
         {
             var name = srcFileMd5.Key;
             var md5 = srcFileMd5.Value;
-            if (destFileMD5s.ContainsKey(name) && destFileMD5s[name] != md5)
+            if (destFileMD5s.ContainsKey(name))
             {
-                CopyFile(Path.Combine(sourcePath, name), Path.Combine(destPath, name));
+                if (destFileMD5s[name] != md5)
+                {
+                    CopyFile(Path.Combine(sourcePath, name), Path.Combine(destPath, name));
+                }
             }
             else
             {
                 CopyFile(Path.Combine(sourcePath, name), Path.Combine(destPath, name));
             }
         }
+
+        CopyFile(Path.Combine(sourcePath, _VersionName), Path.Combine(destPath, _VersionName));//覆盖模式
+
         AssetDatabase.Refresh();
         Debug.Log("复制结束。。");
     }
