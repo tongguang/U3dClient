@@ -26,11 +26,11 @@ public class TestBundleLoad : MonoBehaviour {
 
     private void OnGUI()
     {
-        if (GUI.Button(new Rect(20, 40, 80, 20), "下载"))
+        if (GUI.Button(new Rect(20, 40, 180, 180), "下载"))
         {
             Test1();
         }
-        if (GUI.Button(new Rect(20, 70, 80, 20), "加载"))
+        if (GUI.Button(new Rect(20, 250, 180, 180), "加载"))
         {
             Test2();
         }
@@ -38,7 +38,14 @@ public class TestBundleLoad : MonoBehaviour {
 
     private void Test1()
     {
-        GameRoot.Instance.UpdateMgr.StartUpdate(() => { Debug.Log("下载结束"); }, (updated, total) => {});
+        GameRoot.Instance.UpdateMgr.StartUpdate(() =>
+        {
+            Debug.Log("下载结束");
+            GameRoot.Instance.ResourceMgr.ResourceLoader.ReInitBundlesManifest();
+        }, (updated, total) =>
+        {
+            Debug.Log(string.Format("下载进度 {0} {1}", updated, total));
+        });
     }
 
     private void Test2()

@@ -33,11 +33,11 @@ namespace U3dClient
             WWWStreamingAssetsPath = "file://" + StreamingAssetsPath;
             WWWPersistentDataPath = "file://" + PersistentDataPath;
 #elif UNITY_ANDROID
-            DataPath = "jar:file://" + Application.dataPath;
-            PersistentDataPath = "jar:file://" + Application.persistentDataPath;
-            WWWDataPath = DataPath;
-            WWWStreamingAssetsPath = StreamingAssetsPath;
-            WWWPersistentDataPath = PersistentDataPath;
+            DataPath = Application.dataPath;
+            PersistentDataPath = Application.persistentDataPath;
+			WWWDataPath = "jar:file://" + DataPath;
+			WWWStreamingAssetsPath = StreamingAssetsPath;
+			WWWPersistentDataPath = "jar:file://" + PersistentDataPath;
 #else
             DataPath = Application.dataPath;
             PersistentDataPath = Application.persistentDataPath;
