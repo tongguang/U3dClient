@@ -192,7 +192,7 @@ namespace U3dClient
             {
                 AddDependAssetRef(abName);
             }
-            MainThreadDispatcher.StartUpdateMicroCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
+            MainThreadDispatcher.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
             return nowRef;
         }
 

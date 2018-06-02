@@ -36,7 +36,7 @@ namespace U3dClient
 
         public void StartUpdate(Action endAction)
         {
-            MainThreadDispatcher.StartUpdateMicroCoroutine(StartUpdateEnumerator(endAction));
+            MainThreadDispatcher.StartCoroutine(StartUpdateEnumerator(endAction));
         }
 
         private IEnumerator StartUpdateEnumerator(Action endAction)
@@ -45,34 +45,35 @@ namespace U3dClient
             var versionFileName = FileTool.VersionFileName;
 
             var baseVersionDatas = new Dictionary<string, FileData>();
-            yield return ObservableWWW.GetWWW(Path.Combine(FileTool.WWWStreamingAssetsPath, versionFileName)).Subscribe(
-                x =>
+            var obWWWText = ObservableWWW.Get(Path.Combine(FileTool.WWWStreamingAssetsPath, versionFileName)).ToYieldInstruction();
+            yield return obWWWText;
+            if (obWWWText.HasResult)
+            {
+                var datas = obWWWText.Result.Split('\n');
+                foreach (var data in datas)
                 {
-                    var datas = x.text.Split('\n');
-                    foreach (var data in datas)
+                    var fileData = GetFileData(data);
+                    if (fileData != null)
                     {
-                        var fileData = GetFileData(data);
-                        if (fileData != null)
-                        {
-                            baseVersionDatas.Add(fileData.filePath, fileData);
-                        }
+                        baseVersionDatas.Add(fileData.filePath, fileData);
                     }
-                });
+                }
+            }
             var newVersionData = new Dictionary<string, FileData>();
-            yield return ObservableWWW.GetWWW(Path.Combine(ResUrl, versionFileName)).Subscribe(
-                x =>
+            obWWWText = ObservableWWW.Get(Path.Combine(ResUrl, versionFileName)).ToYieldInstruction();
+            yield return obWWWText;
+            if (obWWWText.HasResult)
+            {
+                var datas = obWWWText.Result.Split('\n');
+                foreach (var data in datas)
                 {
-                    var datas = x.text.Split('\n');
-                    foreach (var data in datas)
+                    var fileData = GetFileData(data);
+                    if (fileData != null)
                     {
-                        var fileData = GetFileData(data);
-                        if (fileData != null)
-                        {
-                            newVersionData.Add(fileData.filePath, fileData);
-                        }
+                        newVersionData.Add(fileData.filePath, fileData);
                     }
-                });
-
+                }
+            }
             var addFileDatas = new List<FileData>();
             foreach (var data in newVersionData)
             {
@@ -106,19 +107,20 @@ namespace U3dClient
             {
                 var filePath = addFileData.filePath;
                 var fileDataStr = addFileData.fileDataStr;
-                yield return ObservableWWW.GetAndGetBytes(Path.Combine(ResUrl, filePath)).Subscribe(
-                    x =>
+                var obWWWByte = ObservableWWW.GetAndGetBytes(Path.Combine(ResUrl, filePath)).ToYieldInstruction();
+                yield return obWWWByte;
+                if (obWWWByte.HasResult)
+                {
+                    var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
+                    var fullFileInfoPath = fullFilePath.Replace(".ab", "") + resInfoFileExten;
+                    var dirName = Path.GetDirectoryName(fullFilePath);
+                    if (!Directory.Exists(dirName))
                     {
-                        var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
-                        var fullFileInfoPath = fullFilePath.Replace(".ab", "") + resInfoFileExten;
-                        var dirName = Path.GetDirectoryName(fullFilePath);
-                        if (!Directory.Exists(dirName))
-                        {
-                            Directory.CreateDirectory(dirName);
-                        }
-                        File.WriteAllBytes(fullFilePath, x);
-                        File.WriteAllText(fullFileInfoPath, fileDataStr);
-                    });
+                        Directory.CreateDirectory(dirName);
+                    }
+                    File.WriteAllBytes(fullFilePath, obWWWByte.Result);
+                    File.WriteAllText(fullFileInfoPath, fileDataStr);
+                }
             }
             if (endAction != null)
             {
