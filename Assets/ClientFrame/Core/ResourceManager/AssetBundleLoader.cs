@@ -196,14 +196,29 @@ namespace U3dClient
             return nowRef;
         }
 
-         public void Init()
-         {
+        public void InitBundlesManifest()
+        {
             m_BundlesManifestRef = LoadAsset<AssetBundleManifest>(m_ManifestBundleName, m_ManifestAssetName,
                 asset =>
                 {
                     m_BundlesManifest = asset;
                     m_Inited = true;
                 }, false);
+        }
+
+        public void Init()
+        {
+            InitBundlesManifest();
+        }
+
+        public void ReInitBundlesManifest()
+        {
+            if (m_BundlesManifest)
+            {
+                m_BundlesManifest = null;
+                UnLoadAsset(m_BundlesManifestRef);
+                InitBundlesManifest();
+            }
         }
 
         public void InitAsync(Action loadedAction)

@@ -34,12 +34,12 @@ namespace U3dClient
 #endif
         }
 
-        public void StartUpdate(Action endAction)
+        public void StartUpdate(Action endAction, Action<long, long> progressAction)
         {
-            MainThreadDispatcher.StartCoroutine(StartUpdateEnumerator(endAction));
+            MainThreadDispatcher.StartCoroutine(StartUpdateEnumerator(endAction, progressAction));
         }
 
-        private IEnumerator StartUpdateEnumerator(Action endAction)
+        private IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
         {
             var resInfoFileExten = FileTool.ResInfoFileExtension;
             var versionFileName = FileTool.VersionFileName;
@@ -59,6 +59,11 @@ namespace U3dClient
                     }
                 }
             }
+            if (obWWWText.HasError)
+            {
+                Debug.Log(string.Format("读取原始版本文件错误"));
+            }
+
             var newVersionData = new Dictionary<string, FileData>();
             obWWWText = ObservableWWW.Get(Path.Combine(ResUrl, versionFileName)).ToYieldInstruction();
             yield return obWWWText;
@@ -74,6 +79,12 @@ namespace U3dClient
                     }
                 }
             }
+            if (obWWWText.HasError)
+            {
+                Debug.Log(string.Format("读取新版本文件错误"));
+            }
+
+            long totalUpdateSize = 0;
             var addFileDatas = new List<FileData>();
             foreach (var data in newVersionData)
             {
@@ -95,19 +106,24 @@ namespace U3dClient
                     if (newFileData.fileMD5 != oldFileData.fileMD5)
                     {
                         addFileDatas.Add(newFileData);
+                        totalUpdateSize += newFileData.fileSize;
                     }
                 }
                 else
                 {
                     addFileDatas.Add(newFileData);
+                    totalUpdateSize += newFileData.fileSize;
                 }
             }
-
+            long updatedSize = 0;
+            progressAction(updatedSize, totalUpdateSize);
             foreach (var addFileData in addFileDatas)
             {
                 var filePath = addFileData.filePath;
                 var fileDataStr = addFileData.fileDataStr;
+                var fileSize = addFileData.fileSize;
                 var obWWWByte = ObservableWWW.GetAndGetBytes(Path.Combine(ResUrl, filePath)).ToYieldInstruction();
+                Debug.Log(string.Format("开始下载 {0} 大小:{1}", filePath, fileSize));
                 yield return obWWWByte;
                 if (obWWWByte.HasResult)
                 {
@@ -120,6 +136,13 @@ namespace U3dClient
                     }
                     File.WriteAllBytes(fullFilePath, obWWWByte.Result);
                     File.WriteAllText(fullFileInfoPath, fileDataStr);
+                    updatedSize += fileSize;
+                    progressAction(updatedSize, totalUpdateSize);
+                    Debug.Log(string.Format("下载完成 {0} 大小:{1}", filePath, fileSize));
+                }
+                if (obWWWByte.HasError)
+                {
+                    Debug.Log(string.Format("下载错误 {0} 大小:{1}", filePath, fileSize));
                 }
             }
             if (endAction != null)

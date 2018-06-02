@@ -38,7 +38,7 @@ public class TestBundleLoad : MonoBehaviour {
 
     private void Test1()
     {
-        GameRoot.Instance.UpdateMgr.StartUpdate(() => { Debug.Log("下载结束"); });
+        GameRoot.Instance.UpdateMgr.StartUpdate(() => { Debug.Log("下载结束"); }, (updated, total) => {});
     }
 
     private void Test2()
