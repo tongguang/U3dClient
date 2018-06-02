@@ -14,17 +14,17 @@ namespace U3dClient
     public class ResourceManager
     {
         public AssetRefCounter RefCounter;
-        public AssetBundleLoader ResourceLoader;
+        public AssetBundleLoader BundleLoader;
 
         public ResourceManager()
         {
             RefCounter = new AssetRefCounter();
-            ResourceLoader = new AssetBundleLoader();
+            BundleLoader = new AssetBundleLoader();
         }
 
         public void Awake()
         {
-            ResourceLoader.Init();
+            BundleLoader.Init();
         }
     }
 }
