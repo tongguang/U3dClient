@@ -136,7 +136,7 @@ namespace U3dClient
             {
                 return false;
             }
-            if (GameRoot.Instance.ResourceMgr.RefCounter.GetBundleRefNum(Name) > 0)
+            if (GameCenter.ResourceMgr.RefCounter.GetBundleRefNum(Name) > 0)
             {
                 return false;
             }

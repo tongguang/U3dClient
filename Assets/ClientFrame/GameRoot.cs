@@ -8,9 +8,6 @@ namespace U3dClient
     {
         public static GameRoot Instance;
 
-        public ResourceManager ResourceMgr = new ResourceManager();
-        public UpdateManager UpdateMgr = new UpdateManager();
-
 
         private void Awake()
         {
@@ -24,19 +21,16 @@ namespace U3dClient
                 return;
             }
 
-            ResourceMgr.Awake();
-            UpdateMgr.Awake();
+           GameCenter.Awake();
         }
 
         private void Start()
         {
-            UpdateMgr.SetResUrl("http://111.231.215.248/AssetBundles1/");
-//            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
+            GameCenter.Start();
         }
 
         private void Update()
         {
-
         }
 
         private void OnApplicationFocus(bool hasFocus)
