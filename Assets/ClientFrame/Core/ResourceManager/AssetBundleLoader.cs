@@ -210,11 +210,6 @@ namespace U3dClient
                 }, false);
         }
 
-        public void Init()
-        {
-            InitBundlesManifest();
-        }
-
         public void ReInitBundlesManifest()
         {
             if (m_BundlesManifest)
@@ -223,6 +218,11 @@ namespace U3dClient
                 UnLoadAsset(m_BundlesManifestRef);
                 InitBundlesManifest();
             }
+        }
+
+        public void Init()
+        {
+            InitBundlesManifest();
         }
 
         public void InitAsync(Action loadedAction)
