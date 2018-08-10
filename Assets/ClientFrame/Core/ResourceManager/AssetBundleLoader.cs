@@ -36,7 +36,9 @@ namespace U3dClient
             var nowRef = GameCenter.ResourceMgr.RefCounter.AddAssetRef(abName, assetName);
             if (!m_BundleNameToItem.ContainsKey(abName))
             {
-                m_BundleNameToItem.Add(abName, new AssetBundleItem(abName));
+                var item = new AssetBundleItem();
+                item.Init(abName);
+                m_BundleNameToItem.Add(abName, item);
             }
 
             return nowRef;
@@ -84,21 +86,23 @@ namespace U3dClient
             return false;
         }
 
-        private IEnumerator LoadAssetAsyncEnumerator<T>(long refRequest, string abName, string assetName, Action<T> loadedAction, bool isLoadDepend) where T : Object
+        private IEnumerator LoadAssetAsyncEnumerator<T>(long refRequest, Action<T> loadedAction, bool isLoadDepend) where T : Object
         {
             var refData = GameCenter.ResourceMgr.RefCounter.GetRefData(refRequest);
             if (refData == null)
             {
                 yield break;
             }
-            var abItem = m_BundleNameToItem[refData.BundleName];
+
+            var abName = refData.BundleName;
+            var assetName = refData.AssetName;
+            var abItem = m_BundleNameToItem[abName];
             var dependRefs = abItem.DependAssetRef;
             if (isLoadDepend && dependRefs != null)
             {
-                foreach (var dependItem in dependRefs)
+                foreach (var dependRef in dependRefs)
                 {
-                    var dependRefData = GameCenter.ResourceMgr.RefCounter.GetRefData(dependItem);
-                    var loadDependAssetEnu = LoadAssetAsyncEnumerator<Object>(dependItem, dependRefData.BundleName, "", null, false);
+                    var loadDependAssetEnu = LoadAssetAsyncEnumerator<Object>(dependRef, null, false);
                     while (loadDependAssetEnu.MoveNext())
                     {
                         yield return loadDependAssetEnu.Current;
@@ -192,7 +196,7 @@ namespace U3dClient
             {
                 AddDependAssetRef(abName);
             }
-            MainThreadDispatcher.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, abName, assetName, loadedAction, isLoadDepend));
+            MainThreadDispatcher.StartCoroutine(LoadAssetAsyncEnumerator<T>(nowRef, loadedAction, isLoadDepend));
             return nowRef;
         }
 

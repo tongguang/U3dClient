@@ -11,12 +11,28 @@ namespace U3dClient
         public LoadState State { private set; get; }
         public AssetBundle Bundle { private set; get; }
         public AssetBundleCreateRequest LoadRequest { private set; get; }
-        public Dictionary<string, AssetBundleAssetItem> AssetNameToAssetItem = new Dictionary<string, AssetBundleAssetItem>();
+        public Dictionary<string, AssetBundleAssetItem> AssetNameToAssetItem;
         public List<long> DependAssetRef;
-        public AssetBundleItem(string name)
+
+        public void Init(string name)
         {
-            State = LoadState.Init;
+            AssetNameToAssetItem = new Dictionary<string, AssetBundleAssetItem>();
             Name = name;
+            State = LoadState.Init;
+        }
+
+        public void OnReuse()
+        {
+        }
+
+        public void OnRecycle()
+        {
+            Name = "";
+            State = LoadState.Init;
+            Bundle = null;
+            LoadRequest = null;
+            AssetNameToAssetItem = null;
+            DependAssetRef = null;
         }
 
         public void SetDependAssetRef(List<long> dependAssetRef)
@@ -33,7 +49,7 @@ namespace U3dClient
                 State = LoadState.Loading;
                 var bundlePath = FileTool.GetBundlePath(Name);
                 var request = AssetBundle.LoadFromFileAsync(bundlePath);
-                SetAssetBundleCreateRequest(request);
+                LoadRequest = request;
             }
             return true;
         }
@@ -47,12 +63,6 @@ namespace U3dClient
                 SetAssetBundle(bundle);
             }
             return true;
-        }
-
-        public void SetAssetBundleCreateRequest(AssetBundleCreateRequest bundleRequest)
-        {
-            State = LoadState.Loading;
-            LoadRequest = bundleRequest;
         }
 
         public void SetAssetBundle(AssetBundle assetBundle)
@@ -70,7 +80,9 @@ namespace U3dClient
         {
             if (!AssetNameToAssetItem.ContainsKey(assetName))
             {
-                AssetNameToAssetItem.Add(assetName, new AssetBundleAssetItem(assetName));
+                var item = new AssetBundleAssetItem();
+                item.Init(assetName);
+                AssetNameToAssetItem.Add(assetName, item);
             }
             var assetItem = AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Init)
@@ -100,7 +112,9 @@ namespace U3dClient
         {
             if (!AssetNameToAssetItem.ContainsKey(assetName))
             {
-                AssetNameToAssetItem.Add(assetName, new AssetBundleAssetItem(assetName));
+                var item = new AssetBundleAssetItem();
+                item.Init(assetName);
+                AssetNameToAssetItem.Add(assetName, item);
             }
             var assetItem = AssetNameToAssetItem[assetName];
             if (assetItem.State == LoadState.Init)
