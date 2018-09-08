@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using U3dClient.GamePool;
+using UniRx;
 
 namespace U3dClient.ResourceMgr
 {
@@ -46,15 +47,36 @@ namespace U3dClient.ResourceMgr
             m_LoadedCallbackDict.Clear();
         }
 
-//        public int StartLoad()
-//        {
-//
-//        }
+        public int Load(string bundleName, Action<bool, AssetBundle> loadedAction)
+        {
+            var index = ResourceManager.GetNewResourceIndex();
+            if (loadedAction == null)
+            {
+                loadedAction = s_DefaultLoadedCallback;
+            }
+            m_LoadedCallbackDict.Add(index, loadedAction);
+            if (m_IsComplete)
+            {
+                loadedAction(m_Bundle != null, m_Bundle);
+            }
+            else
+            {
+                MainThreadDispatcher.StartCoroutine(LoadFunc());
+            }
+
+            return index;
+        }
+
+        public void UnLoad(int resourceIndex)
+        {
+            if (m_LoadedCallbackDict.ContainsKey(resourceIndex))
+            {
+                m_LoadedCallbackDict.Remove(resourceIndex);
+            }
+        }
 
         public IEnumerator LoadFunc()
         {
-//            throw new System.NotImplementedException();
-
             var bundlePath = FileTool.GetBundlePath(m_BundleName);
             var request = AssetBundle.LoadFromFileAsync(bundlePath);
             if (!request.isDone)

@@ -28,3 +28,21 @@ namespace U3dClient
         }
     }
 }
+
+namespace U3dClient.ResourceMgr
+{
+    public static class ResourceManager
+    {
+        private static int ResourceIndex = 0;
+
+        public static void Awake()
+        {
+
+        }
+
+        public static int GetNewResourceIndex()
+        {
+            return ResourceIndex++;
+        }
+    }
+}
