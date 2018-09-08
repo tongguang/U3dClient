@@ -9,15 +9,17 @@ namespace U3dClient.GamePool
         private readonly Stack<T> m_Stack = new Stack<T>();
         private readonly UnityAction<T> m_ActionOnGet;
         private readonly UnityAction<T> m_ActionOnRelease;
+        private readonly int m_MaxCacheCount;
 
         public int countAll { get; private set; }
         public int countActive { get { return countAll - countInactive; } }
         public int countInactive { get { return m_Stack.Count; } }
 
-        public ObjectPool(UnityAction<T> actionOnGet, UnityAction<T> actionOnRelease)
+        public ObjectPool(UnityAction<T> actionOnGet, UnityAction<T> actionOnRelease, int maxCacheCount = -1)
         {
             m_ActionOnGet = actionOnGet;
             m_ActionOnRelease = actionOnRelease;
+            m_MaxCacheCount = maxCacheCount;
         }
 
         public T Get()
@@ -43,7 +45,14 @@ namespace U3dClient.GamePool
 //                Debug.LogError("Internal error. Trying to destroy object that is already released to pool.");
             if (m_ActionOnRelease != null)
                 m_ActionOnRelease(element);
-            m_Stack.Push(element);
+            if (m_MaxCacheCount < 0 || countInactive < m_MaxCacheCount)
+            {
+                m_Stack.Push(element);
+            }
+            else
+            {
+                countAll--;
+            }
         }
     }
 }
