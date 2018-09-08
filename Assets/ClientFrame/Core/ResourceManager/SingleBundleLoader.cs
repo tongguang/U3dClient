@@ -47,8 +47,9 @@ namespace U3dClient.ResourceMgr
             m_LoadedCallbackDict.Clear();
         }
 
-        public int Load(string bundleName, Action<bool, AssetBundle> loadedAction)
+        private int InternalLoad(string bundleName, Action<bool, AssetBundle> loadedAction)
         {
+            m_BundleName = bundleName;
             var index = ResourceManager.GetNewResourceIndex();
             if (loadedAction == null)
             {
@@ -67,7 +68,7 @@ namespace U3dClient.ResourceMgr
             return index;
         }
 
-        public void UnLoad(int resourceIndex)
+        public void InternalUnload(int resourceIndex)
         {
             if (m_LoadedCallbackDict.ContainsKey(resourceIndex))
             {
@@ -106,6 +107,9 @@ namespace U3dClient.ResourceMgr
 
         static Action<bool, AssetBundle> s_DefaultLoadedCallback = (isOk, bundle) => { };
 
-//        static int Load()
+//        static public int Load(string bundleName, Action<bool, AssetBundle> loadedAction)
+//        {
+//
+//        }
     }
 }
