@@ -5,6 +5,7 @@ namespace U3dClient.ResourceMgr
     enum LoadState
     {
         Init,
+        WaitLoad,
         Loading,
         Complete
     }
