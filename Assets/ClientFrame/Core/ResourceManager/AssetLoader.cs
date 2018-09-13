@@ -18,7 +18,7 @@ namespace U3dClient.ResourceMgr
             throw new System.NotImplementedException();
         }
 
-        public IEnumerator LoadFunc()
+        public IEnumerator LoadFuncEnumerator()
         {
             throw new System.NotImplementedException();
         }

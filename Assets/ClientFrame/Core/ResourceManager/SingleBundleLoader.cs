@@ -10,11 +10,12 @@ namespace U3dClient.ResourceMgr
     public class SingleBundleLoader : ILoaderBase
     {
         private string m_BundleName;
-        private bool m_IsComplete;
+        private LoadState m_LoadState;
         private AssetBundle m_Bundle;
 
         private readonly Dictionary<int, Action<bool, AssetBundle>> m_LoadedCallbackDict =
             new Dictionary<int, Action<bool, AssetBundle>>();
+        private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
 
         public SingleBundleLoader()
         {
@@ -32,7 +33,7 @@ namespace U3dClient.ResourceMgr
                 m_Bundle.Unload(true);
             }
 
-            if (m_LoadedCallbackDict.Count > 0)
+            if (m_ResouceIndexSet.Count > 0)
             {
                 Debug.LogError(string.Format("SingleBundleLoader回收错误 {0}", m_BundleName));
             }
@@ -43,7 +44,7 @@ namespace U3dClient.ResourceMgr
         {
             m_BundleName = "";
             m_Bundle = null;
-            m_IsComplete = false;
+            m_LoadState = LoadState.Init;
             m_LoadedCallbackDict.Clear();
         }
 
@@ -55,16 +56,22 @@ namespace U3dClient.ResourceMgr
             {
                 loadedAction = s_DefaultLoadedCallback;
             }
-            m_LoadedCallbackDict.Add(index, loadedAction);
-            if (m_IsComplete)
+
+            m_ResouceIndexSet.Add(index);
+            if (m_LoadState == LoadState.Init)
             {
-                loadedAction(m_Bundle != null, m_Bundle);
+                m_LoadedCallbackDict.Add(index, loadedAction);
+                m_LoadState = LoadState.Loading;
+                MainThreadDispatcher.StartCoroutine(LoadFuncEnumerator());
+            }
+            else if (m_LoadState == LoadState.Loading)
+            {
+                m_LoadedCallbackDict.Add(index, loadedAction);
             }
             else
             {
-                MainThreadDispatcher.StartCoroutine(LoadFunc());
+                loadedAction(m_Bundle != null, m_Bundle);
             }
-
             return index;
         }
 
@@ -74,9 +81,14 @@ namespace U3dClient.ResourceMgr
             {
                 m_LoadedCallbackDict.Remove(resourceIndex);
             }
+
+            if (m_ResouceIndexSet.Contains(resourceIndex))
+            {
+                m_ResouceIndexSet.Remove(resourceIndex);
+            }
         }
 
-        public IEnumerator LoadFunc()
+        public IEnumerator LoadFuncEnumerator()
         {
             var bundlePath = FileTool.GetBundlePath(m_BundleName);
             var request = AssetBundle.LoadFromFileAsync(bundlePath);
@@ -86,7 +98,7 @@ namespace U3dClient.ResourceMgr
             }
 
             m_Bundle = request.assetBundle;
-            m_IsComplete = true;
+            m_LoadState = LoadState.Complete;
             if (m_LoadedCallbackDict.Count > 0)
             {
                 foreach (var action in m_LoadedCallbackDict)
@@ -107,9 +119,14 @@ namespace U3dClient.ResourceMgr
 
         static Action<bool, AssetBundle> s_DefaultLoadedCallback = (isOk, bundle) => { };
 
-//        static public int Load(string bundleName, Action<bool, AssetBundle> loadedAction)
-//        {
-//
-//        }
+        static public int Load(string bundleName, Action<bool, AssetBundle> loadedAction)
+        {
+            return 0;
+        }
+
+        static public void UnLoad(int resouceIndex)
+        {
+
+        }
     }
 }
