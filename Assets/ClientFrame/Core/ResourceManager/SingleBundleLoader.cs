@@ -7,27 +7,23 @@ using UniRx;
 
 namespace U3dClient.ResourceMgr
 {
-    public class SingleBundleLoader : ILoaderBase
+    public class SingleBundleLoader : LoaderBase
     {
-        private string m_BundleName;
-        private LoadState m_LoadState;
-        private AssetBundle m_Bundle;
+        private string m_BundleName = null;
+        private LoadState m_LoadState = LoadState.Init;
+        private AssetBundle m_Bundle = null;
 
         private readonly Dictionary<int, Action<bool, AssetBundle>> m_LoadedCallbackDict =
             new Dictionary<int, Action<bool, AssetBundle>>();
 
         private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
 
-        public SingleBundleLoader()
+        protected override void OnReuse()
         {
             ResetData();
         }
 
-        public void OnReuse()
-        {
-        }
-
-        public void OnRecycle()
+        protected override void OnRecycle()
         {
             if (m_Bundle)
             {
@@ -42,9 +38,9 @@ namespace U3dClient.ResourceMgr
             ResetData();
         }
 
-        private void ResetData()
+        protected override void ResetData()
         {
-            m_BundleName = "";
+            m_BundleName = null;
             m_Bundle = null;
             m_LoadState = LoadState.Init;
             m_LoadedCallbackDict.Clear();
@@ -146,7 +142,7 @@ namespace U3dClient.ResourceMgr
             }
         }
 
-        public IEnumerator LoadFuncEnumerator()
+        protected override IEnumerator LoadFuncEnumerator()
         {
             m_LoadState = LoadState.Loading;
             var bundlePath = FileTool.GetBundlePath(m_BundleName);
@@ -167,6 +163,11 @@ namespace U3dClient.ResourceMgr
 
             m_LoadedCallbackDict.Clear();
             STryUnLoadByName(m_BundleName);
+        }
+
+        public AssetBundle GetAssetBundle()
+        {
+            return m_Bundle;
         }
 
         private static readonly ObjectPool<SingleBundleLoader> s_LoaderPool =
@@ -210,6 +211,20 @@ namespace U3dClient.ResourceMgr
             s_ResIndexToLoader.Add(resIndex, loader);
 
             return resIndex;
+        }
+
+        public static SingleBundleLoader SGetLoader(int resouceIndex)
+        {
+            SingleBundleLoader loader = null;
+            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
+            return loader;
+        }
+
+        public static SingleBundleLoader SGetLoader(string bundleName)
+        {
+            SingleBundleLoader loader = null;
+            s_NameToLoader.TryGetValue(bundleName, out loader);
+            return loader;
         }
 
         public static void SUnLoad(int resouceIndex)

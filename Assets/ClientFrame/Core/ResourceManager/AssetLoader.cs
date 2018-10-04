@@ -2,23 +2,28 @@
 
 namespace U3dClient.ResourceMgr
 {
-    public class AssetLoader:ILoaderBase
+    public class AssetLoader:LoaderBase
     {
         public AssetLoader()
         {
         }
 
-        public void OnReuse()
+        protected override void OnReuse()
         {
             throw new System.NotImplementedException();
         }
 
-        public void OnRecycle()
+        protected override void OnRecycle()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerator LoadFuncEnumerator()
+        protected override void ResetData()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override IEnumerator LoadFuncEnumerator()
         {
             throw new System.NotImplementedException();
         }
