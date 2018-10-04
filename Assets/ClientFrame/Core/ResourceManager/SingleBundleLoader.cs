@@ -18,6 +18,11 @@ namespace U3dClient.ResourceMgr
 
         private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
 
+        public bool IsComplate
+        {
+            get { return m_LoadState == LoadState.Complete; }
+        }
+
         protected override void OnReuse()
         {
             ResetData();
@@ -54,12 +59,12 @@ namespace U3dClient.ResourceMgr
 
         private int InternalLoadAsync(Action<bool, AssetBundle> loadedAction)
         {
-            var index = ResourceManager.GetNewResourceIndex();
             if (loadedAction == null)
             {
                 loadedAction = s_DefaultLoadedCallback;
             }
 
+            var index = ResourceManager.GetNewResourceIndex();
             m_ResouceIndexSet.Add(index);
             if (m_LoadState == LoadState.Init)
             {
@@ -81,12 +86,12 @@ namespace U3dClient.ResourceMgr
 
         private int InternalLoadSync(Action<bool, AssetBundle> loadedAction)
         {
-            var index = ResourceManager.GetNewResourceIndex();
             if (loadedAction == null)
             {
                 loadedAction = s_DefaultLoadedCallback;
             }
 
+            var index = ResourceManager.GetNewResourceIndex();
             m_ResouceIndexSet.Add(index);
             if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
             {
@@ -118,6 +123,7 @@ namespace U3dClient.ResourceMgr
             {
                 m_ResouceIndexSet.Remove(resourceIndex);
             }
+
             STryUnLoadByName(m_BundleName);
         }
 
@@ -170,14 +176,23 @@ namespace U3dClient.ResourceMgr
             return m_Bundle;
         }
 
+        public LoadState GetLoadState()
+        {
+            return m_LoadState;
+        }
+
         private static readonly ObjectPool<SingleBundleLoader> s_LoaderPool =
             new ObjectPool<SingleBundleLoader>(
                 (loader) => { loader.OnReuse(); },
                 (loader) => { loader.OnRecycle(); });
 
         private static readonly Action<bool, AssetBundle> s_DefaultLoadedCallback = (isOk, bundle) => { };
-        private static readonly Dictionary<string, SingleBundleLoader> s_NameToLoader = new Dictionary<string, SingleBundleLoader>();
-        private static readonly Dictionary<int, SingleBundleLoader> s_ResIndexToLoader = new Dictionary<int, SingleBundleLoader>();
+
+        private static readonly Dictionary<string, SingleBundleLoader> s_NameToLoader =
+            new Dictionary<string, SingleBundleLoader>();
+
+        private static readonly Dictionary<int, SingleBundleLoader> s_ResIndexToLoader =
+            new Dictionary<int, SingleBundleLoader>();
 
         public static int SLoadAsync(string bundleName, Action<bool, AssetBundle> loadedAction)
         {

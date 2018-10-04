@@ -2,7 +2,7 @@
 
 namespace U3dClient.ResourceMgr
 {
-    enum LoadState
+    public enum LoadState
     {
         Init,
         WaitLoad,
