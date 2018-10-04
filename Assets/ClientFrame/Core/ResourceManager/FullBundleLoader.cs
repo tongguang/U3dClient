@@ -71,7 +71,38 @@ namespace U3dClient.ResourceMgr
 
         private int InternalLoadSync(Action<bool, AssetBundle> loadedAction)
         {
-            return 0;
+            if (loadedAction == null)
+            {
+                loadedAction = s_DefaultLoadedCallback;
+            }
+
+            var index = ResourceManager.GetNewResourceIndex();
+            m_ResouceIndexSet.Add(index);
+            if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
+            {
+                var depends = s_ManifestAsset.GetAllDependencies(m_BundleName);
+                foreach (var depend in depends)
+                {
+                    var resIndex = SingleBundleLoader.SLoadSync(depend, null);
+                    m_DependBundleIndexList.Add(resIndex);
+                }
+                m_BundleIndex = SingleBundleLoader.SLoadSync(m_BundleName, null);
+                var bundleLoader = SingleBundleLoader.SGetLoader(m_BundleIndex);
+                m_Bundle = bundleLoader.GetAssetBundle();
+
+                m_LoadState = LoadState.Complete;
+                loadedAction(m_Bundle != null, m_Bundle);
+            }
+            else if (m_LoadState == LoadState.Loading)
+            {
+                Debug.LogWarning("错误加载 fullbundleloader");
+            }
+            else
+            {
+                loadedAction(m_Bundle != null, m_Bundle);
+            }
+
+            return index;
         }
 
         protected override IEnumerator LoadFuncEnumerator()
@@ -82,7 +113,7 @@ namespace U3dClient.ResourceMgr
                 var depends = s_ManifestAsset.GetAllDependencies(m_BundleName);
                 foreach (var depend in depends)
                 {
-                    var resIndex = SingleBundleLoader.SLoadSync(depend, null);
+                    var resIndex = SingleBundleLoader.SLoadAsync(depend, null);
                     m_DependBundleIndexList.Add(resIndex);
                 }
             }
@@ -96,7 +127,7 @@ namespace U3dClient.ResourceMgr
                     yield return null;
                 }
             }
-            m_BundleIndex = SingleBundleLoader.SLoadSync(m_BundleName, null);
+            m_BundleIndex = SingleBundleLoader.SLoadAsync(m_BundleName, null);
             bundleLoader = SingleBundleLoader.SGetLoader(m_BundleIndex);
             if (!bundleLoader.IsComplate)
             {
