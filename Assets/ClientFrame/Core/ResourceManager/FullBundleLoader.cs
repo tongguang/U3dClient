@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using U3dClient.GamePool;
 using UnityEngine;
 using UniRx;
 
@@ -14,6 +15,7 @@ namespace U3dClient.ResourceMgr
         private int m_BundleIndex = -1;
         private List<int> m_DependBundleIndexList = new List<int>();
         private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
+
         private readonly Dictionary<int, Action<bool, AssetBundle>> m_LoadedCallbackDict =
             new Dictionary<int, Action<bool, AssetBundle>>();
 
@@ -24,6 +26,15 @@ namespace U3dClient.ResourceMgr
 
         protected override void OnRecycle()
         {
+            if (m_BundleIndex != -1)
+            {
+                SingleBundleLoader.SUnLoad(m_BundleIndex);
+            }
+
+            foreach (var dependIndex in m_DependBundleIndexList)
+            {
+                SingleBundleLoader.SUnLoad(dependIndex);
+            }
             ResetData();
         }
 
@@ -86,6 +97,7 @@ namespace U3dClient.ResourceMgr
                     var resIndex = SingleBundleLoader.SLoadSync(depend, null);
                     m_DependBundleIndexList.Add(resIndex);
                 }
+
                 m_BundleIndex = SingleBundleLoader.SLoadSync(m_BundleName, null);
                 var bundleLoader = SingleBundleLoader.SGetLoader(m_BundleIndex);
                 m_Bundle = bundleLoader.GetAssetBundle();
@@ -127,6 +139,7 @@ namespace U3dClient.ResourceMgr
                     yield return null;
                 }
             }
+
             m_BundleIndex = SingleBundleLoader.SLoadAsync(m_BundleName, null);
             bundleLoader = SingleBundleLoader.SGetLoader(m_BundleIndex);
             if (!bundleLoader.IsComplate)
@@ -142,15 +155,64 @@ namespace U3dClient.ResourceMgr
                 var callback = action.Value;
                 callback(m_Bundle != null, m_Bundle);
             }
+
             m_LoadedCallbackDict.Clear();
+        }
+
+        private void InternalUnload(int resourceIndex)
+        {
+            if (m_LoadedCallbackDict.ContainsKey(resourceIndex))
+            {
+                m_LoadedCallbackDict.Remove(resourceIndex);
+            }
+
+            if (m_ResouceIndexSet.Contains(resourceIndex))
+            {
+                m_ResouceIndexSet.Remove(resourceIndex);
+            }
+
+            STryUnLoadByName(m_BundleName);
+        }
+
+        private bool CanRealUnload()
+        {
+            if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
+            {
+                return true;
+            }
+            else if (m_LoadState == LoadState.Loading)
+            {
+                return false;
+            }
+            else
+            {
+                if (m_ResouceIndexSet.Count > 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         private static readonly string s_ManifestBundleName = "AssetBundles";
         private static readonly string s_ManifestAssetName = "AssetBundleManifest";
         private static AssetBundleManifest s_ManifestAsset = null;
         private static int s_ManifestBundleIndex = -1;
+
+
+        private static readonly ObjectPool<FullBundleLoader> s_LoaderPool =
+            new ObjectPool<FullBundleLoader>(
+                (loader) => { loader.OnReuse(); },
+                (loader) => { loader.OnRecycle(); });
+
         private static readonly Action<bool, AssetBundle> s_DefaultLoadedCallback = (isOk, bundle) => { };
 
+        private static readonly Dictionary<string, FullBundleLoader> s_NameToLoader =
+            new Dictionary<string, FullBundleLoader>();
+
+        private static readonly Dictionary<int, FullBundleLoader> s_ResIndexToLoader =
+            new Dictionary<int, FullBundleLoader>();
 
         public static void InitBundleManifest()
         {
@@ -160,10 +222,80 @@ namespace U3dClient.ResourceMgr
                 s_ManifestBundleIndex = -1;
                 s_ManifestAsset = null;
             }
+
             s_ManifestBundleIndex = SingleBundleLoader.SLoadSync(s_ManifestBundleName, null);
             var loader = SingleBundleLoader.SGetLoader(s_ManifestBundleIndex);
             var bundle = loader.GetAssetBundle();
             s_ManifestAsset = bundle.LoadAsset<AssetBundleManifest>(s_ManifestAssetName);
+        }
+
+        public static int SLoadAsync(string bundleName, Action<bool, AssetBundle> loadedAction)
+        {
+            FullBundleLoader loader;
+            s_NameToLoader.TryGetValue(bundleName, out loader);
+            if (loader == null)
+            {
+                loader = s_LoaderPool.Get();
+                loader.Init(bundleName);
+                s_NameToLoader.Add(bundleName, loader);
+            }
+
+            var resIndex = loader.InternalLoadAsync(loadedAction);
+            s_ResIndexToLoader.Add(resIndex, loader);
+
+            return resIndex;
+        }
+
+        public static int SLoadSync(string bundleName, Action<bool, AssetBundle> loadedAction)
+        {
+            FullBundleLoader loader;
+            s_NameToLoader.TryGetValue(bundleName, out loader);
+            if (loader == null)
+            {
+                loader = s_LoaderPool.Get();
+                loader.Init(bundleName);
+                s_NameToLoader.Add(bundleName, loader);
+            }
+
+            var resIndex = loader.InternalLoadSync(loadedAction);
+            s_ResIndexToLoader.Add(resIndex, loader);
+
+            return resIndex;
+        }
+
+        public static FullBundleLoader SGetLoader(int resouceIndex)
+        {
+            FullBundleLoader loader = null;
+            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
+            return loader;
+        }
+
+        public static FullBundleLoader SGetLoader(string bundleName)
+        {
+            FullBundleLoader loader = null;
+            s_NameToLoader.TryGetValue(bundleName, out loader);
+            return loader;
+        }
+
+        public static void SUnLoad(int resouceIndex)
+        {
+            FullBundleLoader loader;
+            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
+            if (loader != null)
+            {
+                loader.InternalUnload(resouceIndex);
+            }
+        }
+
+        private static void STryUnLoadByName(string bundleName)
+        {
+            FullBundleLoader loader;
+            s_NameToLoader.TryGetValue(bundleName, out loader);
+            if (loader != null && loader.CanRealUnload())
+            {
+                s_NameToLoader.Remove(bundleName);
+                s_LoaderPool.Release(loader);
+            }
         }
     }
 }
