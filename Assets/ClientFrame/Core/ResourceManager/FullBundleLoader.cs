@@ -19,6 +19,11 @@ namespace U3dClient.ResourceMgr
         private readonly Dictionary<int, Action<bool, AssetBundle>> m_LoadedCallbackDict =
             new Dictionary<int, Action<bool, AssetBundle>>();
 
+        public bool IsComplate
+        {
+            get { return m_LoadState == LoadState.Complete; }
+        }
+
         protected override void OnReuse()
         {
             ResetData();
@@ -161,6 +166,8 @@ namespace U3dClient.ResourceMgr
             }
 
             m_LoadedCallbackDict.Clear();
+
+            STryUnLoadByName(m_BundleName);
         }
 
         private void InternalUnload(int resourceIndex)
@@ -197,6 +204,16 @@ namespace U3dClient.ResourceMgr
 
                 return true;
             }
+        }
+
+        public AssetBundle GetAssetBundle()
+        {
+            return m_Bundle;
+        }
+
+        public LoadState GetLoadState()
+        {
+            return m_LoadState;
         }
 
         private static readonly string s_ManifestBundleName = "AssetBundles";
