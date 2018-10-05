@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace U3dClient.ResourceMgr
 {
-    public class AssetLoader:LoaderBase
+    public class AssetLoader : LoaderBase
     {
         private string m_BundleName = null;
         private string m_AssetName = null;
@@ -18,6 +18,7 @@ namespace U3dClient.ResourceMgr
         private int m_BundleIndex = -1;
         private Object m_AssetObject = null;
         private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
+
         private readonly Dictionary<int, Action<bool, Object>> m_LoadedCallbackDict =
             new Dictionary<int, Action<bool, Object>>();
 
@@ -33,9 +34,19 @@ namespace U3dClient.ResourceMgr
 
         protected override void ResetData()
         {
+            if (m_BundleIndex != -1)
+            {
+                FullBundleLoader.SUnLoad(m_BundleIndex);
+            }
+
             m_BundleName = null;
             m_AssetName = null;
+            m_AssetKeyName = null;
             m_LoadState = LoadState.Init;
+            m_BundleIndex = -1;
+            m_AssetObject = null;
+            m_ResouceIndexSet.Clear();
+            m_LoadedCallbackDict.Clear();
         }
 
         private void Init(string bundleName, string assetName, string assetKey)
@@ -109,17 +120,18 @@ namespace U3dClient.ResourceMgr
             {
                 yield break;
             }
+
             m_LoadState = LoadState.Loading;
             m_BundleIndex = FullBundleLoader.SLoadAsync(m_BundleName, null);
             var bundleLoader = FullBundleLoader.SGetLoader(m_BundleIndex);
-            if (!bundleLoader.IsComplate)
+            while (!bundleLoader.IsComplate)
             {
                 yield return null;
             }
 
             var bundle = bundleLoader.GetAssetBundle();
             var request = bundle.LoadAssetAsync<Object>(m_AssetName);
-            if (!request.isDone)
+            while (!request.isDone)
             {
                 yield return null;
             }
@@ -132,6 +144,7 @@ namespace U3dClient.ResourceMgr
                 var callback = action.Value;
                 callback(m_AssetObject != null, m_AssetObject);
             }
+
             m_LoadedCallbackDict.Clear();
             STryUnLoadByAssetKey(m_AssetKeyName);
         }
@@ -173,6 +186,7 @@ namespace U3dClient.ResourceMgr
         }
 
         private static string s_BundleANdAssetSpliteChar = "|";
+
         private static readonly ObjectPool<AssetLoader> s_LoaderPool =
             new ObjectPool<AssetLoader>(
                 (loader) => { loader.OnReuse(); },
@@ -195,7 +209,8 @@ namespace U3dClient.ResourceMgr
             assetKey = stringBuilder.ToString();
         }
 
-        public static int SLoadAsync(string bundleName, string assetName, Action<bool, Object> loadedAction)
+        public static int SLoadAsync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
+            where T : Object
         {
             AssetLoader loader;
             string assetKey;
@@ -208,19 +223,22 @@ namespace U3dClient.ResourceMgr
                 s_NameToLoader.Add(assetKey, loader);
             }
 
-            var resIndex = loader.InternalLoadAsync(loadedAction);
+            var resIndex = loadedAction != null
+                ? loader.InternalLoadAsync((isOk, assetObj) => { loadedAction(isOk, assetObj as T); })
+                : loader.InternalLoadAsync(null);
             s_ResIndexToLoader.Add(resIndex, loader);
 
             return resIndex;
         }
 
-        public static int SLoadSync(string bundleName, string assetName, Action<bool, Object> loadedAction)
+        public static int SLoadSync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
+            where T : Object
         {
             AssetLoader loader;
             string assetKey;
             SCalculateAssetKey(bundleName, assetName, out assetKey);
 
-            s_NameToLoader.TryGetValue(bundleName, out loader);
+            s_NameToLoader.TryGetValue(assetKey, out loader);
             if (loader == null)
             {
                 loader = s_LoaderPool.Get();
@@ -228,7 +246,9 @@ namespace U3dClient.ResourceMgr
                 s_NameToLoader.Add(assetKey, loader);
             }
 
-            var resIndex = loader.InternalLoadSync(loadedAction);
+            var resIndex = loadedAction != null
+                ? loader.InternalLoadSync((isOk, assetObj) => { loadedAction(isOk, assetObj as T); })
+                : loader.InternalLoadSync(null);
             s_ResIndexToLoader.Add(resIndex, loader);
 
             return resIndex;

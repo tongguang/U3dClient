@@ -143,7 +143,7 @@ namespace U3dClient.ResourceMgr
             foreach (var resIndex in m_DependBundleIndexList)
             {
                 bundleLoader = SingleBundleLoader.SGetLoader(resIndex);
-                if (!bundleLoader.IsComplate)
+                while (!bundleLoader.IsComplate)
                 {
                     yield return null;
                 }
@@ -151,7 +151,7 @@ namespace U3dClient.ResourceMgr
 
             m_BundleIndex = SingleBundleLoader.SLoadAsync(m_BundleName, null);
             bundleLoader = SingleBundleLoader.SGetLoader(m_BundleIndex);
-            if (!bundleLoader.IsComplate)
+            while (!bundleLoader.IsComplate)
             {
                 yield return null;
             }
@@ -235,7 +235,7 @@ namespace U3dClient.ResourceMgr
         private static readonly Dictionary<int, FullBundleLoader> s_ResIndexToLoader =
             new Dictionary<int, FullBundleLoader>();
 
-        public static void InitBundleManifest()
+        public static void SInitBundleManifest()
         {
             if (s_ManifestBundleIndex != -1)
             {

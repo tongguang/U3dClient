@@ -3,32 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace U3dClient
-{
-    public enum LoadState
-    {
-        Init,
-        Loading,
-        Loaded,
-    }
-    public class ResourceManager
-    {
-        public AssetRefCounter RefCounter;
-        public AssetBundleLoader BundleLoader;
-
-        public ResourceManager()
-        {
-            RefCounter = new AssetRefCounter();
-            BundleLoader = new AssetBundleLoader();
-        }
-
-        public void Awake()
-        {
-            BundleLoader.Init();
-        }
-    }
-}
-
 namespace U3dClient.ResourceMgr
 {
     public static class ResourceManager
@@ -37,7 +11,7 @@ namespace U3dClient.ResourceMgr
 
         public static void Awake()
         {
-
+            FullBundleLoader.SInitBundleManifest();
         }
 
         public static int GetNewResourceIndex()

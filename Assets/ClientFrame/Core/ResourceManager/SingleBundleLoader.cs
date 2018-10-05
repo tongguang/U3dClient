@@ -158,7 +158,7 @@ namespace U3dClient.ResourceMgr
             m_LoadState = LoadState.Loading;
             var bundlePath = FileTool.GetBundlePath(m_BundleName);
             var request = AssetBundle.LoadFromFileAsync(bundlePath);
-            if (!request.isDone)
+            while (!request.isDone)
             {
                 yield return null;
             }
