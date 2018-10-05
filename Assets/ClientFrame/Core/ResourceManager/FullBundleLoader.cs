@@ -119,6 +119,10 @@ namespace U3dClient.ResourceMgr
 
         protected override IEnumerator LoadFuncEnumerator()
         {
+            if (m_LoadState != LoadState.WaitLoad)
+            {
+                yield break;
+            }
             m_LoadState = LoadState.Loading;
             if (s_ManifestAsset)
             {

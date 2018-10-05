@@ -150,6 +150,11 @@ namespace U3dClient.ResourceMgr
 
         protected override IEnumerator LoadFuncEnumerator()
         {
+            if (m_LoadState != LoadState.WaitLoad)
+            {
+                yield break;
+            }
+
             m_LoadState = LoadState.Loading;
             var bundlePath = FileTool.GetBundlePath(m_BundleName);
             var request = AssetBundle.LoadFromFileAsync(bundlePath);
