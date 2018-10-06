@@ -11,7 +11,7 @@ namespace U3dClient.ResourceMgr
 
         public static void Awake()
         {
-            FullBundleLoader.SInitBundleManifest();
+            FullBundleBaseLoader.SInitBundleManifest();
         }
 
         public static int GetNewResourceIndex()

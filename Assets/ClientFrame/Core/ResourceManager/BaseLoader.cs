@@ -9,7 +9,7 @@ namespace U3dClient.ResourceMgr
         Loading,
         Complete
     }
-    public abstract class LoaderBase
+    public abstract class BaseLoader
     {
         protected abstract void OnReuse();
         protected abstract void OnRecycle();

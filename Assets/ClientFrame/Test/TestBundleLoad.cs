@@ -53,20 +53,20 @@ public class TestBundleLoad : MonoBehaviour
 
     private void Test2()
     {
-        refIndex = AssetLoader.SLoadAsync<GameObject>("res/test2.ab", "Image",
+        refIndex = BundleAssetBaseLoader.SLoadAsync<GameObject>("res/test2.ab", "Image",
             (isOk, o) => { Instantiate(o, transform); });
-//        var refIndex2 = AssetLoader.SLoadAsync<GameObject>("res/test2.ab", "Image",
+//        var refIndex2 = BundleAssetBaseLoader.SLoadAsync<GameObject>("res/test2.ab", "Image",
 //            (isOk, o) =>
 //            {
 //                var go = Instantiate(o, transform);
 //                ((RectTransform) go.transform).anchoredPosition = new Vector2(50, 50);
 //            });
-//        AssetLoader.SUnLoad(refIndex);
-//        AssetLoader.SUnLoad(refIndex2);
+//        BundleAssetBaseLoader.SUnLoad(refIndex);
+//        BundleAssetBaseLoader.SUnLoad(refIndex2);
     }
 
     private void Test3()
     {
-        AssetLoader.SUnLoad(refIndex);
+        BundleAssetBaseLoader.SUnLoad(refIndex);
     }
 }

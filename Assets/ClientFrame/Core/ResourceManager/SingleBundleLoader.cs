@@ -7,7 +7,7 @@ using UniRx;
 
 namespace U3dClient.ResourceMgr
 {
-    public class SingleBundleLoader : LoaderBase
+    public class SingleBundleBaseLoader : BaseLoader
     {
         private string m_BundleName = null;
         private LoadState m_LoadState = LoadState.Init;
@@ -186,85 +186,85 @@ namespace U3dClient.ResourceMgr
             return m_LoadState;
         }
 
-        private static readonly ObjectPool<SingleBundleLoader> s_LoaderPool =
-            new ObjectPool<SingleBundleLoader>(
+        private static readonly ObjectPool<SingleBundleBaseLoader> s_LoaderPool =
+            new ObjectPool<SingleBundleBaseLoader>(
                 (loader) => { loader.OnReuse(); },
                 (loader) => { loader.OnRecycle(); });
 
         private static readonly Action<bool, AssetBundle> s_DefaultLoadedCallback = (isOk, bundle) => { };
 
-        private static readonly Dictionary<string, SingleBundleLoader> s_NameToLoader =
-            new Dictionary<string, SingleBundleLoader>();
+        private static readonly Dictionary<string, SingleBundleBaseLoader> s_NameToLoader =
+            new Dictionary<string, SingleBundleBaseLoader>();
 
-        private static readonly Dictionary<int, SingleBundleLoader> s_ResIndexToLoader =
-            new Dictionary<int, SingleBundleLoader>();
+        private static readonly Dictionary<int, SingleBundleBaseLoader> s_ResIndexToLoader =
+            new Dictionary<int, SingleBundleBaseLoader>();
 
         public static int SLoadAsync(string bundleName, Action<bool, AssetBundle> loadedAction)
         {
-            SingleBundleLoader loader;
-            s_NameToLoader.TryGetValue(bundleName, out loader);
-            if (loader == null)
+            SingleBundleBaseLoader baseLoader;
+            s_NameToLoader.TryGetValue(bundleName, out baseLoader);
+            if (baseLoader == null)
             {
-                loader = s_LoaderPool.Get();
-                loader.Init(bundleName);
-                s_NameToLoader.Add(bundleName, loader);
+                baseLoader = s_LoaderPool.Get();
+                baseLoader.Init(bundleName);
+                s_NameToLoader.Add(bundleName, baseLoader);
             }
 
-            var resIndex = loader.InternalLoadAsync(loadedAction);
-            s_ResIndexToLoader.Add(resIndex, loader);
+            var resIndex = baseLoader.InternalLoadAsync(loadedAction);
+            s_ResIndexToLoader.Add(resIndex, baseLoader);
 
             return resIndex;
         }
 
         public static int SLoadSync(string bundleName, Action<bool, AssetBundle> loadedAction)
         {
-            SingleBundleLoader loader;
-            s_NameToLoader.TryGetValue(bundleName, out loader);
-            if (loader == null)
+            SingleBundleBaseLoader baseLoader;
+            s_NameToLoader.TryGetValue(bundleName, out baseLoader);
+            if (baseLoader == null)
             {
-                loader = s_LoaderPool.Get();
-                loader.Init(bundleName);
-                s_NameToLoader.Add(bundleName, loader);
+                baseLoader = s_LoaderPool.Get();
+                baseLoader.Init(bundleName);
+                s_NameToLoader.Add(bundleName, baseLoader);
             }
 
-            var resIndex = loader.InternalLoadSync(loadedAction);
-            s_ResIndexToLoader.Add(resIndex, loader);
+            var resIndex = baseLoader.InternalLoadSync(loadedAction);
+            s_ResIndexToLoader.Add(resIndex, baseLoader);
 
             return resIndex;
         }
 
-        public static SingleBundleLoader SGetLoader(int resouceIndex)
+        public static SingleBundleBaseLoader SGetLoader(int resouceIndex)
         {
-            SingleBundleLoader loader = null;
-            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
-            return loader;
+            SingleBundleBaseLoader baseLoader = null;
+            s_ResIndexToLoader.TryGetValue(resouceIndex, out baseLoader);
+            return baseLoader;
         }
 
-        public static SingleBundleLoader SGetLoader(string bundleName)
+        public static SingleBundleBaseLoader SGetLoader(string bundleName)
         {
-            SingleBundleLoader loader = null;
-            s_NameToLoader.TryGetValue(bundleName, out loader);
-            return loader;
+            SingleBundleBaseLoader baseLoader = null;
+            s_NameToLoader.TryGetValue(bundleName, out baseLoader);
+            return baseLoader;
         }
 
         public static void SUnLoad(int resouceIndex)
         {
-            SingleBundleLoader loader;
-            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
-            if (loader != null)
+            SingleBundleBaseLoader baseLoader;
+            s_ResIndexToLoader.TryGetValue(resouceIndex, out baseLoader);
+            if (baseLoader != null)
             {
-                loader.InternalUnload(resouceIndex);
+                baseLoader.InternalUnload(resouceIndex);
             }
         }
 
         private static void STryUnLoadByName(string bundleName)
         {
-            SingleBundleLoader loader;
-            s_NameToLoader.TryGetValue(bundleName, out loader);
-            if (loader != null && loader.CanRealUnload())
+            SingleBundleBaseLoader baseLoader;
+            s_NameToLoader.TryGetValue(bundleName, out baseLoader);
+            if (baseLoader != null && baseLoader.CanRealUnload())
             {
                 s_NameToLoader.Remove(bundleName);
-                s_LoaderPool.Release(loader);
+                s_LoaderPool.Release(baseLoader);
             }
         }
     }
