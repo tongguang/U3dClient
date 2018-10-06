@@ -6,9 +6,9 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace U3dClient
+namespace U3dClient.UpdateMgr
 {
-    public class UpdateManager
+    public static class UpdateManager
     {
         public class FileData
         {
@@ -18,13 +18,13 @@ namespace U3dClient
             public string fileDataStr;
         }
 
-        public string ResUrl;
-        public void Awake()
+        public static string ResUrl;
+        public static void Awake()
         {
 
         }
 
-        public void SetResUrl(string resUrl)
+        public static void SetResUrl(string resUrl)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE
             ResUrl = resUrl + "/Win";
@@ -35,12 +35,12 @@ namespace U3dClient
 #endif
         }
 
-        public void StartUpdate(Action endAction, Action<long, long> progressAction)
+        public static void StartUpdate(Action endAction, Action<long, long> progressAction)
         {
             MainThreadDispatcher.StartCoroutine(StartUpdateEnumerator(endAction, progressAction));
         }
 
-        private IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
+        private static IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
         {
             var resInfoFileExten = FileTool.ResInfoFileExtension;
             var versionFileName = FileTool.VersionFileName;
@@ -161,7 +161,7 @@ namespace U3dClient
             }
         }
 
-        private FileData GetFileData(string fileDataStr)
+        private static FileData GetFileData(string fileDataStr)
         {
             var fileDatas = fileDataStr.Split(' ');
             if (fileDatas.Length >= 3)

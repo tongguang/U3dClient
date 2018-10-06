@@ -1,10 +1,10 @@
 ﻿using U3dClient.ResourceMgr;
+using U3dClient.UpdateMgr;
+
 namespace U3dClient
 {
     public static class GameCenter
     {
-        public static UpdateManager UpdateMgr = new UpdateManager();
-
         static GameCenter()
         {
 
@@ -12,13 +12,13 @@ namespace U3dClient
 
         public static void Awake()
         {
-            ResourceMgr.ResourceManager.Awake();
-//            UpdateMgr.Awake();
+            ResourceManager.Awake();
+            UpdateManager.Awake();
         }
 
         public static void Start()
         {
-            UpdateMgr.SetResUrl("http://111.231.215.248/AssetBundles1/");
+            UpdateManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
             //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }
 
