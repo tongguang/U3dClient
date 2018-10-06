@@ -18,7 +18,7 @@ namespace U3dClient
 
         public static void Start()
         {
-//            UpdateMgr.SetResUrl("http://111.231.215.248/AssetBundles1/");
+            UpdateMgr.SetResUrl("http://111.231.215.248/AssetBundles1/");
             //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }
 

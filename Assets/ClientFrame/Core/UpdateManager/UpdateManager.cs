@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace U3dClient
 {
@@ -45,43 +46,49 @@ namespace U3dClient
             var versionFileName = FileTool.VersionFileName;
 
             var baseVersionDatas = new Dictionary<string, FileData>();
-            var obWWWText = ObservableWWW.Get(Path.Combine(FileTool.WWWStreamingAssetsPath, versionFileName)).ToYieldInstruction();
-            yield return obWWWText;
-            if (obWWWText.HasResult)
+            using (UnityWebRequest www =
+                UnityWebRequest.Get(Path.Combine(FileTool.WWWStreamingAssetsPath, versionFileName)))
             {
-                var datas = obWWWText.Result.Split('\n');
-                foreach (var data in datas)
+                yield return www.SendWebRequest();
+                if (www.isNetworkError)
                 {
-                    var fileData = GetFileData(data);
-                    if (fileData != null)
+                    Debug.Log(string.Format("读取原始版本文件错误"));
+                }
+                else
+                {
+                    var datas = www.downloadHandler.text.Split('\n');
+                    foreach (var data in datas)
                     {
-                        baseVersionDatas.Add(fileData.filePath, fileData);
+                        var fileData = GetFileData(data);
+                        if (fileData != null)
+                        {
+                            baseVersionDatas.Add(fileData.filePath, fileData);
+                        }
                     }
                 }
-            }
-            if (obWWWText.HasError)
-            {
-                Debug.Log(string.Format("读取原始版本文件错误"));
             }
 
             var newVersionData = new Dictionary<string, FileData>();
-            obWWWText = ObservableWWW.Get(Path.Combine(ResUrl, versionFileName)).ToYieldInstruction();
-            yield return obWWWText;
-            if (obWWWText.HasResult)
+            using (UnityWebRequest www =
+                UnityWebRequest.Get(Path.Combine(ResUrl, versionFileName)))
             {
-                var datas = obWWWText.Result.Split('\n');
-                foreach (var data in datas)
+                yield return www.SendWebRequest();
+                if (www.isNetworkError)
                 {
-                    var fileData = GetFileData(data);
-                    if (fileData != null)
+                    Debug.Log(string.Format("读取新版本文件错误"));
+                }
+                else
+                {
+                    var datas = www.downloadHandler.text.Split('\n');
+                    foreach (var data in datas)
                     {
-                        newVersionData.Add(fileData.filePath, fileData);
+                        var fileData = GetFileData(data);
+                        if (fileData != null)
+                        {
+                            newVersionData.Add(fileData.filePath, fileData);
+                        }
                     }
                 }
-            }
-            if (obWWWText.HasError)
-            {
-                Debug.Log(string.Format("读取新版本文件错误"));
             }
 
             long totalUpdateSize = 0;
@@ -122,27 +129,30 @@ namespace U3dClient
                 var filePath = addFileData.filePath;
                 var fileDataStr = addFileData.fileDataStr;
                 var fileSize = addFileData.fileSize;
-                var obWWWByte = ObservableWWW.GetAndGetBytes(Path.Combine(ResUrl, filePath)).ToYieldInstruction();
-                Debug.Log(string.Format("开始下载 {0} 大小:{1}", filePath, fileSize));
-                yield return obWWWByte;
-                if (obWWWByte.HasResult)
+                using (UnityWebRequest www =
+                    UnityWebRequest.Get(Path.Combine(ResUrl, filePath)))
                 {
-                    var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
-                    var fullFileInfoPath = fullFilePath.Replace(".ab", "") + resInfoFileExten;
-                    var dirName = Path.GetDirectoryName(fullFilePath);
-                    if (!Directory.Exists(dirName))
+                    Debug.Log(string.Format("开始下载 {0} 大小:{1}", filePath, fileSize));
+                    yield return www.SendWebRequest();
+                    if (www.isNetworkError)
                     {
-                        Directory.CreateDirectory(dirName);
+                        Debug.Log(string.Format("下载错误 {0} 大小:{1}", filePath, fileSize));
                     }
-                    File.WriteAllBytes(fullFilePath, obWWWByte.Result);
-                    File.WriteAllText(fullFileInfoPath, fileDataStr);
-                    updatedSize += fileSize;
-                    progressAction(updatedSize, totalUpdateSize);
-                    Debug.Log(string.Format("下载完成 {0} 大小:{1}", filePath, fileSize));
-                }
-                if (obWWWByte.HasError)
-                {
-                    Debug.Log(string.Format("下载错误 {0} 大小:{1}", filePath, fileSize));
+                    else
+                    {
+                        var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
+                        var fullFileInfoPath = fullFilePath.Replace(".ab", "") + resInfoFileExten;
+                        var dirName = Path.GetDirectoryName(fullFilePath);
+                        if (!Directory.Exists(dirName))
+                        {
+                            Directory.CreateDirectory(dirName);
+                        }
+                        File.WriteAllBytes(fullFilePath, www.downloadHandler.data);
+                        File.WriteAllText(fullFileInfoPath, fileDataStr);
+                        updatedSize += fileSize;
+                        progressAction(updatedSize, totalUpdateSize);
+                        Debug.Log(string.Format("下载完成 {0} 大小:{1}", filePath, fileSize));
+                    }
                 }
             }
             if (endAction != null)
