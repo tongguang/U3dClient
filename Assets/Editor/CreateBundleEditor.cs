@@ -15,7 +15,7 @@ public static class CreateBundleEditor
     private static string _ResPath = "Res";
     private static string _ScriptPath = "Script/Lua";
     private static string _ResouceRootPath = Application.dataPath + "/" + "Resource";
-    private static string _AssetBundleDirectory = "Assets/AssetBundles";
+    private static string _RawAssetBundleDirectory = "RawAssetBundles" + "/" + FileTool.AssetBundlesName;
 #if UNITY_STANDALONE
     private static string _AssetBundleTempDirectory = "TempAssetBundles/Win";
 #elif UNITY_ANDROID
@@ -29,7 +29,7 @@ public static class CreateBundleEditor
     [MenuItem("Bundle/Test")]
     public static void Test()
     {
-        var lines = File.ReadAllLines(Path.Combine(_AssetBundleDirectory, _VersionName));
+        BuildAllAssetBundles();
     }
 
     [MenuItem("Bundle/GenAllPackDataToTemp")]
@@ -88,7 +88,7 @@ public static class CreateBundleEditor
 
     static void BuildAllAssetBundles()
     {
-        string assetBundleDirectory = _AssetBundleDirectory;
+        string assetBundleDirectory = _RawAssetBundleDirectory;
         if (!Directory.Exists(assetBundleDirectory))
         {
             Directory.CreateDirectory(assetBundleDirectory);
@@ -102,14 +102,14 @@ public static class CreateBundleEditor
     public static void GenVersionFile()
     {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.Append(GetVersionInfoStr(Path.Combine(_AssetBundleDirectory, _AssetBundlesName)));
-        var filePaths = Directory.GetFiles(_AssetBundleDirectory,
+        stringBuilder.Append(GetVersionInfoStr(Path.Combine(_RawAssetBundleDirectory, _AssetBundlesName)));
+        var filePaths = Directory.GetFiles(_RawAssetBundleDirectory,
             "*.ab", SearchOption.AllDirectories);
         foreach (var filePath in filePaths)
         {
             stringBuilder.Append(GetVersionInfoStr(filePath));
         }
-        File.WriteAllText(Path.Combine(_AssetBundleDirectory, _VersionName),stringBuilder.ToString());
+        File.WriteAllText(Path.Combine(_RawAssetBundleDirectory, _VersionName),stringBuilder.ToString());
     }
 
     public static string GetVersionInfoStr(string path)
@@ -118,7 +118,7 @@ public static class CreateBundleEditor
         var fileInfo = new FileInfo(newfilePath);
         var fileSize = fileInfo.Length;
         var md5 = GetFileMD5(newfilePath);
-        return string.Format("{0} {1} {2}\n", newfilePath.Replace(_AssetBundleDirectory + "/", ""), fileSize, md5);
+        return string.Format("{0} {1} {2}\n", newfilePath.Replace(_RawAssetBundleDirectory + "/", ""), fileSize, md5);
     }
 
     public static string GetFileMD5(string path)
@@ -138,7 +138,7 @@ public static class CreateBundleEditor
     [MenuItem("Bundle/CopyPackDataToTemp")]
     public static void CopyPackDataToTempDirectory()
     {
-        DiffCopyPackDatas(_AssetBundleDirectory, _AssetBundleTempDirectory);
+        DiffCopyPackDatas(_RawAssetBundleDirectory, _AssetBundleTempDirectory);
         AssetDatabase.Refresh();
         Debug.Log("复制结束。。");
     }
