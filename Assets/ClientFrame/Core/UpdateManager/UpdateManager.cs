@@ -18,6 +18,7 @@ namespace U3dClient.UpdateMgr
             public string fileDataStr;
         }
 
+        private static string s_BundleDotSuffixName = "." + GlobalConfig.s_BundleSuffixName;
         public static string ResUrl;
         public static void Awake()
         {
@@ -97,7 +98,7 @@ namespace U3dClient.UpdateMgr
             {
                 var newFileData = data.Value;
 
-                var oldFileInfoPath = Path.Combine(FileTool.PersistentDataPath, newFileData.filePath.Replace(".ab", "") + resInfoFileExten);
+                var oldFileInfoPath = Path.Combine(FileTool.PersistentDataPath, newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
                 FileData oldFileData = null;
                 if (File.Exists(oldFileInfoPath))
                 {
@@ -141,7 +142,7 @@ namespace U3dClient.UpdateMgr
                     else
                     {
                         var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
-                        var fullFileInfoPath = fullFilePath.Replace(".ab", "") + resInfoFileExten;
+                        var fullFileInfoPath = fullFilePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten;
                         var dirName = Path.GetDirectoryName(fullFilePath);
                         if (!Directory.Exists(dirName))
                         {
