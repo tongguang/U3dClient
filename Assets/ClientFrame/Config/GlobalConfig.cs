@@ -4,5 +4,4 @@ using UnityEngine;
 
 public static class GlobalConfig
 {
-    public static string s_BundleSuffixName = "ab";
 }

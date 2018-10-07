@@ -75,7 +75,7 @@ public static class CreateBundleEditor
             var abName = dirName.Replace(_ResouceRootPath + "/", "").ToLower();
             var asset = AssetImporter.GetAtPath(assetPath);
             asset.assetBundleName = abName;
-            asset.assetBundleVariant = GlobalConfig.s_BundleSuffixName;
+            asset.assetBundleVariant = GlobalDefine.s_BundleSuffixName;
             asset.SaveAndReimport();
             Debug.Log(abName);
         }
@@ -104,7 +104,7 @@ public static class CreateBundleEditor
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.Append(GetVersionInfoStr(Path.Combine(_RawAssetBundleDirectory, _AssetBundlesName)));
         var filePaths = Directory.GetFiles(_RawAssetBundleDirectory,
-            "*." + GlobalConfig.s_BundleSuffixName, SearchOption.AllDirectories);
+            "*." + GlobalDefine.s_BundleSuffixName, SearchOption.AllDirectories);
         foreach (var filePath in filePaths)
         {
             stringBuilder.Append(GetVersionInfoStr(filePath));

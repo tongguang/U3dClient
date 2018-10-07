@@ -4,5 +4,5 @@ using UnityEngine;
 
 public static class GlobalDefine
 {
-
+    public static string s_BundleSuffixName = "ab";
 }

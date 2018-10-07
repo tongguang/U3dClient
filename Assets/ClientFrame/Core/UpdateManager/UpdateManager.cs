@@ -18,7 +18,7 @@ namespace U3dClient.UpdateMgr
             public string fileDataStr;
         }
 
-        private static string s_BundleDotSuffixName = "." + GlobalConfig.s_BundleSuffixName;
+        private static string s_BundleDotSuffixName = "." + GlobalDefine.s_BundleSuffixName;
         public static string ResUrl;
         public static void Awake()
         {
