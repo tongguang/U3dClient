@@ -29,16 +29,15 @@ namespace U3dClient.ResourceMgr
 
         protected override void OnRecycle()
         {
+            if (m_BundleIndex != -1)
+            {
+                FullBundleBaseLoader.SUnLoad(m_BundleIndex);
+            }
             ResetData();
         }
 
         protected override void ResetData()
         {
-            if (m_BundleIndex != -1)
-            {
-                FullBundleBaseLoader.SUnLoad(m_BundleIndex);
-            }
-
             m_BundleName = null;
             m_AssetName = null;
             m_AssetKeyName = null;
