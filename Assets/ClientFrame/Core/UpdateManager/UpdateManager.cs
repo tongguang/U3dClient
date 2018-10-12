@@ -20,9 +20,9 @@ namespace U3dClient.UpdateMgr
 
         private static string s_BundleDotSuffixName = "." + GlobalDefine.s_BundleSuffixName;
         public static string ResUrl;
+
         public static void Awake()
         {
-
         }
 
         public static void SetResUrl(string resUrl)
@@ -51,7 +51,7 @@ namespace U3dClient.UpdateMgr
                 UnityWebRequest.Get(Path.Combine(FileTool.s_WWWStreamingAssetsPath, versionFileName)))
             {
                 yield return www.SendWebRequest();
-                if (www.isNetworkError)
+                if (www.isNetworkError || www.isHttpError)
                 {
                     Debug.Log(string.Format("读取原始版本文件错误"));
                 }
@@ -74,7 +74,7 @@ namespace U3dClient.UpdateMgr
                 UnityWebRequest.Get(Path.Combine(ResUrl, versionFileName)))
             {
                 yield return www.SendWebRequest();
-                if (www.isNetworkError)
+                if (www.isNetworkError || www.isHttpError)
                 {
                     Debug.Log(string.Format("读取新版本文件错误"));
                 }
@@ -98,7 +98,8 @@ namespace U3dClient.UpdateMgr
             {
                 var newFileData = data.Value;
 
-                var oldFileInfoPath = Path.Combine(FileTool.s_PersistentDataPath, newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
+                var oldFileInfoPath = Path.Combine(FileTool.s_PersistentDataPath,
+                    newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
                 FileData oldFileData = null;
                 if (File.Exists(oldFileInfoPath))
                 {
@@ -123,6 +124,7 @@ namespace U3dClient.UpdateMgr
                     totalUpdateSize += newFileData.fileSize;
                 }
             }
+
             long updatedSize = 0;
             progressAction(updatedSize, totalUpdateSize);
             foreach (var addFileData in addFileDatas)
@@ -135,7 +137,7 @@ namespace U3dClient.UpdateMgr
                 {
                     Debug.Log(string.Format("开始下载 {0} 大小:{1}", filePath, fileSize));
                     yield return www.SendWebRequest();
-                    if (www.isNetworkError)
+                    if (www.isNetworkError || www.isHttpError)
                     {
                         Debug.Log(string.Format("下载错误 {0} 大小:{1}", filePath, fileSize));
                     }
@@ -148,6 +150,7 @@ namespace U3dClient.UpdateMgr
                         {
                             Directory.CreateDirectory(dirName);
                         }
+
                         File.WriteAllBytes(fullFilePath, www.downloadHandler.data);
                         File.WriteAllText(fullFileInfoPath, fileDataStr);
                         updatedSize += fileSize;
@@ -156,6 +159,7 @@ namespace U3dClient.UpdateMgr
                     }
                 }
             }
+
             if (endAction != null)
             {
                 endAction();
@@ -176,6 +180,7 @@ namespace U3dClient.UpdateMgr
                 };
                 return fileData;
             }
+
             return null;
         }
     }
