@@ -131,11 +131,10 @@ namespace U3dClient.GameTools
             }
 
             string destVerPath = CommonHelper.CombinePath(destPath, s_VersionFileName);
-            string[] destFileInfos = null;
             var destFileMD5s = new Dictionary<string, string>();
             if (File.Exists(destVerPath))
             {
-                destFileInfos = File.ReadAllLines(destVerPath);
+                var destFileInfos = File.ReadAllLines(destVerPath);
                 foreach (var destFileInfo in destFileInfos)
                 {
                     var info = destFileInfo.Split(' ');
@@ -176,7 +175,7 @@ namespace U3dClient.GameTools
 //            }
 
             AssetDatabase.Refresh();
-            Debug.Log("复制结束。。");
+            Debug.Log(string.Format("复制{0}到{1}结束。。", sourcePath, destPath));
         }
 
         public static void GeneratePackDataToTempPath()
@@ -193,7 +192,7 @@ namespace U3dClient.GameTools
 
         public static void CopyPackDataFromReleaseToStreamAssetPath()
         {
-            DiffCopyPackDatas(CommonHelper.CombinePath(s_AbsProjectPath, s_RelativeTempAssetBundlesPath) , Application.streamingAssetsPath);
+            DiffCopyPackDatas(CommonHelper.CombinePath(s_AbsProjectPath, s_RelativeReleaseAssetBundlesPath) , Application.streamingAssetsPath);
         }
     }
 }
