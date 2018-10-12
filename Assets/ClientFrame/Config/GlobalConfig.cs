@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GlobalConfig
+namespace U3dClient
 {
-}
+    public static class GlobalConfig
+    {
+    }
+} 

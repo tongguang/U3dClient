@@ -15,7 +15,7 @@ public static class CreateBundleEditor
     private static string _ResPath = "Res";
     private static string _ScriptPath = "Script/Lua";
     private static string _ResouceRootPath = Application.dataPath + "/" + "Resource";
-    private static string _RawAssetBundleDirectory = "RawAssetBundles" + "/" + FileTool.AssetBundlesName;
+    private static string _RawAssetBundleDirectory = "RawAssetBundles" + "/" + GlobalDefine.s_AssetBundlesName;
 #if UNITY_STANDALONE
     private static string _AssetBundleTempDirectory = "TempAssetBundles/Win";
 #elif UNITY_ANDROID
@@ -23,8 +23,8 @@ public static class CreateBundleEditor
 #else
     private static string _AssetBundleTempDirectory = "TempAssetBundles/Ios";
 #endif
-    private static string _AssetBundlesName = FileTool.AssetBundlesName;
-    private static string _VersionName = FileTool.VersionFileName;
+    private static string _AssetBundlesName = GlobalDefine.s_AssetBundlesName;
+    private static string _VersionName = GlobalDefine.s_VersionFileName;
 
     [MenuItem("Bundle/Test")]
     public static void Test()

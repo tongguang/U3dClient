@@ -7,43 +7,36 @@ namespace U3dClient
 {
     public static class FileTool
     {
-        public static string DataPath;
-        public static string StreamingAssetsPath;
-        public static string PersistentDataPath;
+        public static string s_DataPath;
+        public static string s_StreamingAssetsPath;
+        public static string s_PersistentDataPath;
 
-        public static string WWWDataPath;
-        public static string WWWStreamingAssetsPath;
-        public static string WWWPersistentDataPath;
-
-        public static string AssetBundlesName;
-        public static string VersionFileName;
-        public static string ResInfoFileExtension;
+        public static string s_WWWDataPath;
+        public static string s_WWWStreamingAssetsPath;
+        public static string s_WWWPersistentDataPath;
 
         static FileTool()
         {
-            AssetBundlesName = "AssetBundles";
-            VersionFileName = "Version.txt";
-            ResInfoFileExtension = ".ex";
-
-            StreamingAssetsPath = Application.streamingAssetsPath;
+            
+            s_StreamingAssetsPath = Application.streamingAssetsPath;
 #if UNITY_STANDALONE
-            DataPath = Application.dataPath;
-            PersistentDataPath = Path.Combine(DataPath, "../ResCache");
-            WWWDataPath = "file://" + DataPath;
-            WWWStreamingAssetsPath = "file://" + StreamingAssetsPath;
-            WWWPersistentDataPath = "file://" + PersistentDataPath;
+            s_DataPath = Application.dataPath;
+            s_PersistentDataPath = Path.Combine(s_DataPath, "../ResCache");
+            s_WWWDataPath = "file://" + s_DataPath;
+            s_WWWStreamingAssetsPath = "file://" + s_StreamingAssetsPath;
+            s_WWWPersistentDataPath = "file://" + s_PersistentDataPath;
 #elif UNITY_ANDROID
-            DataPath = Application.dataPath;
-            PersistentDataPath = Application.persistentDataPath;
-			WWWDataPath = "jar:file://" + DataPath;
-			WWWStreamingAssetsPath = StreamingAssetsPath;
-			WWWPersistentDataPath = "jar:file://" + PersistentDataPath;
+            s_DataPath = Application.dataPath;
+            s_PersistentDataPath = Application.persistentDataPath;
+			s_WWWDataPath = "jar:file://" + s_DataPath;
+			s_WWWStreamingAssetsPath = s_StreamingAssetsPath;
+			s_WWWPersistentDataPath = "jar:file://" + s_PersistentDataPath;
 #else
-            DataPath = Application.dataPath;
-            PersistentDataPath = Application.persistentDataPath;
-            WWWDataPath = "file://" + DataPath;
-            WWWStreamingAssetsPath = "file://" + StreamingAssetsPath;
-            WWWPersistentDataPath = "file://" + PersistentDataPath;
+            s_DataPath = Application.dataPath;
+            s_PersistentDataPath = Application.persistentDataPath;
+            s_WWWDataPath = "file://" + s_DataPath;
+            s_WWWStreamingAssetsPath = "file://" + s_StreamingAssetsPath;
+            s_WWWPersistentDataPath = "file://" + s_PersistentDataPath;
 #endif
         }
 
@@ -55,7 +48,7 @@ namespace U3dClient
             }
 
             {
-                var bundlePath = Path.Combine(PersistentDataPath, bundleName);
+                var bundlePath = Path.Combine(s_PersistentDataPath, bundleName);
                 if (File.Exists(bundlePath))
                 {
                     return bundlePath;
@@ -63,7 +56,7 @@ namespace U3dClient
             }
 
             {
-                var bundlePath = Path.Combine(StreamingAssetsPath, bundleName);
+                var bundlePath = Path.Combine(s_StreamingAssetsPath, bundleName);
                 return bundlePath;
             }
         }

@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GlobalDefine
+namespace U3dClient
 {
-    public static string s_BundleSuffixName = "ab";
+    public static class GlobalDefine
+    {
+        public static string s_BundleSuffixName = "ab";
+        public static string s_AssetBundlesName = "AssetBundles";
+        public static string s_VersionFileName = "Version.txt";
+        public static string s_ResInfoFileExtension = ".ex";
+    }
 }

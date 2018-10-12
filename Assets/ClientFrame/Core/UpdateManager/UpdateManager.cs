@@ -43,12 +43,12 @@ namespace U3dClient.UpdateMgr
 
         private static IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
         {
-            var resInfoFileExten = FileTool.ResInfoFileExtension;
-            var versionFileName = FileTool.VersionFileName;
+            var resInfoFileExten = GlobalDefine.s_ResInfoFileExtension;
+            var versionFileName = GlobalDefine.s_VersionFileName;
 
             var baseVersionDatas = new Dictionary<string, FileData>();
             using (UnityWebRequest www =
-                UnityWebRequest.Get(Path.Combine(FileTool.WWWStreamingAssetsPath, versionFileName)))
+                UnityWebRequest.Get(Path.Combine(FileTool.s_WWWStreamingAssetsPath, versionFileName)))
             {
                 yield return www.SendWebRequest();
                 if (www.isNetworkError)
@@ -98,7 +98,7 @@ namespace U3dClient.UpdateMgr
             {
                 var newFileData = data.Value;
 
-                var oldFileInfoPath = Path.Combine(FileTool.PersistentDataPath, newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
+                var oldFileInfoPath = Path.Combine(FileTool.s_PersistentDataPath, newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
                 FileData oldFileData = null;
                 if (File.Exists(oldFileInfoPath))
                 {
@@ -141,7 +141,7 @@ namespace U3dClient.UpdateMgr
                     }
                     else
                     {
-                        var fullFilePath = Path.Combine(FileTool.PersistentDataPath, filePath);
+                        var fullFilePath = Path.Combine(FileTool.s_PersistentDataPath, filePath);
                         var fullFileInfoPath = fullFilePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten;
                         var dirName = Path.GetDirectoryName(fullFilePath);
                         if (!Directory.Exists(dirName))
