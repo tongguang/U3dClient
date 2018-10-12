@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -106,11 +106,94 @@ namespace U3dClient.GameTools
                 EditorUserBuildSettings.activeBuildTarget);
         }
 
+        public static void DiffCopyPackDatas(string sourcePath, string destPath)
+        {
+            if (!Directory.Exists(destPath))
+            {
+                Directory.CreateDirectory(destPath);
+            }
+            if (!File.Exists(CommonHelper.CombinePath(sourcePath, s_VersionFileName)))
+            {
+                Debug.Log("复制失败");
+                return;
+            }
+
+
+            string srcVerPath = CommonHelper.CombinePath(sourcePath, s_VersionFileName);
+            var srcFileInfos = File.ReadAllLines(srcVerPath);
+            var srcFileMD5s = new Dictionary<string, string>();
+            foreach (var destFileInfo in srcFileInfos)
+            {
+                var info = destFileInfo.Split(' ');
+                var fileName = info[0];
+                var md5 = info[2];
+                srcFileMD5s[fileName] = md5;
+            }
+
+            string destVerPath = CommonHelper.CombinePath(destPath, s_VersionFileName);
+            string[] destFileInfos = null;
+            var destFileMD5s = new Dictionary<string, string>();
+            if (File.Exists(destVerPath))
+            {
+                destFileInfos = File.ReadAllLines(destVerPath);
+                foreach (var destFileInfo in destFileInfos)
+                {
+                    var info = destFileInfo.Split(' ');
+                    var fileName = info[0];
+                    var md5 = info[2];
+                    destFileMD5s[fileName] = md5;
+                }
+            }
+
+            foreach (var srcFileMd5 in srcFileMD5s)
+            {
+                var name = srcFileMd5.Key;
+                var md5 = srcFileMd5.Value;
+                if (destFileMD5s.ContainsKey(name))
+                {
+                    if (destFileMD5s[name] != md5)
+                    {
+                        CommonHelper.CopyFile(CommonHelper.CombinePath(sourcePath, name), CommonHelper.CombinePath(destPath, name));
+                    }
+                }
+                else
+                {
+                    CommonHelper.CopyFile(CommonHelper.CombinePath(sourcePath, name), CommonHelper.CombinePath(destPath, name));
+                }
+            }
+
+            CommonHelper.CopyFile(CommonHelper.CombinePath(sourcePath, s_VersionFileName), CommonHelper.CombinePath(destPath, s_VersionFileName));//覆盖模式
+
+//            foreach (var destFileMd5 in destFileMD5s)
+//            {
+//                var name = destFileMd5.Key;
+//                var md5 = destFileMd5.Value;
+//                if (!srcFileMD5s.ContainsKey(name))
+//                {
+//                    Debug.Log(String.Format("删除{0}", CommonHelper.CombinePath(destPath, name)));
+//                    FileUtil.DeleteFileOrDirectory(CommonHelper.CombinePath(destPath, name));
+//                }
+//            }
+
+            AssetDatabase.Refresh();
+            Debug.Log("复制结束。。");
+        }
+
         public static void GeneratePackDataToTempPath()
         {
             GenerateNormalResAssetBundleName();
             BuildAssetBundlesToTempPath();
             GenerateVersionFile();
+        }
+
+        public static void CopyPackDataFromTempToReleasePath()
+        {
+            DiffCopyPackDatas(s_RelativeTempAssetBundlesPath, s_RelativeReleaseAssetBundlesPath);
+        }
+
+        public static void CopyPackDataFromReleaseToStreamAssetPath()
+        {
+            DiffCopyPackDatas(CommonHelper.CombinePath(s_AbsProjectPath, s_RelativeTempAssetBundlesPath) , Application.streamingAssetsPath);
         }
     }
 }

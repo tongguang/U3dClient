@@ -40,9 +40,16 @@ namespace U3dClient.GameTools
             BuildAssetBundleProcess.GeneratePackDataToTempPath();
         }
 
-//        [Button("CopyAssetBundlesToReleaseDir")]
-//        public void CopyAssetBundlesToReleaseDir()
-//        {
-//        }
+        [Button("CopyPackDataFromTempToReleasePath")]
+        public void CopyPackDataFromTempToReleasePath()
+        {
+            BuildAssetBundleProcess.CopyPackDataFromTempToReleasePath();
+        }
+
+        [Button("CopyPackDataFromReleaseToStreamAssetPath")]
+        public void CopyPackDataFromReleaseToStreamAssetPath()
+        {
+            BuildAssetBundleProcess.CopyPackDataFromReleaseToStreamAssetPath();
+        }
     }
 }

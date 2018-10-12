@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using UnityEditor;
+using UnityEngine;
 
 namespace U3dClient.GameTools
 {
@@ -28,6 +30,21 @@ namespace U3dClient.GameTools
             md5Provider.Clear();
             fs.Close();
             return resule;
+        }
+
+        public static void CopyFile(string sourcePath, string destPath)
+        {
+            var dirName = Path.GetDirectoryName(destPath);
+            if (dirName == null)
+            {
+                Debug.LogWarning(string.Format("复制{0}到{1}出错", sourcePath, destPath));
+                return;
+            }
+            if (!Directory.Exists(dirName))
+            {
+                Directory.CreateDirectory(dirName);
+            }
+            File.Copy(sourcePath, destPath, true);
         }
     }
 }
