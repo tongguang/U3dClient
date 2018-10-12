@@ -4,8 +4,8 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/AssetStoreTools*
-/[Tt]empAssetBundles/
-
+/[Gg]ameRelease/
+/[Gg]ameTemp/
 # Visual Studio 2015 cache directory
 /.vs/
 /.vscode/
