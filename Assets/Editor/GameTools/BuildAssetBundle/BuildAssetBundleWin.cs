@@ -37,7 +37,7 @@ namespace U3dClient.GameTools
         [Button("GeneratePackDataToTempPath")]
         public void GeneratePackDataToTempPath()
         {
-            BuildAssetBundleProcess.GeneratePackDataToTempPath();
+            EditorApplication.delayCall += BuildAssetBundleProcess.GeneratePackDataToTempPath;
         }
 
         [Button("CopyPackDataFromTempToReleasePath")]
