@@ -43,13 +43,13 @@ namespace U3dClient.GameTools
         [Button("CopyPackDataFromTempToReleasePath")]
         public void CopyPackDataFromTempToReleasePath()
         {
-            BuildAssetBundleProcess.CopyPackDataFromTempToReleasePath();
+            EditorApplication.delayCall += BuildAssetBundleProcess.CopyPackDataFromTempToReleasePath;
         }
 
         [Button("CopyPackDataFromReleaseToStreamAssetPath")]
         public void CopyPackDataFromReleaseToStreamAssetPath()
         {
-            BuildAssetBundleProcess.CopyPackDataFromReleaseToStreamAssetPath();
+            EditorApplication.delayCall += BuildAssetBundleProcess.CopyPackDataFromReleaseToStreamAssetPath;
         }
     }
 }
