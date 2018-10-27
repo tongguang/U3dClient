@@ -12,6 +12,7 @@ namespace U3dClient.GameTools
         public static string s_AbsProjectPath = CommonHelper.NormalPath(System.Environment.CurrentDirectory);
         public static string s_RelativeNormalResRawPath = CommonHelper.CombinePath("Assets", "Resource");
         public static string s_RelativeTempAssetBundlesPath = CommonHelper.CombinePath("GameTemp", GlobalDefine.s_AssetBundlesName);
+        
 #if UNITY_STANDALONE
         public static string s_RelativeReleaseAssetBundlesPath = "GameRelease/AssetBundles/Win";
 #elif UNITY_ANDROID
@@ -21,6 +22,11 @@ namespace U3dClient.GameTools
 #endif
         public static string s_AssetBundlesName = GlobalDefine.s_AssetBundlesName;
         public static string s_VersionFileName = GlobalDefine.s_VersionFileName;
+
+
+        public static string s_RelativeScriptResRawPath = CommonHelper.CombinePath("Assets", "Script");
+        public static string s_RelativeScriptResTempPackPath = CommonHelper.CombinePath("Assets", "TempPackScript");
+        public static string s_ScriptAssetBundleName = GlobalDefine.s_ScriptAssetBundleName;
 
         private static void GenerateNormalResAssetBundleName()
         {
@@ -92,6 +98,50 @@ namespace U3dClient.GameTools
             var fileSize = fileInfo.Length;
             var md5 = CommonHelper.GetFileMD5(newfilePath);
             return string.Format("{0} {1} {2}", newfilePath.Replace(s_RelativeTempAssetBundlesPath + "/", ""), fileSize, md5);
+        }
+
+        public static void GenerateScriptResAssetBundleName()
+        {
+            if (Directory.Exists(s_RelativeScriptResTempPackPath))
+            {
+                FileUtil.DeleteFileOrDirectory(s_RelativeScriptResTempPackPath);
+            }
+            var filePaths = Directory.GetFiles(s_RelativeScriptResRawPath,
+                "*.lua", SearchOption.AllDirectories);
+            foreach (var filePath in filePaths)
+            {
+                var normalFilePath = CommonHelper.NormalPath(filePath);
+                var luaDataPath = normalFilePath.Replace(s_RelativeScriptResRawPath + "/", "").Replace(".lua", ".bytes").Replace("/", ".");
+                luaDataPath = CommonHelper.CombinePath(s_RelativeScriptResTempPackPath, luaDataPath);
+                var luaDataDirPath = Path.GetDirectoryName(luaDataPath);
+                if (!Directory.Exists(luaDataDirPath))
+                {
+                    if (luaDataDirPath != null) Directory.CreateDirectory(luaDataDirPath);
+                }
+                var datas = File.ReadAllBytes(normalFilePath);
+                File.WriteAllBytes(luaDataPath, datas);
+            }
+            AssetDatabase.Refresh();
+
+            filePaths = Directory.GetFiles(s_RelativeScriptResTempPackPath,
+                "*.bytes", SearchOption.AllDirectories);
+            foreach (var filePath in filePaths)
+            {
+               
+                var normalFilePath = CommonHelper.NormalPath(filePath);
+                var assetPath = normalFilePath;
+                var dirName = Path.GetDirectoryName(normalFilePath);
+                if (dirName != null)
+                {
+                    var abName = s_ScriptAssetBundleName;
+                    var asset = AssetImporter.GetAtPath(assetPath);
+                    if (asset)
+                    {
+                        asset.SetAssetBundleNameAndVariant(abName, GlobalDefine.s_BundleSuffixName);
+                    }
+                }
+            }
+            AssetDatabase.Refresh();
         }
 
         private static void BuildAssetBundlesToTempPath()

@@ -1,19 +1,16 @@
 ﻿using U3dClient.ResourceMgr;
 using U3dClient.UpdateMgr;
+using U3dClient.ScriptMgr;
 
 namespace U3dClient
 {
     public static class GameCenter
     {
-        static GameCenter()
-        {
-
-        }
-
         public static void Awake()
         {
             ResourceManager.Awake();
             UpdateManager.Awake();
+            ScriptManager.Awake();
         }
 
         public static void Start()

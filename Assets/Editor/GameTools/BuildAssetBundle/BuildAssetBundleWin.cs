@@ -51,5 +51,11 @@ namespace U3dClient.GameTools
         {
             EditorApplication.delayCall += BuildAssetBundleProcess.CopyPackDataFromReleaseToStreamAssetPath;
         }
+
+        [Button("Test")]
+        public void Test()
+        {
+            EditorApplication.delayCall += BuildAssetBundleProcess.GenerateScriptResAssetBundleName;
+        }
     }
 }
