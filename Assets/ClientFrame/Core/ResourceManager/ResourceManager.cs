@@ -7,7 +7,7 @@ namespace U3dClient.ResourceMgr
 {
     public static class ResourceManager
     {
-        private static int ResourceIndex = 0;
+        private static int s_ResourceIndex = 0;
 
         public static void Awake()
         {
@@ -16,7 +16,7 @@ namespace U3dClient.ResourceMgr
 
         public static int GetNewResourceIndex()
         {
-            return ResourceIndex++;
+            return s_ResourceIndex++;
         }
     }
 }
