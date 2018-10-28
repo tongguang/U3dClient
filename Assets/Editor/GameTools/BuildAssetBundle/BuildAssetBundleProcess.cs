@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using U3dClient.ScriptMgr;
 using UnityEditor;
 using UnityEngine;
 
@@ -123,6 +124,10 @@ namespace U3dClient.GameTools
             }
             AssetDatabase.Refresh();
 
+            var fileDesc = ScriptableObject.CreateInstance<LuaFileRef>();
+            Dictionary<string, TextAsset> fileRefDict = new Dictionary<string, TextAsset>();
+
+            var abName = s_ScriptAssetBundleName;
             filePaths = Directory.GetFiles(s_RelativeScriptResTempPackPath,
                 "*.bytes", SearchOption.AllDirectories);
             foreach (var filePath in filePaths)
@@ -133,14 +138,22 @@ namespace U3dClient.GameTools
                 var dirName = Path.GetDirectoryName(normalFilePath);
                 if (dirName != null)
                 {
-                    var abName = s_ScriptAssetBundleName;
                     var asset = AssetImporter.GetAtPath(assetPath);
                     if (asset)
                     {
                         asset.SetAssetBundleNameAndVariant(abName, GlobalDefine.s_BundleSuffixName);
+                        var fileName = Path.GetFileNameWithoutExtension(assetPath);
+                        fileRefDict[fileName] = AssetDatabase.LoadAssetAtPath<TextAsset>(assetPath);
                     }
                 }
             }
+
+            fileDesc.AssetsRefDict = fileRefDict;
+            var fileDescPath = CommonHelper.CombinePath(s_RelativeScriptResTempPackPath, GlobalDefine.s_ScriptFileDescName + ".asset");
+            AssetDatabase.CreateAsset(fileDesc, fileDescPath);
+            var fileDescAsset = AssetImporter.GetAtPath(fileDescPath);
+            fileDescAsset.SetAssetBundleNameAndVariant(abName, GlobalDefine.s_BundleSuffixName);
+
             AssetDatabase.Refresh();
         }
 
@@ -231,6 +244,7 @@ namespace U3dClient.GameTools
         public static void GeneratePackDataToTempPath()
         {
             GenerateNormalResAssetBundleName();
+            GenerateScriptResAssetBundleName();
             BuildAssetBundlesToTempPath();
             GenerateVersionFile();
         }

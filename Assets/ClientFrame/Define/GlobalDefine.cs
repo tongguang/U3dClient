@@ -11,5 +11,6 @@ namespace U3dClient
         public static string s_VersionFileName = "Version.txt";
         public static string s_ResInfoFileExtension = ".ex";
         public static string s_ScriptAssetBundleName = "scriptdata";
+        public static string s_ScriptFileDescName = "LuaFileDesc";
     }
 }

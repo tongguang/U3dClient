@@ -21,7 +21,6 @@ namespace U3dClient
 
         public static void Update()
         {
-
         }
 
         public static void OnApplicationFocus(bool hasFocus)

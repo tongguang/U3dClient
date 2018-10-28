@@ -6,6 +6,7 @@
 /Assets/AssetStoreTools*
 /[Gg]ameRelease/
 /[Gg]ameTemp/
+/Assets/TempPackScript*
 # Visual Studio 2015 cache directory
 /.vs/
 /.vscode/
