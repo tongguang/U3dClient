@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace U3dClient.ScriptMgr
+namespace U3dClient.Component
 {
     public class LuaFileRef : SerializedScriptableObject
     {
