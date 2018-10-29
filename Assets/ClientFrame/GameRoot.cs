@@ -31,25 +31,27 @@ namespace U3dClient
 
         private void Update()
         {
+            GameCenter.Update();
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-
+            GameCenter.OnApplicationFocus(hasFocus);
         }
 
         private void OnApplicationPause(bool pauseStatus)
         {
-            
+            GameCenter.OnApplicationPause(pauseStatus);
         }
 
         private void OnDestroy()
         {
-            
+            GameCenter.OnDestroy();
         }
-       
+
         private void OnApplicationQuit()
         {
+            GameCenter.OnApplicationQuit();
         }
     }
 }

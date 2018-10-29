@@ -25,6 +25,35 @@ namespace U3dClient.UpdateMgr
         {
         }
 
+        public static void Start()
+        {
+
+        }
+
+        public static void Update()
+        {
+        }
+
+        public static void OnApplicationFocus(bool hasFocus)
+        {
+
+        }
+
+        public static void OnApplicationPause(bool pauseStatus)
+        {
+
+        }
+
+        public static void OnDestroy()
+        {
+
+        }
+
+        public static void OnApplicationQuit()
+        {
+
+        }
+
         public static void SetResUrl(string resUrl)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE
