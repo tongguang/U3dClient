@@ -199,7 +199,7 @@ namespace U3dClient.ResourceMgr
         private static readonly Dictionary<int, BundleAssetBaseLoader> s_ResIndexToLoader =
             new Dictionary<int, BundleAssetBaseLoader>();
 
-        private static void SCalculateAssetKey(string bundleName, string assetName, out string assetKey)
+        private static void CalculateAssetKey(string bundleName, string assetName, out string assetKey)
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(bundleName);
@@ -208,12 +208,12 @@ namespace U3dClient.ResourceMgr
             assetKey = stringBuilder.ToString();
         }
 
-        public static int SLoadAsync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
+        public static int LoadAsync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
             where T : Object
         {
             BundleAssetBaseLoader baseLoader;
             string assetKey;
-            SCalculateAssetKey(bundleName, assetName, out assetKey);
+            CalculateAssetKey(bundleName, assetName, out assetKey);
             s_NameToLoader.TryGetValue(assetKey, out baseLoader);
             if (baseLoader == null)
             {
@@ -230,12 +230,12 @@ namespace U3dClient.ResourceMgr
             return resIndex;
         }
 
-        public static int SLoadSync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
+        public static int LoadSync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
             where T : Object
         {
             BundleAssetBaseLoader baseLoader;
             string assetKey;
-            SCalculateAssetKey(bundleName, assetName, out assetKey);
+            CalculateAssetKey(bundleName, assetName, out assetKey);
 
             s_NameToLoader.TryGetValue(assetKey, out baseLoader);
             if (baseLoader == null)
@@ -253,18 +253,18 @@ namespace U3dClient.ResourceMgr
             return resIndex;
         }
 
-        public static BundleAssetBaseLoader SGetLoader(int resouceIndex)
+        public static BundleAssetBaseLoader GetLoader(int resouceIndex)
         {
             BundleAssetBaseLoader baseLoader = null;
             s_ResIndexToLoader.TryGetValue(resouceIndex, out baseLoader);
             return baseLoader;
         }
 
-        public static BundleAssetBaseLoader SGetLoader(string bundleName, string assetName)
+        public static BundleAssetBaseLoader GetLoader(string bundleName, string assetName)
         {
             BundleAssetBaseLoader baseLoader = null;
             string assetKey;
-            SCalculateAssetKey(bundleName, assetName, out assetKey);
+            CalculateAssetKey(bundleName, assetName, out assetKey);
             s_NameToLoader.TryGetValue(assetKey, out baseLoader);
             return baseLoader;
         }
@@ -282,7 +282,7 @@ namespace U3dClient.ResourceMgr
         private static void TryUnLoadByName(string bundleName, string assetName)
         {
             string assetKey;
-            SCalculateAssetKey(bundleName, assetName, out assetKey);
+            CalculateAssetKey(bundleName, assetName, out assetKey);
             TryUnLoadByAssetKey(assetKey);
         }
 
