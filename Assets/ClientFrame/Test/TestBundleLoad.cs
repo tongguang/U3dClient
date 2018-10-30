@@ -68,6 +68,6 @@ public class TestBundleLoad : MonoBehaviour
 
     private void Test3()
     {
-        BundleAssetBaseLoader.SUnLoad(refIndex);
+        BundleAssetBaseLoader.UnLoad(refIndex);
     }
 }

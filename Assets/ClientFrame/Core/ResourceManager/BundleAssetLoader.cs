@@ -145,7 +145,7 @@ namespace U3dClient.ResourceMgr
             }
 
             m_LoadedCallbackDict.Clear();
-            STryUnLoadByAssetKey(m_AssetKeyName);
+            TryUnLoadByAssetKey(m_AssetKeyName);
         }
 
         private void InternalUnload(int resourceIndex)
@@ -160,7 +160,7 @@ namespace U3dClient.ResourceMgr
                 m_ResouceIndexSet.Remove(resourceIndex);
             }
 
-            STryUnLoadByAssetKey(m_AssetKeyName);
+            TryUnLoadByAssetKey(m_AssetKeyName);
         }
 
         private bool CanRealUnload()
@@ -269,7 +269,7 @@ namespace U3dClient.ResourceMgr
             return baseLoader;
         }
 
-        public static void SUnLoad(int resouceIndex)
+        public static void UnLoad(int resouceIndex)
         {
             BundleAssetBaseLoader baseLoader;
             s_ResIndexToLoader.TryGetValue(resouceIndex, out baseLoader);
@@ -279,14 +279,14 @@ namespace U3dClient.ResourceMgr
             }
         }
 
-        private static void STryUnLoadByName(string bundleName, string assetName)
+        private static void TryUnLoadByName(string bundleName, string assetName)
         {
             string assetKey;
             SCalculateAssetKey(bundleName, assetName, out assetKey);
-            STryUnLoadByAssetKey(assetKey);
+            TryUnLoadByAssetKey(assetKey);
         }
 
-        private static void STryUnLoadByAssetKey(string assetKey)
+        private static void TryUnLoadByAssetKey(string assetKey)
         {
             BundleAssetBaseLoader baseLoader;
             s_NameToLoader.TryGetValue(assetKey, out baseLoader);
