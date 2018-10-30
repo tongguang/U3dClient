@@ -31,7 +31,7 @@ namespace U3dClient.ResourceMgr
         {
             if (m_BundleIndex != -1)
             {
-                FullBundleBaseLoader.UnLoad(m_BundleIndex);
+                FullBundleLoader.UnLoad(m_BundleIndex);
             }
             ResetData();
         }
@@ -93,8 +93,8 @@ namespace U3dClient.ResourceMgr
             m_ResouceIndexSet.Add(index);
             if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
             {
-                m_BundleIndex = FullBundleBaseLoader.LoadSync(m_BundleName, null);
-                var bundleLoader = FullBundleBaseLoader.GetLoader(m_BundleIndex);
+                m_BundleIndex = FullBundleLoader.LoadSync(m_BundleName, null);
+                var bundleLoader = FullBundleLoader.GetLoader(m_BundleIndex);
                 var bundle = bundleLoader.GetAssetBundle();
                 m_AssetObject = bundle.LoadAsset<Object>(m_AssetName);
 
@@ -121,8 +121,8 @@ namespace U3dClient.ResourceMgr
             }
 
             m_LoadState = LoadState.Loading;
-            m_BundleIndex = FullBundleBaseLoader.LoadAsync(m_BundleName, null);
-            var bundleLoader = FullBundleBaseLoader.GetLoader(m_BundleIndex);
+            m_BundleIndex = FullBundleLoader.LoadAsync(m_BundleName, null);
+            var bundleLoader = FullBundleLoader.GetLoader(m_BundleIndex);
             while (!bundleLoader.IsComplate)
             {
                 yield return null;
