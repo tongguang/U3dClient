@@ -19,16 +19,16 @@ namespace U3dClient.UpdateMgr
         }
 
         private static string s_BundleDotSuffixName = "." + GlobalDefine.s_BundleSuffixName;
-        public static string ResUrl;
+        public static string s_ResUrl;
 
         public static void SetResUrl(string resUrl)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE
-            ResUrl = resUrl + "/Win";
+            s_ResUrl = resUrl + "/Win";
 #elif UNITY_ANDROID
-            ResUrl = resUrl + "/Android";
+            s_ResUrl = resUrl + "/Android";
 #else
-            ResUrl = resUrl + "/Ios";   
+            s_ResUrl = resUrl + "/Ios";   
 #endif
         }
 
@@ -67,7 +67,7 @@ namespace U3dClient.UpdateMgr
 
             var newVersionData = new Dictionary<string, FileData>();
             using (UnityWebRequest www =
-                UnityWebRequest.Get(Path.Combine(ResUrl, versionFileName)))
+                UnityWebRequest.Get(Path.Combine(s_ResUrl, versionFileName)))
             {
                 yield return www.SendWebRequest();
                 if (www.isNetworkError || www.isHttpError)
@@ -129,7 +129,7 @@ namespace U3dClient.UpdateMgr
                 var fileDataStr = addFileData.fileDataStr;
                 var fileSize = addFileData.fileSize;
                 using (UnityWebRequest www =
-                    UnityWebRequest.Get(Path.Combine(ResUrl, filePath)))
+                    UnityWebRequest.Get(Path.Combine(s_ResUrl, filePath)))
                 {
                     Debug.Log(string.Format("开始下载 {0} 大小:{1}", filePath, fileSize));
                     yield return www.SendWebRequest();

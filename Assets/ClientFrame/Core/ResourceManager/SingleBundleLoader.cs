@@ -124,7 +124,7 @@ namespace U3dClient.ResourceMgr
                 m_ResouceIndexSet.Remove(resourceIndex);
             }
 
-            STryUnLoadByName(m_BundleName);
+            TryUnLoadByName(m_BundleName);
         }
 
         private bool CanRealUnload()
@@ -173,7 +173,7 @@ namespace U3dClient.ResourceMgr
             }
 
             m_LoadedCallbackDict.Clear();
-            STryUnLoadByName(m_BundleName);
+            TryUnLoadByName(m_BundleName);
         }
 
         public AssetBundle GetAssetBundle()
@@ -199,7 +199,7 @@ namespace U3dClient.ResourceMgr
         private static readonly Dictionary<int, SingleBundleBaseLoader> s_ResIndexToLoader =
             new Dictionary<int, SingleBundleBaseLoader>();
 
-        public static int SLoadAsync(string bundleName, Action<bool, AssetBundle> loadedAction)
+        public static int LoadAsync(string bundleName, Action<bool, AssetBundle> loadedAction)
         {
             SingleBundleBaseLoader baseLoader;
             s_NameToLoader.TryGetValue(bundleName, out baseLoader);
@@ -216,7 +216,7 @@ namespace U3dClient.ResourceMgr
             return resIndex;
         }
 
-        public static int SLoadSync(string bundleName, Action<bool, AssetBundle> loadedAction)
+        public static int LoadSync(string bundleName, Action<bool, AssetBundle> loadedAction)
         {
             SingleBundleBaseLoader baseLoader;
             s_NameToLoader.TryGetValue(bundleName, out baseLoader);
@@ -233,21 +233,21 @@ namespace U3dClient.ResourceMgr
             return resIndex;
         }
 
-        public static SingleBundleBaseLoader SGetLoader(int resouceIndex)
+        public static SingleBundleBaseLoader GetLoader(int resouceIndex)
         {
             SingleBundleBaseLoader baseLoader = null;
             s_ResIndexToLoader.TryGetValue(resouceIndex, out baseLoader);
             return baseLoader;
         }
 
-        public static SingleBundleBaseLoader SGetLoader(string bundleName)
+        public static SingleBundleBaseLoader GetLoader(string bundleName)
         {
             SingleBundleBaseLoader baseLoader = null;
             s_NameToLoader.TryGetValue(bundleName, out baseLoader);
             return baseLoader;
         }
 
-        public static void SUnLoad(int resouceIndex)
+        public static void UnLoad(int resouceIndex)
         {
             SingleBundleBaseLoader baseLoader;
             s_ResIndexToLoader.TryGetValue(resouceIndex, out baseLoader);
@@ -257,7 +257,7 @@ namespace U3dClient.ResourceMgr
             }
         }
 
-        private static void STryUnLoadByName(string bundleName)
+        private static void TryUnLoadByName(string bundleName)
         {
             SingleBundleBaseLoader baseLoader;
             s_NameToLoader.TryGetValue(bundleName, out baseLoader);

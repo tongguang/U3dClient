@@ -224,20 +224,20 @@ namespace U3dClient.GameTools
         }
 
         //--------------begin 热补丁自动化配置-------------------------
-        static bool SHasGenericParameter(Type type)
+        static bool HasGenericParameter(Type type)
         {
             if (type.IsGenericTypeDefinition) return true;
             if (type.IsGenericParameter) return true;
             if (type.IsByRef || type.IsArray)
             {
-                return SHasGenericParameter(type.GetElementType());
+                return HasGenericParameter(type.GetElementType());
             }
 
             if (type.IsGenericType)
             {
                 foreach (var typeArg in type.GetGenericArguments())
                 {
-                    if (SHasGenericParameter(typeArg))
+                    if (HasGenericParameter(typeArg))
                     {
                         return true;
                     }
@@ -282,7 +282,7 @@ namespace U3dClient.GameTools
                     from field in type.GetFields(flag)
                     select field.FieldType;
                 return (returnTypes.Concat(paramTypes).Concat(fieldTypes))
-                    .Where(t => t.BaseType == typeof(MulticastDelegate) && !SHasGenericParameter(t)).Distinct();
+                    .Where(t => t.BaseType == typeof(MulticastDelegate) && !HasGenericParameter(t)).Distinct();
             }
         }
         //--------------end 热补丁自动化配置-------------------------

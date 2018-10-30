@@ -10,7 +10,7 @@ namespace U3dClient.GameFlowMgr
         public void OnEnter()
         {
             Debug.Log("EnterGameState OnEnter");
-            FullBundleBaseLoader.SInitBundleManifest();
+            ResourceManager.InitResourceManager();
             UpdateManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
             //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }

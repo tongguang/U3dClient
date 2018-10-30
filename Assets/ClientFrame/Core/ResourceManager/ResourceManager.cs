@@ -9,13 +9,14 @@ namespace U3dClient.ResourceMgr
     {
         private static int s_ResourceIndex = 0;
 
-        public static void Awake()
-        {
-        }
-
         public static int GetNewResourceIndex()
         {
             return s_ResourceIndex++;
+        }
+
+        public static void InitResourceManager()
+        {
+            FullBundleBaseLoader.InitBundleManifest();
         }
 
     }
