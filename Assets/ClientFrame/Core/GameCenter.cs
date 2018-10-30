@@ -1,4 +1,6 @@
-﻿using U3dClient.ResourceMgr;
+﻿using U3dClient.FsmMgr;
+using U3dClient.GameFlowMgr;
+using U3dClient.ResourceMgr;
 using U3dClient.UpdateMgr;
 using U3dClient.ScriptMgr;
 
@@ -8,19 +10,17 @@ namespace U3dClient
     {
         public static void Awake()
         {
-            ResourceManager.Awake();
-            UpdateManager.Awake();
-            ScriptManager.Awake();
+            GameFlowManager.Awake();
         }
 
         public static void Start()
         {
-            UpdateManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
-            //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
+            GameFlowManager.Start();
         }
 
         public static void Update()
         {
+            FsmManager.Update();
         }
 
         public static void OnApplicationFocus(bool hasFocus)
@@ -35,11 +35,12 @@ namespace U3dClient
 
         public static void OnDestroy()
         {
-
+            GameFlowManager.OnDestroy();
         }
 
         public static void OnApplicationQuit()
         {
+            GameFlowManager.OnApplicationQuit();
         }
     }
 }

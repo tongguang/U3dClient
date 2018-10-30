@@ -6,40 +6,6 @@ namespace U3dClient.ScriptMgr
 {
     public static class ScriptManager
     {
-
-        public static void Awake()
-        {
-
-        }
-
-        public static void Start()
-        {
-
-        }
-
-        public static void Update()
-        {
-        }
-
-        public static void OnApplicationFocus(bool hasFocus)
-        {
-
-        }
-
-        public static void OnApplicationPause(bool pauseStatus)
-        {
-
-        }
-
-        public static void OnDestroy()
-        {
-
-        }
-
-        public static void OnApplicationQuit()
-        {
-
-        }
     }
 }
 
