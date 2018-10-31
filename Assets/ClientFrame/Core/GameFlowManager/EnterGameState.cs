@@ -1,6 +1,6 @@
 ﻿using U3dClient.FsmMgr;
 using U3dClient.ResourceMgr;
-using U3dClient.UpdateMgr;
+using U3dClient.UpgradeMgr;
 using UnityEngine;
 
 namespace U3dClient.GameFlowMgr
@@ -11,7 +11,7 @@ namespace U3dClient.GameFlowMgr
         {
             Debug.Log("EnterGameState OnEnter");
             ResourceManager.InitResourceManager();
-            UpdateManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
+            UpgradeManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
             //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }
 

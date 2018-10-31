@@ -29,7 +29,7 @@ namespace U3dClient.GameFlowMgr
         {
             if (GameFlowFsm != null)
             {
-                FsmManager.ReleaseFsm(GameFlowFsm.FsmIndex);
+                FsmManager.ReleaseFsm(GameFlowFsm);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using U3dClient.FsmMgr;
 using U3dClient.GameFlowMgr;
 using U3dClient.ResourceMgr;
-using U3dClient.UpdateMgr;
+using U3dClient.UpgradeMgr;
 using U3dClient.ScriptMgr;
 
 namespace U3dClient

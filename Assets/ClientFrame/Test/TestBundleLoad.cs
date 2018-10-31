@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using U3dClient;
 using U3dClient.ResourceMgr;
-using U3dClient.UpdateMgr;
+using U3dClient.UpgradeMgr;
 
 public class TestBundleLoad : MonoBehaviour
 {
@@ -46,7 +46,7 @@ public class TestBundleLoad : MonoBehaviour
 
     private void Test1()
     {
-        UpdateManager.StartUpdate(() => { Debug.Log("下载结束"); },
+        UpgradeManager.StartUpdate(() => { Debug.Log("下载结束"); },
             (updated, total) => { Debug.Log(string.Format("下载进度 {0} {1}", updated, total)); });
     }
 

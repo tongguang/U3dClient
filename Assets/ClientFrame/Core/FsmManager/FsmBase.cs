@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
+using U3dClient.Update;
 
 namespace U3dClient.FsmMgr
 {
-    public class FsmBase
+    public class FsmBase:UpdateItemBase
     {
         private Dictionary<int, IFsmState> m_StateDict;
         private int m_CurStateID;
         private IFsmState m_CurState;
-        public int FsmIndex = -1;
         public bool IsVaild = true;
-        public void Init(int fsmIndex, Dictionary<int, IFsmState> stateDict, int initStateID)
+        public void Init(Dictionary<int, IFsmState> stateDict, int initStateID)
         {
-            FsmIndex = fsmIndex;
             m_StateDict = stateDict;
             ChangeState(initStateID);
         }
@@ -27,7 +26,7 @@ namespace U3dClient.FsmMgr
             IsVaild = false;
         }
 
-        public void Update()
+        public override void Update()
         {
             if (m_CurState!=null)
             {

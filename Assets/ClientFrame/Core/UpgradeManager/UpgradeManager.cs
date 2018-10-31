@@ -6,9 +6,9 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace U3dClient.UpdateMgr
+namespace U3dClient.UpgradeMgr
 {
-    public static class UpdateManager
+    public static class UpgradeManager
     {
         public class FileData
         {
