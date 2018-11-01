@@ -10,12 +10,11 @@ namespace U3dClient
     {
         public static void Awake()
         {
-            GameFlowManager.Awake();
         }
 
         public static void Start()
         {
-            GameFlowManager.Start();
+            GameFlowManager.Init();
         }
 
         public static void Update()
@@ -35,12 +34,11 @@ namespace U3dClient
 
         public static void OnDestroy()
         {
-            GameFlowManager.OnDestroy();
+            GameFlowManager.Release();
         }
 
         public static void OnApplicationQuit()
         {
-            GameFlowManager.OnApplicationQuit();
         }
     }
 }
