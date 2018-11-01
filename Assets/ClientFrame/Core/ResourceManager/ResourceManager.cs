@@ -14,7 +14,7 @@ namespace U3dClient.ResourceMgr
             return s_ResourceIndex++;
         }
 
-        public static void InitResourceManager()
+        public static void Init()
         {
             FullBundleLoader.InitBundleManifest();
         }
