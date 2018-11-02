@@ -8,12 +8,27 @@ namespace U3dClient.ScriptMgr
 {
     public static class ScriptManager
     {
-        public static Dictionary<string, TextAsset> s_LuaFileAssetDict;
+        public class LuaFileBytes
+        {
+            private byte[] m_Utf8Bytes = null;
+
+            public void SetBytes(byte[] utf8Bytes)
+            {
+                m_Utf8Bytes = utf8Bytes;
+            }
+
+            public byte[] GetBytes()
+            {
+                return m_Utf8Bytes;
+            }
+        }
+
+        public static Dictionary<string, LuaFileBytes> s_LuaFileBytesDict;
         public static MainLuaRunner SMainMainLuaRunner;
 
-        public static void SetLuaFileAssetDict(Dictionary<string, TextAsset> luaFileAssetDict)
+        public static void SetLuaFileBytesDict(Dictionary<string, LuaFileBytes> luaFileBytesDict)
         {
-            s_LuaFileAssetDict = luaFileAssetDict;
+            s_LuaFileBytesDict = luaFileBytesDict;
         }
 
         public static void InitMainLuaRunner()
@@ -21,12 +36,11 @@ namespace U3dClient.ScriptMgr
             SMainMainLuaRunner = new MainLuaRunner();
             SMainMainLuaRunner.Init((ref string filename) =>
             {
-                TextAsset textAsset;
-                s_LuaFileAssetDict.TryGetValue(filename, out textAsset);
-                if (textAsset)
+                LuaFileBytes fileBytes;
+                s_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
+                if (fileBytes!=null)
                 {
-                    Debug.Log(textAsset.text);
-                    return Encoding.UTF8.GetBytes(textAsset.text);
+                    return fileBytes.GetBytes();
                 }
                 return null;
             });

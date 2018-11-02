@@ -1,4 +1,6 @@
-﻿using U3dClient.Component;
+﻿using System.Collections.Generic;
+using System.Text;
+using U3dClient.Component;
 using U3dClient.FsmMgr;
 using U3dClient.ResourceMgr;
 using U3dClient.ScriptMgr;
@@ -10,6 +12,7 @@ namespace U3dClient.GameFlowMgr
     public class EnterGameState:IFsmState
     {
         private int m_Step;
+        private int m_LuaFileResIndex = -1;
         public void OnEnter()
         {
             Debug.Log("EnterGameState OnEnter");
@@ -24,11 +27,18 @@ namespace U3dClient.GameFlowMgr
             if (m_Step == 1)
             {
                 m_Step = 2;
-                BundleAssetLoader.LoadAsync<LuaFileRef>(GlobalDefine.s_ScriptAssetBundleName + "." + GlobalDefine.s_BundleSuffixName,
+                m_LuaFileResIndex = BundleAssetLoader.LoadAsync<LuaFileRef>(GlobalDefine.s_ScriptAssetBundleName + "." + GlobalDefine.s_BundleSuffixName,
                     GlobalDefine.s_ScriptFileDescName, (b, fileRef) =>
                     {
                         m_Step = 3;
-                        ScriptManager.SetLuaFileAssetDict(fileRef.AssetsRefDict);
+                        Dictionary<string, ScriptManager.LuaFileBytes> fileBytesDict = new Dictionary<string, ScriptManager.LuaFileBytes>();
+                        foreach (var asset in fileRef.AssetsRefDict)
+                        {
+                            ScriptManager.LuaFileBytes fileBytes = new ScriptManager.LuaFileBytes();
+                            fileBytes.SetBytes(Encoding.UTF8.GetBytes(asset.Value.text));
+                            fileBytesDict.Add(asset.Key, fileBytes);
+                        }
+                        ScriptManager.SetLuaFileBytesDict(fileBytesDict);
                     }
                 );
             }
@@ -37,6 +47,10 @@ namespace U3dClient.GameFlowMgr
             }
             else if (m_Step == 3)
             {
+                if (m_LuaFileResIndex != -1)
+                {
+                    BundleAssetLoader.UnLoad(m_LuaFileResIndex);
+                }
                 GameFlowManager.GameFlowFsm.ChangeState((int) GameFlowManager.GameFlowState.LuaLoop);
                 return;
             }

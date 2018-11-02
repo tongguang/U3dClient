@@ -2,34 +2,34 @@
 using XLua;
 namespace U3dClient.ScriptMgr
 {
-
-    public class MainLuaLoopMap
-    {
-        public Action Init;
-        public Action Update;
-        public Action Release;
-    }
-
     public class MainLuaRunner
     {
+        [CSharpCallLua]
+        public interface ICallLuaLoopMap
+        {
+            void Init();
+            void Update();
+            void Release();
+        }
+
         private LuaEnv m_LuaEnv = null;
-        private MainLuaLoopMap m_MainLuaLoopMap;
+        private ICallLuaLoopMap m_CallLuaLoopMap;
 
         public void Init(LuaEnv.CustomLoader loader)
         {
             m_LuaEnv = new LuaEnv();
             m_LuaEnv.AddLoader(loader);
             m_LuaEnv.DoString("require('main')");
-            m_MainLuaLoopMap = m_LuaEnv.Global.Get<MainLuaLoopMap>("MainLoop");
-            m_MainLuaLoopMap.Init();
+            m_CallLuaLoopMap = m_LuaEnv.Global.Get<ICallLuaLoopMap>("MainLoop");
+            m_CallLuaLoopMap.Init();
         }
 
         public void Release()
         {
             if (m_LuaEnv != null)
             {
-                m_MainLuaLoopMap.Release();
-                m_MainLuaLoopMap = null;
+                m_CallLuaLoopMap.Release();
+                m_CallLuaLoopMap = null;
                 m_LuaEnv.Dispose();
                 m_LuaEnv = null;
             }
@@ -39,7 +39,7 @@ namespace U3dClient.ScriptMgr
         {
             if (m_LuaEnv != null)
             {
-                m_MainLuaLoopMap.Update();
+                m_CallLuaLoopMap.Update();
                 m_LuaEnv.Tick();
             }
         }
