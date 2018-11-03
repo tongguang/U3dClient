@@ -15,7 +15,7 @@ using System.Linq;
 namespace U3dClient.GameTools
 {
 //配置的详细介绍请看Doc下《XLua的配置.doc》
-    public static class ExportConfig
+    public static class XLuaExportConfig
     {
 
 //    [MenuItem("Test/Test1")]
