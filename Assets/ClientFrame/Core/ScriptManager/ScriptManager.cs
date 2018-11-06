@@ -24,7 +24,7 @@ namespace U3dClient.ScriptMgr
         }
 
         public static Dictionary<string, LuaFileBytes> s_LuaFileBytesDict;
-        public static MainLuaRunner SMainMainLuaRunner;
+        public static MainLuaRunner s_MainMainLuaRunner;
 
         public static void SetLuaFileBytesDict(Dictionary<string, LuaFileBytes> luaFileBytesDict)
         {
@@ -33,8 +33,8 @@ namespace U3dClient.ScriptMgr
 
         public static void InitMainLuaRunner()
         {
-            SMainMainLuaRunner = new MainLuaRunner();
-            SMainMainLuaRunner.Init((ref string filename) =>
+            s_MainMainLuaRunner = new MainLuaRunner();
+            s_MainMainLuaRunner.Init((ref string filename) =>
             {
                 LuaFileBytes fileBytes;
                 s_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
@@ -48,18 +48,18 @@ namespace U3dClient.ScriptMgr
 
         public static void ReleaseMainLuaRunner()
         {
-            if (SMainMainLuaRunner != null)
+            if (s_MainMainLuaRunner != null)
             {
-                SMainMainLuaRunner.Release();
-                SMainMainLuaRunner = null;
+                s_MainMainLuaRunner.Release();
+                s_MainMainLuaRunner = null;
             }
         }
 
         public static void UpdateMainLuaRunner()
         {
-            if (SMainMainLuaRunner != null)
+            if (s_MainMainLuaRunner != null)
             {
-                SMainMainLuaRunner.Update();
+                s_MainMainLuaRunner.Update();
             }
         }
     }

@@ -10,7 +10,7 @@ namespace U3dClient.UpgradeMgr
 {
     public static class UpgradeManager
     {
-        public class FileData
+        public struct FileData
         {
             public string filePath;
             public int fileSize;
@@ -56,8 +56,9 @@ namespace U3dClient.UpgradeMgr
                     var datas = www.downloadHandler.text.Split('\n');
                     foreach (var data in datas)
                     {
-                        var fileData = GetFileData(data);
-                        if (fileData != null)
+                        FileData fileData = new FileData();
+                        GetFileData(data, ref fileData);
+                        if (fileData.filePath != null)
                         {
                             baseVersionDatas.Add(fileData.filePath, fileData);
                         }
@@ -79,8 +80,9 @@ namespace U3dClient.UpgradeMgr
                     var datas = www.downloadHandler.text.Split('\n');
                     foreach (var data in datas)
                     {
-                        var fileData = GetFileData(data);
-                        if (fileData != null)
+                        FileData fileData = new FileData();
+                        GetFileData(data, ref fileData);
+                        if (fileData.filePath != null)
                         {
                             newVersionData.Add(fileData.filePath, fileData);
                         }
@@ -96,17 +98,17 @@ namespace U3dClient.UpgradeMgr
 
                 var oldFileInfoPath = Path.Combine(FileTool.s_PersistentDataPath,
                     newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
-                FileData oldFileData = null;
+                FileData oldFileData = new FileData {filePath = null};
                 if (File.Exists(oldFileInfoPath))
                 {
-                    oldFileData = GetFileData(File.ReadAllText(oldFileInfoPath));
+                    GetFileData(File.ReadAllText(oldFileInfoPath), ref oldFileData);
                 }
                 else if (baseVersionDatas.ContainsKey(newFileData.filePath))
                 {
                     oldFileData = baseVersionDatas[newFileData.filePath];
                 }
 
-                if (oldFileData != null)
+                if (oldFileData.filePath != null)
                 {
                     if (newFileData.fileMD5 != oldFileData.fileMD5)
                     {
@@ -162,22 +164,20 @@ namespace U3dClient.UpgradeMgr
             }
         }
 
-        private static FileData GetFileData(string fileDataStr)
+        private static void GetFileData(string fileDataStr, ref FileData fileData)
         {
             var fileDatas = fileDataStr.Split(' ');
             if (fileDatas.Length >= 3)
             {
-                var fileData = new FileData
-                {
-                    filePath = fileDatas[0],
-                    fileSize = int.Parse(fileDatas[1]),
-                    fileMD5 = fileDatas[2],
-                    fileDataStr = fileDataStr
-                };
-                return fileData;
+                fileData.filePath = fileDatas[0];
+                fileData.fileSize = int.Parse(fileDatas[1]);
+                fileData.fileMD5 = fileDatas[2];
+                fileData.fileDataStr = fileDataStr;
             }
-
-            return null;
+            else
+            {
+                fileData.filePath = null;
+            }
         }
     }
 }
