@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace U3dClient.ResourceMgr
+namespace U3dClient.Resource
 {
     public enum LoadState
     {

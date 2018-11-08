@@ -7,7 +7,7 @@ using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace U3dClient.ResourceMgr
+namespace U3dClient.Resource
 {
     public class BundleAssetLoader : BaseLoader
     {

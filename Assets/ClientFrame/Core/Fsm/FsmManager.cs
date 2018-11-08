@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using U3dClient.Update;
 
-namespace U3dClient.FsmMgr
+namespace U3dClient.Fsm
 {
     public static class FsmManager
     {

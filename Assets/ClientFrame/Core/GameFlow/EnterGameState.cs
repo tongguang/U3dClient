@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using U3dClient.Component;
-using U3dClient.FsmMgr;
-using U3dClient.ResourceMgr;
-using U3dClient.ScriptMgr;
-using U3dClient.UpgradeMgr;
+using U3dClient.Fsm;
+using U3dClient.Resource;
+using U3dClient.Script;
+using U3dClient.Upgrade;
 using UnityEngine;
 
-namespace U3dClient.GameFlowMgr
+namespace U3dClient.GameFlow
 {
     public class EnterGameState:IFsmState
     {

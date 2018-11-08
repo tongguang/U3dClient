@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using XLua;
 
-namespace U3dClient.ScriptMgr
+namespace U3dClient.Script
 {
     public static class ScriptManager
     {
