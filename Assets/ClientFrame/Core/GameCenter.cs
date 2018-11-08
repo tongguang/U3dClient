@@ -10,11 +10,11 @@ namespace U3dClient
     {
         public static void Awake()
         {
+            GameFlowManager.Init();
         }
 
         public static void Start()
         {
-            GameFlowManager.Init();
         }
 
         public static void Update()
