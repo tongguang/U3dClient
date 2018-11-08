@@ -8,7 +8,6 @@ namespace U3dClient.Fsm
         private Dictionary<int, IFsmState> m_StateDict;
         private int m_CurStateID;
         private IFsmState m_CurState;
-        public bool IsVaild = true;
         public void Init(Dictionary<int, IFsmState> stateDict, int initStateID)
         {
             m_StateDict = stateDict;
@@ -23,7 +22,6 @@ namespace U3dClient.Fsm
             }
 
             m_CurState = null;
-            IsVaild = false;
         }
 
         public override void Update()

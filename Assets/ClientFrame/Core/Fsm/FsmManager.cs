@@ -9,15 +9,14 @@ namespace U3dClient.Fsm
 
         public static T CreateFsm<T>(Dictionary<int, IFsmState> stateDict, int initStateID) where T:FsmBase, new()
         {
-            T fsm = new T();
-            s_FsmUpdater.AddUpdate(fsm);
+            var fsm = s_FsmUpdater.CreateItem<T>();
             fsm.Init(stateDict, initStateID);
             return fsm;
         }
 
         public static void ReleaseFsm(FsmBase fsm)
         {
-            s_FsmUpdater.RemoveUpdate(fsm);
+            s_FsmUpdater.ReleaseItem(fsm);
             fsm.Release();
         }
 

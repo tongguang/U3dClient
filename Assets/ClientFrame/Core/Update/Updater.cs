@@ -6,8 +6,7 @@ namespace U3dClient.Update
     {
         private bool m_IsUpdate = false;
         private Dictionary<int, UpdateItemBase> m_UpdateDict = new Dictionary<int, UpdateItemBase>();
-        private Dictionary<int, UpdateItemBase> m_DelayAddUpdateDict = new Dictionary<int, UpdateItemBase>();
-        private Dictionary<int, UpdateItemBase> m_DelayRemoveUpdateDict = new Dictionary<int, UpdateItemBase>();
+        private List<UpdateItemBase> m_TempUpdateList = new List<UpdateItemBase>();
 
         private int m_UpdateIndex = 0;
 
@@ -17,47 +16,29 @@ namespace U3dClient.Update
             return m_UpdateIndex++;
         }
 
-        public void AddUpdate(UpdateItemBase updateItem) 
+        public T CreateItem<T>() where T: UpdateItemBase, new()
         {
             var newIndex = GetNewUpdateIndex();
-            if (m_IsUpdate)
-            {
-                m_DelayAddUpdateDict.Add(newIndex, updateItem);
-            }
-            else
-            {
-                m_UpdateDict.Add(newIndex, updateItem);
-            }
-
+            var updateItem = new T();
+            m_UpdateDict.Add(newIndex, updateItem);
             updateItem.UpdateIndex = newIndex;
+            updateItem.IsValid = true;
+            return updateItem;
         }
 
-        public void RemoveUpdate(UpdateItemBase updateItem)
+        public void ReleaseItem(UpdateItemBase updateItem)
         {
-            RemoveUpdate(updateItem.UpdateIndex);
+            ReleaseItem(updateItem.UpdateIndex);
         }
 
-        public void RemoveUpdate(int updateIndex)
+        public void ReleaseItem(int updateIndex)
         {
             UpdateItemBase updateItem;
             m_UpdateDict.TryGetValue(updateIndex, out updateItem);
             if (updateItem != null)
             {
-                if (m_IsUpdate)
-                {
-                    m_DelayRemoveUpdateDict.Add(updateIndex, updateItem);
-                }
-                else
-                {
-                    m_DelayRemoveUpdateDict.Remove(updateIndex);
-                }
-
-                return;
-            }
-            m_DelayAddUpdateDict.TryGetValue(updateIndex, out updateItem);
-            if (updateItem != null)
-            {
-                m_DelayAddUpdateDict.Remove(updateIndex);
+                m_UpdateDict.Remove(updateIndex);
+                updateItem.IsValid = false;
             }
         }
 
@@ -65,45 +46,24 @@ namespace U3dClient.Update
         {
             UpdateItemBase updateItem;
             m_UpdateDict.TryGetValue(updateIndex, out updateItem);
-            if (updateItem != null)
-            {
-                return updateItem;
-            }
-            m_DelayAddUpdateDict.TryGetValue(updateIndex, out updateItem);
             return updateItem;
         }
 
         public void Update()
         {
-            m_IsUpdate = true;
-
-            foreach (var update in m_UpdateDict)
+            m_TempUpdateList.Clear();
+            foreach (var updateItemBase in m_UpdateDict)
             {
-                if (!m_DelayRemoveUpdateDict.ContainsKey(update.Key))
-                {
-                    update.Value.Update();
-                }
+                m_TempUpdateList.Add(updateItemBase.Value);
             }
 
-            if (m_DelayAddUpdateDict.Count > 0)
+            foreach (var updateItemBase in m_TempUpdateList)
             {
-                foreach (var update in m_DelayAddUpdateDict)
+                if (updateItemBase.IsValid)
                 {
-                    m_UpdateDict.Add(update.Key, update.Value);
+                    updateItemBase.Update();
                 }
-                m_DelayAddUpdateDict.Clear();
             }
-
-            if (m_DelayRemoveUpdateDict.Count > 0)
-            {
-                foreach (var update in m_DelayRemoveUpdateDict)
-                {
-                    m_UpdateDict.Remove(update.Key);
-                }
-                m_DelayRemoveUpdateDict.Clear();
-            }
-
-            m_IsUpdate = false;
         }
     }
 }
