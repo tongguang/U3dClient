@@ -12,7 +12,7 @@ namespace U3dClient.GameTools
     {
         public static string s_AbsProjectPath = CommonHelper.NormalPath(System.Environment.CurrentDirectory);
         public static string s_RelativeNormalResRawPath = CommonHelper.CombinePath("Assets", "Resource");
-        public static string s_RelativeTempAssetBundlesPath = CommonHelper.CombinePath("GameTemp", GlobalDefine.s_AssetBundlesName);
+        public static string s_RelativeTempAssetBundlesPath = CommonHelper.CombinePath("GameTemp", CommonDefine.s_AssetBundlesName);
         
 #if UNITY_STANDALONE
         public static string s_RelativeReleaseAssetBundlesPath = "GameRelease/AssetBundles/Win";
@@ -21,13 +21,13 @@ namespace U3dClient.GameTools
 #else
         public static string s_RelativeReleaseAssetBundlesPath = "GameRelease/AssetBundles/Ios";
 #endif
-        public static string s_AssetBundlesName = GlobalDefine.s_AssetBundlesName;
-        public static string s_VersionFileName = GlobalDefine.s_VersionFileName;
+        public static string s_AssetBundlesName = CommonDefine.s_AssetBundlesName;
+        public static string s_VersionFileName = CommonDefine.s_VersionFileName;
 
 
         public static string s_RelativeScriptResRawPath = CommonHelper.CombinePath("Assets", "Script");
         public static string s_RelativeScriptResTempPackPath = CommonHelper.CombinePath("Assets", "TempPackScript");
-        public static string s_ScriptAssetBundleName = GlobalDefine.s_ScriptAssetBundleName;
+        public static string s_ScriptAssetBundleName = CommonDefine.s_ScriptAssetBundleName;
 
         private static void GenerateNormalResAssetBundleName()
         {
@@ -48,7 +48,7 @@ namespace U3dClient.GameTools
                     var asset = AssetImporter.GetAtPath(assetPath);
                     if (asset)
                     {
-                        asset.SetAssetBundleNameAndVariant(abName, GlobalDefine.s_BundleSuffixName);
+                        asset.SetAssetBundleNameAndVariant(abName, CommonDefine.s_BundleSuffixName);
                     }
                 }
             }
@@ -82,7 +82,7 @@ namespace U3dClient.GameTools
             stringBuilder.Append(GetVersionInfoStr(Path.Combine(s_RelativeTempAssetBundlesPath, s_AssetBundlesName)));
             stringBuilder.Append("\n");
             var filePaths = Directory.GetFiles(s_RelativeTempAssetBundlesPath,
-                "*." + GlobalDefine.s_BundleSuffixName, SearchOption.AllDirectories);
+                "*." + CommonDefine.s_BundleSuffixName, SearchOption.AllDirectories);
             foreach (var filePath in filePaths)
             {
                 stringBuilder.Append(GetVersionInfoStr(filePath));
@@ -141,7 +141,7 @@ namespace U3dClient.GameTools
                     var asset = AssetImporter.GetAtPath(assetPath);
                     if (asset)
                     {
-                        asset.SetAssetBundleNameAndVariant(abName, GlobalDefine.s_BundleSuffixName);
+                        asset.SetAssetBundleNameAndVariant(abName, CommonDefine.s_BundleSuffixName);
                         var fileName = Path.GetFileNameWithoutExtension(assetPath);
                         fileRefDict[fileName] = AssetDatabase.LoadAssetAtPath<TextAsset>(assetPath);
                     }
@@ -149,10 +149,10 @@ namespace U3dClient.GameTools
             }
 
             fileDesc.AssetsRefDict = fileRefDict;
-            var fileDescPath = CommonHelper.CombinePath(s_RelativeScriptResTempPackPath, GlobalDefine.s_ScriptFileDescName + ".asset");
+            var fileDescPath = CommonHelper.CombinePath(s_RelativeScriptResTempPackPath, CommonDefine.s_ScriptFileDescName + ".asset");
             AssetDatabase.CreateAsset(fileDesc, fileDescPath);
             var fileDescAsset = AssetImporter.GetAtPath(fileDescPath);
-            fileDescAsset.SetAssetBundleNameAndVariant(abName, GlobalDefine.s_BundleSuffixName);
+            fileDescAsset.SetAssetBundleNameAndVariant(abName, CommonDefine.s_BundleSuffixName);
 
             AssetDatabase.Refresh();
         }

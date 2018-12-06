@@ -18,7 +18,7 @@ namespace U3dClient.Frame
             public string fileDataStr;
         }
 
-        private static string s_BundleDotSuffixName = "." + GlobalDefine.s_BundleSuffixName;
+        private static string s_BundleDotSuffixName = "." + CommonDefine.s_BundleSuffixName;
         public static string s_ResUrl;
 
         public static void SetResUrl(string resUrl)
@@ -39,8 +39,8 @@ namespace U3dClient.Frame
 
         private static IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
         {
-            var resInfoFileExten = GlobalDefine.s_ResInfoFileExtension;
-            var versionFileName = GlobalDefine.s_VersionFileName;
+            var resInfoFileExten = CommonDefine.s_ResInfoFileExtension;
+            var versionFileName = CommonDefine.s_VersionFileName;
 
             var baseVersionDatas = new Dictionary<string, FileData>();
             using (UnityWebRequest www =

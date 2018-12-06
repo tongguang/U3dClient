@@ -23,8 +23,8 @@ namespace U3dClient.Game
             if (m_Step == 1)
             {
                 m_Step = 2;
-                m_LuaFileResIndex = BundleAssetLoader.LoadAsync<LuaFileRef>(GlobalDefine.s_ScriptAssetBundleName + "." + GlobalDefine.s_BundleSuffixName,
-                    GlobalDefine.s_ScriptFileDescName, (b, fileRef) =>
+                m_LuaFileResIndex = BundleAssetLoader.LoadAsync<LuaFileRef>(CommonDefine.s_ScriptAssetBundleName + "." + CommonDefine.s_BundleSuffixName,
+                    CommonDefine.s_ScriptFileDescName, (b, fileRef) =>
                     {
                         m_Step = 3;
                         Dictionary<string, ScriptManager.LuaFileBytes> fileBytesDict = new Dictionary<string, ScriptManager.LuaFileBytes>();

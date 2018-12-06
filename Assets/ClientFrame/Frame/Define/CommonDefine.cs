@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace U3dClient.Frame
 {
-    public static class GlobalDefine
+    public static class CommonDefine
     {
         public static string s_BundleSuffixName = "ab";
         public static string s_AssetBundlesName = "AssetBundles";

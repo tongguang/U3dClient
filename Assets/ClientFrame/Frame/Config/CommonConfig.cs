@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace U3dClient.Frame
 {
-    public static class GlobalConfig
+    public static class CommonConfig
     {
     }
 } 
