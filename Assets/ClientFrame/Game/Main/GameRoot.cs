@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace U3dClient
+namespace U3dClient.Game
 {
     public class GameRoot : MonoBehaviour
     {

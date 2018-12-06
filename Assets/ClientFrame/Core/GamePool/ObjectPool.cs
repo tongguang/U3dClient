@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace U3dClient.GamePool
+namespace U3dClient.Frame
 {
     internal class ObjectPool<T> where T : new()
     {

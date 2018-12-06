@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace U3dClient
+namespace U3dClient.Frame
 {
     public static class FileTool
     {

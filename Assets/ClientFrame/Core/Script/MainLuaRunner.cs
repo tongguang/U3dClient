@@ -1,6 +1,6 @@
 ﻿using System;
 using XLua;
-namespace U3dClient.Script
+namespace U3dClient.Frame
 {
     public class MainLuaRunner
     {

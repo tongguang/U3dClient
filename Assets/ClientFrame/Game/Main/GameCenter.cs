@@ -1,10 +1,6 @@
-﻿using U3dClient.Fsm;
-using U3dClient.GameFlow;
-using U3dClient.Resource;
-using U3dClient.Upgrade;
-using U3dClient.Script;
+﻿using U3dClient.Frame;
 
-namespace U3dClient
+namespace U3dClient.Game
 {
     public static class GameCenter
     {

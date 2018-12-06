@@ -6,7 +6,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace U3dClient.Upgrade
+namespace U3dClient.Frame
 {
     public static class UpgradeManager
     {

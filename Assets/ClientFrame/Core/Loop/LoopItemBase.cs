@@ -1,6 +1,6 @@
-﻿namespace U3dClient.Update
+﻿namespace U3dClient.Frame
 {
-    public class UpdateItemBase
+    public class LoopItemBase
     {
         public int UpdateIndex = -1;
         public bool IsValid = false;

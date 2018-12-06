@@ -1,4 +1,4 @@
-﻿namespace U3dClient.Fsm
+﻿namespace U3dClient.Frame
 {
     public interface IFsmState
     {

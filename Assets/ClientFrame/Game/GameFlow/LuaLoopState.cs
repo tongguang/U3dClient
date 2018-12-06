@@ -1,11 +1,7 @@
-﻿using U3dClient.Component;
-using U3dClient.Fsm;
-using U3dClient.Resource;
-using U3dClient.Script;
-using U3dClient.Upgrade;
+﻿using U3dClient.Frame;
 using UnityEngine;
 
-namespace U3dClient.GameFlow
+namespace U3dClient.Game
 {
     public class LuaLoopState : IFsmState
     {

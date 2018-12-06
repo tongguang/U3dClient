@@ -2,12 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using U3dClient.GamePool;
 using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace U3dClient.Resource
+namespace U3dClient.Frame
 {
     public class BundleAssetLoader : BaseLoader
     {

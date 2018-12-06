@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace U3dClient.GamePool
+namespace U3dClient.Frame
 {
     internal static class DictionaryPool<T1, T2>
     {

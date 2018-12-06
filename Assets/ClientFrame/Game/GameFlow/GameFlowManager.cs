@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using U3dClient.Fsm;
+using U3dClient.Frame;
 
-namespace U3dClient.GameFlow
+namespace U3dClient.Game
 {
     public static class GameFlowManager
     {

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using U3dClient.GamePool;
 using UnityEngine;
 using UniRx;
 
-namespace U3dClient.Resource
+namespace U3dClient.Frame
 {
     public class FullBundleLoader : BaseLoader
     {

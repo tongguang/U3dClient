@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using U3dClient;
-using U3dClient.Resource;
-using U3dClient.Upgrade;
+using U3dClient.Frame;
 
 public class TestBundleLoad : MonoBehaviour
 {

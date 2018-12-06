@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace U3dClient.Resource
+namespace U3dClient.Frame
 {
     public static class ResourceManager
     {

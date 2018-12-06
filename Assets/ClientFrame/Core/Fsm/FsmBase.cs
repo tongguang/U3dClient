@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using U3dClient.Update;
 
-namespace U3dClient.Fsm
+namespace U3dClient.Frame
 {
-    public class FsmBase:UpdateItemBase
+    public class FsmBase:LoopItemBase
     {
         private Dictionary<int, IFsmState> m_StateDict;
         private int m_CurStateID;

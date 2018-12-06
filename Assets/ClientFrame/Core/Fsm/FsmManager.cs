@@ -1,28 +1,27 @@
 ﻿using System.Collections.Generic;
-using U3dClient.Update;
 
-namespace U3dClient.Fsm
+namespace U3dClient.Frame
 {
     public static class FsmManager
     {
-        private static Updater s_FsmUpdater = new Updater();
+        private static Looper _sFsmLooper = new Looper();
 
         public static T CreateFsm<T>(Dictionary<int, IFsmState> stateDict, int initStateID) where T:FsmBase, new()
         {
-            var fsm = s_FsmUpdater.CreateItem<T>();
+            var fsm = _sFsmLooper.CreateItem<T>();
             fsm.Init(stateDict, initStateID);
             return fsm;
         }
 
         public static void ReleaseFsm(FsmBase fsm)
         {
-            s_FsmUpdater.ReleaseItem(fsm);
+            _sFsmLooper.ReleaseItem(fsm);
             fsm.Release();
         }
 
         public static void Update()
         {
-            s_FsmUpdater.Update();
+            _sFsmLooper.Update();
         }
     }
 }

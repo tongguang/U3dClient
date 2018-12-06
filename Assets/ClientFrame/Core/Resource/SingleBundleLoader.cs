@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using U3dClient.GamePool;
 using UniRx;
 
-namespace U3dClient.Resource
+namespace U3dClient.Frame
 {
     public class SingleBundleLoader : BaseLoader
     {
