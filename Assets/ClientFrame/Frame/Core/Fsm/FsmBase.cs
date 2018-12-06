@@ -2,8 +2,9 @@
 
 namespace U3dClient.Frame
 {
-    public class FsmBase:LoopItemBase
+    public class FsmBase
     {
+        public int LoopIndex = -1;
         private Dictionary<int, IFsmState> m_StateDict;
         private int m_CurStateID;
         private IFsmState m_CurState;
@@ -23,7 +24,7 @@ namespace U3dClient.Frame
             m_CurState = null;
         }
 
-        public override void Update()
+        public void Update()
         {
             if (m_CurState!=null)
             {

@@ -13,14 +13,15 @@ namespace U3dClient.Frame
 
         public T CreateFsm<T>(Dictionary<int, IFsmState> stateDict, int initStateID) where T:FsmBase, new()
         {
-            var fsm = m_FsmLooper.CreateItem<T>();
+            var fsm = new T();
             fsm.Init(stateDict, initStateID);
+            fsm.LoopIndex = m_FsmLooper.AddLoopAction(fsm.Update);
             return fsm;
         }
 
         public void ReleaseFsm(FsmBase fsm)
         {
-            m_FsmLooper.ReleaseItem(fsm);
+            m_FsmLooper.RemoveLoopAction(fsm.LoopIndex);
             fsm.Release();
         }
 
