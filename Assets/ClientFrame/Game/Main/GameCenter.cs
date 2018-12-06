@@ -4,18 +4,24 @@ namespace U3dClient.Game
 {
     public static class GameCenter
     {
+        public static GameFlowManager s_GameFlowManager;
+        public static FsmManager s_FsmManager;
+
         public static void Awake()
         {
-            GameFlowManager.Init();
+            s_FsmManager = new FsmManager();
+            s_GameFlowManager = new GameFlowManager();
         }
 
         public static void Start()
         {
+            s_FsmManager.Init();
+            s_GameFlowManager.Init();
         }
 
         public static void Update()
         {
-            FsmManager.Update();
+            s_FsmManager.Update();
         }
 
         public static void OnApplicationFocus(bool hasFocus)
@@ -30,7 +36,7 @@ namespace U3dClient.Game
 
         public static void OnDestroy()
         {
-            GameFlowManager.Release();
+            s_GameFlowManager.Release();
         }
 
         public static void OnApplicationQuit()
