@@ -4,7 +4,7 @@ namespace U3dClient.Frame
 {
     public class FsmManager
     {
-        private  Looper m_FsmLooper = new Looper();
+        private  LoopContain m_FsmLoopContain = new LoopContain();
 
         public void Init()
         {
@@ -20,19 +20,19 @@ namespace U3dClient.Frame
         {
             var fsm = new T();
             fsm.Init(stateDict, initStateID);
-            fsm.LoopIndex = m_FsmLooper.AddLoopAction(fsm.Update);
+            fsm.LoopIndex = m_FsmLoopContain.AddLoopAction(fsm.Update);
             return fsm;
         }
 
         public void ReleaseFsm(FsmBase fsm)
         {
-            m_FsmLooper.RemoveLoopAction(fsm.LoopIndex);
+            m_FsmLoopContain.RemoveLoopAction(fsm.LoopIndex);
             fsm.Release();
         }
 
         public void Update()
         {
-            m_FsmLooper.Update();
+            m_FsmLoopContain.Update();
         }
     }
 }

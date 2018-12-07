@@ -406,6 +406,7 @@ PlayerSettings:
   switchAllowsVideoCapturing: 1
   switchAllowsRuntimeAddOnContentInstall: 0
   switchDataLossConfirmation: 0
+  switchUserAccountLockEnabled: 0
   switchSupportedNpadStyles: 3
   switchSocketConfigEnabled: 0
   switchTcpInitialSendBufferSize: 32
@@ -554,7 +555,7 @@ PlayerSettings:
   scriptingBackend: {}
   incrementalIl2cppBuild: {}
   additionalIl2CppArgs: 
-  scriptingRuntimeVersion: 0
+  scriptingRuntimeVersion: 1
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
@@ -625,6 +626,7 @@ PlayerSettings:
   XboxOneSplashScreen: {fileID: 0}
   XboxOneAllowedProductIds: []
   XboxOnePersistentLocalStorageSize: 0
+  XboxOneXTitleMemory: 8
   xboxOneScriptCompiler: 0
   vrEditorSettings:
     daydream:
