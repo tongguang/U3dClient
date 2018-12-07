@@ -5,8 +5,9 @@ using UnityEngine;
 
 namespace U3dClient.Frame
 {
-    public static class ResourceManager
+    public class ResourceManager
     {
+        private bool m_IsInit = false;
         private static int s_ResourceIndex = 0;
 
         public static int GetNewResourceIndex()
@@ -14,7 +15,17 @@ namespace U3dClient.Frame
             return s_ResourceIndex++;
         }
 
-        public static void Init()
+        public void Init()
+        {
+            m_IsInit = true;
+        }
+
+        public void Release()
+        {
+
+        }
+
+        public void InitBundleManifest()
         {
             FullBundleLoader.InitBundleManifest();
         }

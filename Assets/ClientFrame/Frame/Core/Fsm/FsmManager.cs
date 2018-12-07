@@ -11,6 +11,11 @@ namespace U3dClient.Frame
 
         }
 
+        public void Release()
+        {
+
+        }
+
         public T CreateFsm<T>(Dictionary<int, IFsmState> stateDict, int initStateID) where T:FsmBase, new()
         {
             var fsm = new T();

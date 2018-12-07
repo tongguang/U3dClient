@@ -13,8 +13,8 @@ namespace U3dClient.Game
         {
             Debug.Log("EnterGameState OnEnter");
             m_Step = 1;
-            ResourceManager.Init();
-            UpgradeManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
+            GameCenter.s_ResourceManager.InitBundleManifest();
+            GameCenter.s_UpgradeManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
             //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }
 

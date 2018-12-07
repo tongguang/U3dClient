@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace U3dClient.Frame
 {
-    public static class UpgradeManager
+    public class UpgradeManager
     {
         public struct FileData
         {
@@ -18,10 +18,20 @@ namespace U3dClient.Frame
             public string fileDataStr;
         }
 
-        private static string s_BundleDotSuffixName = "." + CommonDefine.s_BundleSuffixName;
-        public static string s_ResUrl;
+        private string s_BundleDotSuffixName = "." + CommonDefine.s_BundleSuffixName;
+        public string s_ResUrl;
 
-        public static void SetResUrl(string resUrl)
+        public void Init()
+        {
+
+        }
+
+        public void Release()
+        {
+
+        }
+
+        public void SetResUrl(string resUrl)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE
             s_ResUrl = resUrl + "/Win";
@@ -32,12 +42,12 @@ namespace U3dClient.Frame
 #endif
         }
 
-        public static void StartUpdate(Action endAction, Action<long, long> progressAction)
+        public void StartUpdate(Action endAction, Action<long, long> progressAction)
         {
             MainThreadDispatcher.StartCoroutine(StartUpdateEnumerator(endAction, progressAction));
         }
 
-        private static IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
+        private IEnumerator StartUpdateEnumerator(Action endAction, Action<long, long> progressAction)
         {
             var resInfoFileExten = CommonDefine.s_ResInfoFileExtension;
             var versionFileName = CommonDefine.s_VersionFileName;
@@ -164,7 +174,7 @@ namespace U3dClient.Frame
             }
         }
 
-        private static void GetFileData(string fileDataStr, ref FileData fileData)
+        private void GetFileData(string fileDataStr, ref FileData fileData)
         {
             var fileDatas = fileDataStr.Split(' ');
             if (fileDatas.Length >= 3)
