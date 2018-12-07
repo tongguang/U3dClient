@@ -5,6 +5,7 @@ using System.IO;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
+using Random = System.Random;
 
 namespace U3dClient.Frame
 {
@@ -18,8 +19,8 @@ namespace U3dClient.Frame
             public string fileDataStr;
         }
 
-        private string s_BundleDotSuffixName = "." + CommonDefine.s_BundleSuffixName;
-        public string s_ResUrl;
+        private string m_BundleDotSuffixName = "." + CommonDefine.s_BundleSuffixName;
+        private string m_ResUrl;
 
         public void Init()
         {
@@ -34,11 +35,11 @@ namespace U3dClient.Frame
         public void SetResUrl(string resUrl)
         {
 #if UNITY_EDITOR || UNITY_STANDALONE
-            s_ResUrl = resUrl + "/Win";
+            m_ResUrl = resUrl + "/Win";
 #elif UNITY_ANDROID
-            s_ResUrl = resUrl + "/Android";
+            m_ResUrl = resUrl + "/Android";
 #else
-            s_ResUrl = resUrl + "/Ios";   
+            m_ResUrl = resUrl + "/Ios";   
 #endif
         }
 
@@ -78,7 +79,7 @@ namespace U3dClient.Frame
 
             var newVersionData = new Dictionary<string, FileData>();
             using (UnityWebRequest www =
-                UnityWebRequest.Get(Path.Combine(s_ResUrl, versionFileName)))
+                UnityWebRequest.Get(Path.Combine(m_ResUrl, versionFileName)))
             {
                 yield return www.SendWebRequest();
                 if (www.isNetworkError || www.isHttpError)
@@ -107,7 +108,7 @@ namespace U3dClient.Frame
                 var newFileData = data.Value;
 
                 var oldFileInfoPath = Path.Combine(FileTool.s_PersistentDataPath,
-                    newFileData.filePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten);
+                    newFileData.filePath.Replace(m_BundleDotSuffixName, "") + resInfoFileExten);
                 FileData oldFileData = new FileData {filePath = null};
                 if (File.Exists(oldFileInfoPath))
                 {
@@ -140,8 +141,10 @@ namespace U3dClient.Frame
                 var filePath = addFileData.filePath;
                 var fileDataStr = addFileData.fileDataStr;
                 var fileSize = addFileData.fileSize;
+                var fileMD5 = addFileData.fileSize;
+                var url = string.Format("{0}?{1}{2}", Path.Combine(m_ResUrl, filePath), fileMD5, UnityEngine.Random.Range(1, 10000));
                 using (UnityWebRequest www =
-                    UnityWebRequest.Get(Path.Combine(s_ResUrl, filePath)))
+                    UnityWebRequest.Get(url))
                 {
                     Debug.Log(string.Format("开始下载 {0} 大小:{1}", filePath, fileSize));
                     yield return www.SendWebRequest();
@@ -152,7 +155,7 @@ namespace U3dClient.Frame
                     else
                     {
                         var fullFilePath = Path.Combine(FileTool.s_PersistentDataPath, filePath);
-                        var fullFileInfoPath = fullFilePath.Replace(s_BundleDotSuffixName, "") + resInfoFileExten;
+                        var fullFileInfoPath = fullFilePath.Replace(m_BundleDotSuffixName, "") + resInfoFileExten;
                         var dirName = Path.GetDirectoryName(fullFilePath);
                         if (!Directory.Exists(dirName))
                         {
