@@ -21,37 +21,44 @@ namespace U3dClient.Game
                 return;
             }
 
-           GameCenter.Awake();
+           GameFrameCenter.Awake();
+           GameLogicCenter.Awake();
         }
 
         private void Start()
         {
-            GameCenter.Start();
+            GameFrameCenter.Start();
+            GameLogicCenter.Start();
         }
 
         private void Update()
         {
-            GameCenter.Update();
+            GameFrameCenter.Update();
+            GameLogicCenter.Update();
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            GameCenter.OnApplicationFocus(hasFocus);
+            GameFrameCenter.OnApplicationFocus(hasFocus);
+            GameLogicCenter.OnApplicationFocus(hasFocus);
         }
 
         private void OnApplicationPause(bool pauseStatus)
         {
-            GameCenter.OnApplicationPause(pauseStatus);
+            GameFrameCenter.OnApplicationPause(pauseStatus);
+            GameLogicCenter.OnApplicationPause(pauseStatus);
         }
 
         private void OnDestroy()
         {
-            GameCenter.OnDestroy();
+            GameFrameCenter.OnDestroy();
+            GameLogicCenter.OnDestroy();
         }
 
         private void OnApplicationQuit()
         {
-            GameCenter.OnApplicationQuit();
+            GameFrameCenter.OnApplicationQuit();
+            GameLogicCenter.OnApplicationQuit();
         }
     }
 }

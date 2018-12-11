@@ -45,7 +45,7 @@ public class TestBundleLoad : MonoBehaviour
 
     private void Test1()
     {
-        GameCenter.s_UpgradeManager.StartUpdate(() => { Debug.Log("下载结束"); },
+        GameFrameCenter.s_UpgradeManager.StartUpdate(() => { Debug.Log("下载结束"); },
             (updated, total) => { Debug.Log(string.Format("下载进度 {0} {1}", updated, total)); });
     }
 

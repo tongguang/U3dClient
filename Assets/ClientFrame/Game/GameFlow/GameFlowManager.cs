@@ -15,7 +15,7 @@ namespace U3dClient.Game
 
         public void Init()
         {
-            GameFlowFsm = GameCenter.s_FsmManager.CreateFsm<FsmBase>(new Dictionary<int, IFsmState>
+            GameFlowFsm = GameFrameCenter.s_FsmManager.CreateFsm<FsmBase>(new Dictionary<int, IFsmState>
             {
                 { (int)GameFlowState.EnterGame, new EnterGameState()},
                 { (int)GameFlowState.LuaLoop, new LuaLoopState()},
@@ -26,7 +26,7 @@ namespace U3dClient.Game
         {
             if (GameFlowFsm != null)
             {
-                GameCenter.s_FsmManager.ReleaseFsm(GameFlowFsm);
+                GameFrameCenter.s_FsmManager.ReleaseFsm(GameFlowFsm);
                 GameFlowFsm = null;
             }
         }
