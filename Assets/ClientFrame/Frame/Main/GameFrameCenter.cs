@@ -1,6 +1,6 @@
 ﻿using U3dClient.Frame;
 
-namespace U3dClient.Game
+namespace U3dClient.Frame
 {
     public static class GameFrameCenter
     {

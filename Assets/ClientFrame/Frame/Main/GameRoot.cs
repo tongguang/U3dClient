@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using U3dClient.Game;
 using UnityEngine;
 
-namespace U3dClient.Game
+namespace U3dClient.Frame
 {
     public class GameRoot : MonoBehaviour
     {
