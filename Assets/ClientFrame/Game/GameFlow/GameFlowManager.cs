@@ -10,23 +10,27 @@ namespace U3dClient.Game
             EnterGame,
             LuaLoop,
         }
-        public FsmBase GameFlowFsm;
+        public Fsm<GameFlowState> GameFlowFsm;
 
 
         public void Init()
         {
-            GameFlowFsm = GameFrameCenter.s_FsmManager.CreateFsm<FsmBase>(new Dictionary<int, IFsmState>
-            {
-                { (int)GameFlowState.EnterGame, new EnterGameState()},
-                { (int)GameFlowState.LuaLoop, new LuaLoopState()},
-            }, (int) GameFlowState.EnterGame);
+            GameFlowFsm = new Fsm<GameFlowState>();
+            GameFlowFsm.AddState(GameFlowState.EnterGame, new EnterGameState());
+            GameFlowFsm.AddState(GameFlowState.LuaLoop, new LuaLoopState());
+            GameFlowFsm.ChangeState(GameFlowState.EnterGame);
+        }
+
+        public void Update()
+        {
+            GameFlowFsm.Update();
         }
 
         public void Release()
         {
             if (GameFlowFsm != null)
             {
-                GameFrameCenter.s_FsmManager.ReleaseFsm(GameFlowFsm);
+                GameFlowFsm.Release();
                 GameFlowFsm = null;
             }
         }

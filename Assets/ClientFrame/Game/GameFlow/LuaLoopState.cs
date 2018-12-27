@@ -8,17 +8,17 @@ namespace U3dClient.Game
         private int m_Step;
         public void OnEnter()
         {
-            ScriptManager.InitMainLuaRunner();
+            GameLogicCenter.s_ScriptManager.InitMainLuaRunner();
         }
 
         public void OnUpdate()
         {
-            ScriptManager.UpdateMainLuaRunner();
+            GameLogicCenter.s_ScriptManager.UpdateMainLuaRunner();
         }
 
         public void OnExit()
         {
-            ScriptManager.ReleaseMainLuaRunner();
+            GameLogicCenter.s_ScriptManager.ReleaseMainLuaRunner();
         }
     }
 }

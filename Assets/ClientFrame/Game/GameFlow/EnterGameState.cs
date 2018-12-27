@@ -34,7 +34,7 @@ namespace U3dClient.Game
                             fileBytes.SetBytes(Encoding.UTF8.GetBytes(asset.Value.text));
                             fileBytesDict.Add(asset.Key, fileBytes);
                         }
-                        ScriptManager.SetLuaFileBytesDict(fileBytesDict);
+                        GameLogicCenter.s_ScriptManager.SetLuaFileBytesDict(fileBytesDict);
                     }
                 );
             }
@@ -47,7 +47,7 @@ namespace U3dClient.Game
                 {
                     BundleAssetLoader.UnLoad(m_LuaFileResIndex);
                 }
-                GameLogicCenter.s_GameFlowManager.GameFlowFsm.ChangeState((int) GameFlowManager.GameFlowState.LuaLoop);
+                GameLogicCenter.s_GameFlowManager.GameFlowFsm.ChangeState(GameFlowManager.GameFlowState.LuaLoop);
                 return;
             }
             else

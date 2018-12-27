@@ -4,9 +4,9 @@ using System.Text;
 using UnityEngine;
 using XLua;
 
-namespace U3dClient.Frame
+namespace U3dClient.Game
 {
-    public static class ScriptManager
+    public class ScriptManager
     {
         public class LuaFileBytes
         {
@@ -23,30 +23,31 @@ namespace U3dClient.Frame
             }
         }
 
+        public void Release()
+        {
+            ReleaseMainLuaRunner();
+        }
+
         public static Dictionary<string, LuaFileBytes> s_LuaFileBytesDict;
         public static MainLuaRunner s_MainMainLuaRunner;
 
-        public static void SetLuaFileBytesDict(Dictionary<string, LuaFileBytes> luaFileBytesDict)
+        public void SetLuaFileBytesDict(Dictionary<string, LuaFileBytes> luaFileBytesDict)
         {
             s_LuaFileBytesDict = luaFileBytesDict;
         }
 
-        public static void InitMainLuaRunner()
+        public void InitMainLuaRunner()
         {
             s_MainMainLuaRunner = new MainLuaRunner();
             s_MainMainLuaRunner.Init((ref string filename) =>
             {
                 LuaFileBytes fileBytes;
                 s_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
-                if (fileBytes!=null)
-                {
-                    return fileBytes.GetBytes();
-                }
-                return null;
+                return fileBytes?.GetBytes();
             });
         }
 
-        public static void ReleaseMainLuaRunner()
+        public void ReleaseMainLuaRunner()
         {
             if (s_MainMainLuaRunner != null)
             {
@@ -55,12 +56,9 @@ namespace U3dClient.Frame
             }
         }
 
-        public static void UpdateMainLuaRunner()
+        public void UpdateMainLuaRunner()
         {
-            if (s_MainMainLuaRunner != null)
-            {
-                s_MainMainLuaRunner.Update();
-            }
+            s_MainMainLuaRunner?.Update();
         }
     }
 }

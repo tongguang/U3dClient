@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace U3dClient.Frame
 {
+    [DefaultExecutionOrder(-1000)]
     public class GameRoot : MonoBehaviour
     {
         public static GameRoot Instance;
@@ -36,6 +37,12 @@ namespace U3dClient.Frame
         {
             GameFrameCenter.Update();
             GameLogicCenter.Update();
+        }
+
+        private void FixedUpdate()
+        {
+            GameFrameCenter.FixedUpdate();
+            GameLogicCenter.FixedUpdate();
         }
 
         private void OnApplicationFocus(bool hasFocus)
