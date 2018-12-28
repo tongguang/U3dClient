@@ -8,9 +8,9 @@
 
         public static void Awake()
         {
+            s_ScriptManager = new ScriptManager();
             s_GameFlowManager = new GameFlowManager();
             s_GameFlowManager.Init();
-            s_ScriptManager = new ScriptManager();
         }
 
         public static void Start()
@@ -38,8 +38,8 @@
 
         public static void OnDestroy()
         {
-            s_ScriptManager.Release();
             s_GameFlowManager.Release();
+            s_ScriptManager.Release();
         }
 
         public static void OnApplicationQuit()

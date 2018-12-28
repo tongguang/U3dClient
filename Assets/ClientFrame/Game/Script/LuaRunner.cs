@@ -2,7 +2,7 @@
 using XLua;
 namespace U3dClient.Game
 {
-    public class MainLuaRunner
+    public class LuaRunner
     {
         [CSharpCallLua]
         public interface ICallLuaLoopMap
@@ -21,27 +21,31 @@ namespace U3dClient.Game
             m_LuaEnv.AddLoader(loader);
             m_LuaEnv.DoString("require('main')");
             m_CallLuaLoopMap = m_LuaEnv.Global.Get<ICallLuaLoopMap>("MainLoop");
-            m_CallLuaLoopMap.Init();
         }
 
         public void Release()
         {
             if (m_LuaEnv != null)
             {
-                m_CallLuaLoopMap.Release();
-                m_CallLuaLoopMap = null;
                 m_LuaEnv.Dispose();
                 m_LuaEnv = null;
             }
         }
 
-        public void Update()
+        public void DoInit()
         {
-            if (m_LuaEnv != null)
-            {
-                m_CallLuaLoopMap.Update();
-                m_LuaEnv.Tick();
-            }
+            m_CallLuaLoopMap.Init();
+        }
+
+        public void DoUpdate()
+        {
+            m_CallLuaLoopMap.Update();
+            m_LuaEnv.Tick();
+        }
+
+        public void DoRelease()
+        {
+            m_CallLuaLoopMap.Release();
         }
     }
 }

@@ -28,37 +28,32 @@ namespace U3dClient.Game
             ReleaseMainLuaRunner();
         }
 
-        public static Dictionary<string, LuaFileBytes> s_LuaFileBytesDict;
-        public static MainLuaRunner s_MainMainLuaRunner;
+        private Dictionary<string, LuaFileBytes> m_LuaFileBytesDict;
+        public LuaRunner MainLuaRunner;
 
         public void SetLuaFileBytesDict(Dictionary<string, LuaFileBytes> luaFileBytesDict)
         {
-            s_LuaFileBytesDict = luaFileBytesDict;
+            m_LuaFileBytesDict = luaFileBytesDict;
         }
 
         public void InitMainLuaRunner()
         {
-            s_MainMainLuaRunner = new MainLuaRunner();
-            s_MainMainLuaRunner.Init((ref string filename) =>
+            MainLuaRunner = new LuaRunner();
+            MainLuaRunner.Init((ref string filename) =>
             {
                 LuaFileBytes fileBytes;
-                s_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
+                m_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
                 return fileBytes?.GetBytes();
             });
         }
 
         public void ReleaseMainLuaRunner()
         {
-            if (s_MainMainLuaRunner != null)
+            if (MainLuaRunner != null)
             {
-                s_MainMainLuaRunner.Release();
-                s_MainMainLuaRunner = null;
+                MainLuaRunner.Release();
+                MainLuaRunner = null;
             }
-        }
-
-        public void UpdateMainLuaRunner()
-        {
-            s_MainMainLuaRunner?.Update();
         }
     }
 }
