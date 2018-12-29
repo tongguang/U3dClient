@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using U3dClient.Frame;
-using U3dClient.Game;
+using U3dClient;
 
 public class TestBundleLoad : MonoBehaviour
 {
@@ -45,7 +44,7 @@ public class TestBundleLoad : MonoBehaviour
 
     private void Test1()
     {
-        GameFrameCenter.s_UpgradeManager.StartUpdate(() => { Debug.Log("下载结束"); },
+        GameCenter.s_UpgradeManager.StartUpdate(() => { Debug.Log("下载结束"); },
             (updated, total) => { Debug.Log(string.Format("下载进度 {0} {1}", updated, total)); });
     }
 

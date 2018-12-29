@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using U3dClient.Frame;
+using U3dClient;
 using UnityEditor;
 using UnityEngine;
 
