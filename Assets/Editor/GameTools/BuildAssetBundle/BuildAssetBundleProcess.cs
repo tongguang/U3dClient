@@ -44,6 +44,7 @@ namespace U3dClient.GameTools
                 var dirName = Path.GetDirectoryName(normalFilePath);
                 if (dirName != null)
                 {
+                    dirName = CommonHelper.NormalPath(dirName);
                     var abName = dirName.Replace(s_RelativeNormalResRawPath + "/", "").ToLower();
                     var asset = AssetImporter.GetAtPath(assetPath);
                     if (asset)
