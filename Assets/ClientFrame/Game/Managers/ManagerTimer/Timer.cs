@@ -5,6 +5,12 @@ namespace U3dClient
 {
     public class Timer
     {
+        private Action m_OnComplete;
+        private Action<float> m_OnUpdate;
+        private float m_StartTime;
+        private float m_LastUpdateTime;
+        private float? m_TimeElapsedBeforeCancel;
+        private float? m_TimeElapsedBeforePause;
 
         public float Duration { get; private set; }
 
@@ -88,16 +94,31 @@ namespace U3dClient
             return GetTimeRemaining() / Duration;
         }
 
-        private readonly Action m_OnComplete;
-        private readonly Action<float> m_OnUpdate;
-        private float m_StartTime;
-        private float m_LastUpdateTime;
+        public void OnReuse()
+        {
+            ResetData();
+        }
 
-        private float? m_TimeElapsedBeforeCancel;
-        private float? m_TimeElapsedBeforePause;
+        public void OnRecycle()
+        {
+            ResetData();
+        }
 
+        public void ResetData()
+        {
+            m_OnComplete = null;
+            m_OnUpdate = null;
+            m_StartTime = 0;
+            m_LastUpdateTime = 0;
+            m_TimeElapsedBeforeCancel = null;
+            m_TimeElapsedBeforePause = null;
+            Duration = 0;
+            IsLooped = false;
+            IsCompleted = false;
+            UsesRealTime = false;
+        }
 
-        public Timer(float duration, Action mOnComplete, Action<float> mOnUpdate,
+        public void Init(float duration, Action mOnComplete, Action<float> mOnUpdate,
             bool isLooped, bool usesRealTime)
         {
             Duration = duration;
@@ -106,7 +127,6 @@ namespace U3dClient
 
             IsLooped = isLooped;
             UsesRealTime = usesRealTime;
-
 
             m_StartTime = GetWorldTime();
             m_LastUpdateTime = m_StartTime;

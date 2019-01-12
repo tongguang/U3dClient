@@ -7,6 +7,14 @@ namespace U3dClient
         private static List<IGameManager> m_ManagerList = new List<IGameManager>();
         private static Dictionary<string, IGameManager> m_ManagerDict = new Dictionary<string, IGameManager>();
 
+        public static TimerManager s_TimerManager
+        {
+            get
+            {
+                return GetManager<TimerManager>();
+            }
+        }
+
         public static ResourceManager s_ResourceManager
         {
             get
@@ -43,6 +51,7 @@ namespace U3dClient
         {
             #region addManager
 
+            AddManager<TimerManager>();
             AddManager<ResourceManager>();
             AddManager<UpgradeManager>();
             AddManager<ScriptManager>();

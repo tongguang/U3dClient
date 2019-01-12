@@ -8,13 +8,17 @@ namespace U3dClient
 {
     public class TimerManager : IGameManager
     {
+        private ObjectPool<Timer> m_TimerPool = new ObjectPool<Timer>((timer) => { timer.OnReuse();}, (timer) => { timer.OnRecycle(); });
+
         private List<Timer> m_Timers = new List<Timer>();
         private List<Timer> m_TimersToAdd = new List<Timer>();
+        private List<Timer> m_TimersDone = new List<Timer>();
 
         public Timer RegisterTimer(float duration, Action onComplete, Action<float> onUpdate = null,
             bool isLooped = false, bool useRealTime = false)
         {
-            Timer timer = new Timer(duration, onComplete, onUpdate, isLooped, useRealTime);
+            Timer timer = m_TimerPool.Get();
+            timer.Init(duration, onComplete, onUpdate, isLooped, useRealTime);
             m_TimersToAdd.Add(timer);
             return timer;
         }
@@ -24,12 +28,12 @@ namespace U3dClient
             timer?.Cancel();
         }
 
-        public static void PauseTimer(Timer timer)
+        public void PauseTimer(Timer timer)
         {
             timer?.Pause();
         }
 
-        public static void ResumeTimer(Timer timer)
+        public void ResumeTimer(Timer timer)
         {
             timer?.Resume();
         }
@@ -40,7 +44,14 @@ namespace U3dClient
             {
                 timer.Cancel();
             }
-
+            foreach (Timer timer in m_Timers)
+            {
+                m_TimerPool.Release(timer);
+            }
+            foreach (Timer timer in m_TimersToAdd)
+            {
+                m_TimerPool.Release(timer);
+            }
             m_Timers.Clear();
             m_TimersToAdd.Clear();
         }
@@ -72,9 +83,18 @@ namespace U3dClient
             foreach (Timer timer in m_Timers)
             {
                 timer.Update();
+                if (timer.IsDone)
+                {
+                    m_TimersDone.Add(timer);
+                }
             }
 
-            m_Timers.RemoveAll(t => t.IsDone);
+            foreach (var timer in m_TimersDone)
+            {
+                m_TimerPool.Release(timer);
+                m_Timers.Remove(timer);
+            }
+            m_TimersDone.Clear();
         }
 
         public void Awake()
