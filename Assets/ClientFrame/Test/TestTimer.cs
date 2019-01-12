@@ -23,7 +23,7 @@ public class TestTimer : MonoBehaviour {
 //        }
     }
 
-    private static Timer timer;
+    private static int timer;
     private void Test1()
     {
         timer = GameCenter.s_TimerManager.RegisterTimer(1, () => { Debug.Log("complate"); }, f => { Debug.Log(f); }, true);

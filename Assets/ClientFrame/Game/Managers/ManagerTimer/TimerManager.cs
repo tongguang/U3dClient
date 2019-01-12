@@ -10,47 +10,63 @@ namespace U3dClient
     {
         private ObjectPool<Timer> m_TimerPool = new ObjectPool<Timer>((timer) => { timer.OnReuse();}, (timer) => { timer.OnRecycle(); });
 
-        private List<Timer> m_Timers = new List<Timer>();
-        private List<Timer> m_TimersToAdd = new List<Timer>();
+        private int m_TimerIndex = 1;
+        private Dictionary<int, Timer> m_Timers = new Dictionary<int, Timer>();
+        private Dictionary<int, Timer> m_TimersToAdd = new Dictionary<int, Timer>();
         private List<Timer> m_TimersDone = new List<Timer>();
 
-        public Timer RegisterTimer(float duration, Action onComplete, Action<float> onUpdate = null,
+        public int RegisterTimer(float duration, Action onComplete, Action<float> onUpdate = null,
             bool isLooped = false, bool useRealTime = false)
         {
+            var index = GetNewTimerIndex();
             Timer timer = m_TimerPool.Get();
-            timer.Init(duration, onComplete, onUpdate, isLooped, useRealTime);
-            m_TimersToAdd.Add(timer);
-            return timer;
+            timer.Init(index, duration, onComplete, onUpdate, isLooped, useRealTime);
+            m_TimersToAdd.Add(index, timer);
+            return index;
         }
 
-        public void CancelTimer(Timer timer)
+        public void CancelTimer(int timerIndex)
         {
+            var timer = GetTimer(timerIndex);
             timer?.Cancel();
         }
 
-        public void PauseTimer(Timer timer)
+        public Timer GetTimer(int timerIndex)
         {
+            Timer timer;
+            m_Timers.TryGetValue(timerIndex, out timer);
+            if (timer == null)
+            {
+                m_TimersToAdd.TryGetValue(timerIndex, out timer);
+            }
+            return timer;
+        }
+
+        public void PauseTimer(int timerIndex)
+        {
+            var timer = GetTimer(timerIndex);
             timer?.Pause();
         }
 
-        public void ResumeTimer(Timer timer)
+        public void ResumeTimer(int timerIndex)
         {
+            var timer = GetTimer(timerIndex);
             timer?.Resume();
         }
 
         public void CancelAllTimers()
         {
-            foreach (Timer timer in m_Timers)
+            foreach (var timerPair in m_Timers)
             {
-                timer.Cancel();
+                timerPair.Value.Cancel();
             }
-            foreach (Timer timer in m_Timers)
+            foreach (var timerPair in m_Timers)
             {
-                m_TimerPool.Release(timer);
+                m_TimerPool.Release(timerPair.Value);
             }
-            foreach (Timer timer in m_TimersToAdd)
+            foreach (var timerPair in m_TimersToAdd)
             {
-                m_TimerPool.Release(timer);
+                m_TimerPool.Release(timerPair.Value);
             }
             m_Timers.Clear();
             m_TimersToAdd.Clear();
@@ -58,30 +74,47 @@ namespace U3dClient
 
         public void PauseAllTimers()
         {
-            foreach (Timer timer in m_Timers)
+            foreach (var timerPair in m_Timers)
             {
-                timer.Pause();
+                timerPair.Value.Pause();
+            }
+            foreach (var timerPair in m_TimersToAdd)
+            {
+                timerPair.Value.Pause();
             }
         }
 
         public void ResumeAllTimers()
         {
-            foreach (Timer timer in m_Timers)
+            foreach (var timerPair in m_Timers)
             {
-                timer.Resume();
+                timerPair.Value.Resume();
             }
+            foreach (var timerPair in m_TimersToAdd)
+            {
+                timerPair.Value.Resume();
+            }
+        }
+
+        private int GetNewTimerIndex()
+        {
+            return m_TimerIndex++;
         }
 
         private void UpdateAllTimers()
         {
             if (m_TimersToAdd.Count > 0)
             {
-                m_Timers.AddRange(m_TimersToAdd);
+                foreach (var timerPair in m_TimersToAdd)
+                {
+                    m_Timers.Add(timerPair.Key, timerPair.Value);
+                }
                 m_TimersToAdd.Clear();
             }
 
-            foreach (Timer timer in m_Timers)
+            foreach (var timerPair in m_Timers)
             {
+                var timer = timerPair.Value;
                 timer.Update();
                 if (timer.IsDone)
                 {
@@ -92,7 +125,7 @@ namespace U3dClient
             foreach (var timer in m_TimersDone)
             {
                 m_TimerPool.Release(timer);
-                m_Timers.Remove(timer);
+                m_Timers.Remove(timer.TimerIndex);
             }
             m_TimersDone.Clear();
         }

@@ -283,10 +283,10 @@ namespace U3dClient
             return resIndex;
         }
 
-        public static FullBundleLoader GetLoader(int resouceIndex)
+        public static FullBundleLoader GetLoader(int resourceIndex)
         {
             FullBundleLoader loader = null;
-            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
+            s_ResIndexToLoader.TryGetValue(resourceIndex, out loader);
             return loader;
         }
 
@@ -297,13 +297,14 @@ namespace U3dClient
             return loader;
         }
 
-        public static void UnLoad(int resouceIndex)
+        public static void UnLoad(int resourceIndex)
         {
             FullBundleLoader loader;
-            s_ResIndexToLoader.TryGetValue(resouceIndex, out loader);
+            s_ResIndexToLoader.TryGetValue(resourceIndex, out loader);
             if (loader != null)
             {
-                loader.InternalUnload(resouceIndex);
+                s_ResIndexToLoader.Remove(resourceIndex);
+                loader.InternalUnload(resourceIndex);
             }
         }
 

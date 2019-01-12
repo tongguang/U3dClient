@@ -47,7 +47,8 @@ namespace U3dClient
                 {
                     BundleAssetLoader.UnLoad(m_LuaFileResIndex);
                 }
-                GameCenter.s_GameFlowManager.GameFlowFsm.ChangeState(GameFlowManager.GameFlowState.LuaLoop);
+                m_Step = 4;
+//                GameCenter.s_GameFlowManager.GameFlowFsm.ChangeState(GameFlowManager.GameFlowState.LuaLoop);
                 return;
             }
             else

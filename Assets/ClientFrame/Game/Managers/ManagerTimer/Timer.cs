@@ -12,6 +12,8 @@ namespace U3dClient
         private float? m_TimeElapsedBeforeCancel;
         private float? m_TimeElapsedBeforePause;
 
+        public int TimerIndex { get; private set; }
+
         public float Duration { get; private set; }
 
         public bool IsLooped { get; set; }
@@ -106,6 +108,7 @@ namespace U3dClient
 
         public void ResetData()
         {
+            TimerIndex = 0;
             m_OnComplete = null;
             m_OnUpdate = null;
             m_StartTime = 0;
@@ -118,12 +121,14 @@ namespace U3dClient
             UsesRealTime = false;
         }
 
-        public void Init(float duration, Action mOnComplete, Action<float> mOnUpdate,
+        public void Init(int timerIndex, float duration, Action onComplete, Action<float> onUpdate,
             bool isLooped, bool usesRealTime)
         {
+            TimerIndex = timerIndex;
+
             Duration = duration;
-            m_OnComplete = mOnComplete;
-            m_OnUpdate = mOnUpdate;
+            m_OnComplete = onComplete;
+            m_OnUpdate = onUpdate;
 
             IsLooped = isLooped;
             UsesRealTime = usesRealTime;
