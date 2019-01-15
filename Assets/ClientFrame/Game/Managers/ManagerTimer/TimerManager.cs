@@ -25,7 +25,7 @@ namespace U3dClient
             return index;
         }
 
-        public void CancelTimer(int timerIndex)
+        public void UnRegisterTimer(int timerIndex)
         {
             var timer = GetTimer(timerIndex);
             timer?.Cancel();
@@ -54,7 +54,7 @@ namespace U3dClient
             timer?.Resume();
         }
 
-        public void CancelAllTimers()
+        public void UnRegisterAllTimers()
         {
             foreach (var timerPair in m_Timers)
             {

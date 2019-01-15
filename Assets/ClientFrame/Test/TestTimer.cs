@@ -31,7 +31,7 @@ public class TestTimer : MonoBehaviour {
 
     private void Test2()
     {
-        GameCenter.s_TimerManager.CancelTimer(timer);
+        GameCenter.s_TimerManager.UnRegisterTimer(timer);
     }
 
     private void Test3()
