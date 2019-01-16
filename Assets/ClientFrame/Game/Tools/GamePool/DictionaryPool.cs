@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace U3dClient
 {
-    internal static class DictionaryPool<T1, T2>
+    public static class DictionaryPool<T1, T2>
     {
         // Object pool to avoid allocations.
         private static readonly ObjectPool<Dictionary<T1, T2>> s_ListPool = new ObjectPool<Dictionary<T1, T2>>(null, l => l.Clear());
