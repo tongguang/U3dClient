@@ -37,17 +37,26 @@ namespace U3dClient
 
         public void UnRegisterEvent(int eventIndex)
         {
-            var eventName = m_EventIndexToName[eventIndex];
-            Dictionary<int, Action<IEventMessage>> actions;
-            m_NameToEventActions.TryGetValue(eventName, out actions);
-            if (actions != null)
+            string eventName;
+            m_EventIndexToName.TryGetValue(eventIndex, out eventName);
+            if (eventName != null)
             {
-                actions.Remove(eventIndex);
-                if (actions.Count == 0)
+                m_EventIndexToName.Remove(eventIndex);
+                Dictionary<int, Action<IEventMessage>> actions;
+                m_NameToEventActions.TryGetValue(eventName, out actions);
+                if (actions != null)
                 {
-                    m_NameToEventActions.Remove(eventName);
-                    DictionaryPool<int, Action<IEventMessage>>.Release(actions);
+                    actions.Remove(eventIndex);
+                    if (actions.Count == 0)
+                    {
+                        m_NameToEventActions.Remove(eventName);
+                        DictionaryPool<int, Action<IEventMessage>>.Release(actions);
+                    }
                 }
+            }
+            else
+            {
+                Debug.LogError($"UnRegisterEvent error  {eventIndex}");
             }
         }
 
@@ -57,14 +66,23 @@ namespace U3dClient
             {
                 Dictionary<int, Action<IEventMessage>> actions;
                 m_NameToEventActions.TryGetValue(eventName, out actions);
+                m_TempIndexToEventActions.Clear();
                 if (actions != null)
                 {
                     foreach (var actionPair in actions)
+                    {
+                        m_TempIndexToEventActions.Add(actionPair.Key, actionPair.Value);
+                    }
+                }
+                foreach (var actionPair in m_TempIndexToEventActions)
+                {
+                    if (m_EventIndexToName.ContainsKey(actionPair.Key))
                     {
                         actionPair.Value?.Invoke(eventMessage);
                     }
                 }
                 eventMessage?.ReleaseSelf();
+                m_TempIndexToEventActions.Clear();
             }
             else
             {
