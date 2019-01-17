@@ -15,6 +15,11 @@ namespace U3dClient
         private Dictionary<int, Timer> m_TimersToAdd = new Dictionary<int, Timer>();
         private List<Timer> m_TimersDone = new List<Timer>();
 
+        private int GetNewTimerIndex()
+        {
+            return m_TimerIndex++;
+        }
+
         public int RegisterTimer(float duration, Action onComplete, Action<float> onUpdate = null,
             bool isLooped = false, bool useRealTime = false)
         {
@@ -54,22 +59,26 @@ namespace U3dClient
             timer?.Resume();
         }
 
-        public void UnRegisterAllTimers()
+        public void UnRegisterAllTimers(bool isImmediate = true)
         {
             foreach (var timerPair in m_Timers)
             {
                 timerPair.Value.Cancel();
             }
-            foreach (var timerPair in m_Timers)
-            {
-                m_TimerPool.Release(timerPair.Value);
-            }
             foreach (var timerPair in m_TimersToAdd)
             {
                 m_TimerPool.Release(timerPair.Value);
             }
-            m_Timers.Clear();
             m_TimersToAdd.Clear();
+
+            if (isImmediate)
+            {
+                foreach (var timerPair in m_Timers)
+                {
+                    m_TimerPool.Release(timerPair.Value);
+                }
+                m_Timers.Clear();
+            }
         }
 
         public void PauseAllTimers()
@@ -94,11 +103,6 @@ namespace U3dClient
             {
                 timerPair.Value.Resume();
             }
-        }
-
-        private int GetNewTimerIndex()
-        {
-            return m_TimerIndex++;
         }
 
         private void UpdateAllTimers()

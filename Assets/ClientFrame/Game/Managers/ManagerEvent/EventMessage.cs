@@ -131,27 +131,3 @@ namespace U3dClient
         }
     }
 }
-
-
-
-
-class Testss
-{
-    static public void Test()
-    {
-        IEventMessage a = EventMessage<string>.GetEventMessage();
-        IEventMessage b = EventMessage<string>.GetEventMessage();
-        a.ReleaseSelf();
-        b.ReleaseSelf();
-        IEventMessage c = EventMessage<string>.GetEventMessage();
-        IEventMessage d = EventMessage<int>.GetEventMessage();
-        IEventMessage e = EventMessage<int, int>.GetEventMessage();
-        EventMessageFactory<EventMessage<string>>.DebugPoolData();
-        c.ReleaseSelf();
-        EventMessageFactory<EventMessage<string>>.DebugPoolData();
-        d.ReleaseSelf();
-        EventMessageFactory<EventMessage<string>>.DebugPoolData();
-        e.ReleaseSelf();
-        EventMessageFactory<EventMessage<string>>.DebugPoolData();
-    }
-}

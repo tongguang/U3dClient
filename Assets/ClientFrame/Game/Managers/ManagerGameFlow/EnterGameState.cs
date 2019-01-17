@@ -55,8 +55,6 @@ namespace U3dClient
             {
                 
             }
-
-            Debug.Log("EnterGameState OnUpdate");
         }
 
         public void OnExit()

@@ -3,89 +3,86 @@ using System.Collections.Generic;
 
 namespace U3dClient
 {
-    public class LoopItem
+    public class LoopContain<T1, T2>
     {
-        public int Index = 0;
-        public bool IsValid = false;
-        public int Priority = 0;
-        public Action UpdateAction = null;
-    }
+        private Dictionary<T1, T2> m_Items = new Dictionary<T1, T2>();
+        private Dictionary<T1, T2> m_ItemsToAdd = new Dictionary<T1, T2>();
+        private HashSet<T1> m_ItemKeysToRemove = new HashSet<T1>();
+        private Action<T2> m_ForeachAction = null;
+        private Action<T2> m_RemoveItemAction = null;
 
-    public class LoopContain
-    {
-        public class LoopItemCompare : IComparer<LoopItem>
+        public void SetForeachAction(Action<T2> action)
         {
-            
-            public int Compare(LoopItem x, LoopItem y)
+            m_ForeachAction = action;
+        }
+
+        public void SetRemoveItemAction(Action<T2> action)
+        {
+            m_RemoveItemAction = action;
+        }
+
+        public void AddLoop(T1 key, T2 value)
+        {
+            m_ItemsToAdd.Add(key, value);
+        }
+
+        public void RemoveLoop(T1 key)
+        {
+            T2 item;
+            m_ItemsToAdd.TryGetValue(key, out item);
+            if (item != null)
             {
-                return x.Priority.CompareTo(y.Priority);
+                m_RemoveItemAction?.Invoke(item);
+                m_ItemsToAdd.Remove(key);
+                return;
             }
-        }
-       
-        private ObjectPool<LoopItem> LoopItemPool = new ObjectPool<LoopItem>(null, (item) =>
-        {
-            item.Index = 0;
-            item.IsValid = false;
-            item.UpdateAction = null;
-            item.Priority = 0;
-        });
-        private Dictionary<int, LoopItem> m_LoopDict = new Dictionary<int, LoopItem>();
-        private SortedSet<LoopItem> m_SortedLoopSet = new SortedSet<LoopItem>(new LoopItemCompare());
-        private List<LoopItem> m_TempLoopList = new List<LoopItem>();
-
-        private int m_LoopIndex = 0;
-
-        private int GetNewLoopIndex()
-        {
-            return m_LoopIndex++;
+            m_ItemKeysToRemove.Add(key);
         }
 
-        public int AddLoopAction(Action action, int priority = 0)
+        public void Foreach()
         {
-            var newIndex = GetNewLoopIndex();
-            var item = LoopItemPool.Get();
-            item.Index = newIndex;
-            item.IsValid = true;
-            item.UpdateAction = action;
-            item.Priority = priority;
-            m_LoopDict.Add(newIndex, item);
-            m_SortedLoopSet.Add(item);
-            return newIndex;
-        }
-
-        public void RemoveLoopAction(int index)
-        {
-            LoopItem loopItem;
-            m_LoopDict.TryGetValue(index, out loopItem);
-            if (loopItem != null)
+            foreach (var itemPair in m_ItemsToAdd)
             {
-                m_LoopDict.Remove(index);
-                m_SortedLoopSet.Remove(loopItem);
-                LoopItemPool.Release(loopItem);
+                m_Items.Add(itemPair.Key, itemPair.Value);
             }
-        }
-
-        public LoopItem GetLoop(int index)
-        {
-            LoopItem loopItem;
-            m_LoopDict.TryGetValue(index, out loopItem);
-            return loopItem;
-        }
-
-        public void Update()
-        {
-            m_TempLoopList.Clear();
-            foreach (var loop in m_SortedLoopSet)
+            m_ItemsToAdd.Clear();
+            foreach (var itemPair in m_Items)
             {
-                m_TempLoopList.Add(loop);
-            }
-
-            foreach (var loop in m_TempLoopList)
-            {
-                if (loop.IsValid)
+                if (!m_ItemKeysToRemove.Contains(itemPair.Key))
                 {
-                    loop.UpdateAction?.Invoke();
+                    m_ForeachAction(itemPair.Value);
                 }
+            }
+
+            foreach (var itemKey in m_ItemKeysToRemove)
+            {
+                var item = m_Items[itemKey];
+                m_RemoveItemAction(item);
+                m_Items.Remove(itemKey);
+            }
+            m_ItemKeysToRemove.Clear();
+        }
+
+        public void Clear(bool isImmediate = true)
+        {
+            foreach (var itemPair in m_ItemsToAdd)
+            {
+                RemoveLoop(itemPair.Key);
+            }
+            foreach (var itemPair in m_Items)
+            {
+                RemoveLoop(itemPair.Key);
+            }
+            if (isImmediate)
+            {
+                foreach (var itemKey in m_ItemKeysToRemove)
+                {
+                    var item = m_Items[itemKey];
+                    m_RemoveItemAction(item);
+                    m_Items.Remove(itemKey);
+                }
+                m_ItemKeysToRemove.Clear();
+                m_Items.Clear();
             }
         }
     }
