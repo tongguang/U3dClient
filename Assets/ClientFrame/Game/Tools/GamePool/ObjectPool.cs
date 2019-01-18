@@ -41,8 +41,8 @@ namespace U3dClient
 
         public void Release(T element)
         {
-//            if (m_Stack.Count > 0 && ReferenceEquals(m_Stack.Peek(), element))
-//                Debug.LogError("Internal error. Trying to destroy object that is already released to pool.");
+            if (m_Stack.Count > 0 && ReferenceEquals(m_Stack.Peek(), element))
+                Debug.LogError("Internal error. Trying to destroy object that is already released to pool.");
             if (m_ActionOnRelease != null)
                 m_ActionOnRelease(element);
             if (m_MaxCacheCount < 0 || countInactive < m_MaxCacheCount)
