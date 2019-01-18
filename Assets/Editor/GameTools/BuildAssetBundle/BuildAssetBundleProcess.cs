@@ -11,7 +11,7 @@ namespace U3dClient.GameTools
     public static class BuildAssetBundleProcess
     {
         public static string s_AbsProjectPath = CommonHelper.NormalPath(System.Environment.CurrentDirectory);
-        public static string s_RelativeNormalResRawPath = CommonHelper.CombinePath("Assets", "Resource");
+        public static string s_RelativeNormalResRawPath = CommonDefine.s_RelativeNormalResRawPath;
         public static string s_RelativeTempAssetBundlesPath = CommonHelper.CombinePath("GameTemp", CommonDefine.s_AssetBundlesName);
         
 #if UNITY_STANDALONE
@@ -25,7 +25,7 @@ namespace U3dClient.GameTools
         public static string s_VersionFileName = CommonDefine.s_VersionFileName;
 
 
-        public static string s_RelativeScriptResRawPath = CommonHelper.CombinePath("Assets", "Script");
+        public static string s_RelativeScriptResRawPath = CommonDefine.s_RelativeScriptResRawPath;
         public static string s_RelativeScriptResTempPackPath = CommonHelper.CombinePath("Assets", "TempPackScript");
         public static string s_ScriptAssetBundleName = CommonDefine.s_ScriptAssetBundleName;
 
