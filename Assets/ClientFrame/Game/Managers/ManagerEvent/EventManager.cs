@@ -107,6 +107,7 @@ namespace U3dClient
                     var eventMessages = eventMessagesPair.Value;
                     ListPool<IEventMessage>.Release(eventMessages);
                 }
+                m_TempDelayEventMessages.Clear();
 
                 foreach (var eventMessagesPair in m_DelayEventMessages)
                 {
@@ -145,12 +146,7 @@ namespace U3dClient
                     m_TempIndexToEventActions.Clear();
                     ListPool<IEventMessage>.Release(eventMessages);
                 }
-                foreach (var eventMessagesPair in m_TempDelayEventMessages)
-                {
-                    var eventName = eventMessagesPair.Key;
-                    var eventMessages = eventMessagesPair.Value;
-                    ListPool<IEventMessage>.Release(eventMessages);
-                }
+                m_TempDelayEventMessages.Clear();
             }
         }
 
