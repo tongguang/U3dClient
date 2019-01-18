@@ -150,7 +150,7 @@ namespace U3dClient.GameTools
             }
 
             fileDesc.AssetsRefDict = fileRefDict;
-            var fileDescPath = CommonHelper.CombinePath(s_RelativeScriptResTempPackPath, CommonDefine.s_ScriptFileDescName + ".asset");
+            var fileDescPath = CommonHelper.CombinePath(s_RelativeScriptResTempPackPath, CommonDefine.s_ScriptFileDescName);
             AssetDatabase.CreateAsset(fileDesc, fileDescPath);
             var fileDescAsset = AssetImporter.GetAtPath(fileDescPath);
             fileDescAsset.SetAssetBundleNameAndVariant(abName, CommonDefine.s_BundleSuffixName);
@@ -166,7 +166,7 @@ namespace U3dClient.GameTools
                 Directory.CreateDirectory(assetBundleDirectory);
             }
 
-            BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None,
+            BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None | BuildAssetBundleOptions.DisableLoadAssetByFileName,
                 EditorUserBuildSettings.activeBuildTarget);
         }
 

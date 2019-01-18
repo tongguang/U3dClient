@@ -52,7 +52,7 @@ public class TestBundleLoad : MonoBehaviour
 
     private void Test2()
     {
-        refIndex = BundleAssetLoader.LoadAsync<GameObject>("res/test2.ab", "Image",
+        refIndex = BundleAssetLoader.LoadAsync<GameObject>("res/test2.ab", "Image.prefab",
             (isOk, o) => { Instantiate(o, transform); });
 //        var refIndex2 = BundleAssetBaseLoader.SLoadAsync<GameObject>("res/test2.ab", "Image",
 //            (isOk, o) =>
