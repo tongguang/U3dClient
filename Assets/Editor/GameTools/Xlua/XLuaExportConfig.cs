@@ -127,7 +127,7 @@ namespace U3dClient.GameTools
             "UnityEngine.XR",
         };
 
-        static bool SIsUnityExcluded(Type type)
+        static bool IsUnityExcluded(Type type)
         {
             var fullName = type.FullName;
             for (int i = 0; i < s_UnityExclude.Count; i++)
@@ -141,15 +141,39 @@ namespace U3dClient.GameTools
             return false;
         }
 
+        private static List<string> s_CustomExclude = new List<string>
+        {
+            "U3dClient.EditorModeAssetLoader",
+        };
+
+        static bool IsCustomExcluded(Type type)
+        {
+            var fullName = type.FullName;
+            for (int i = 0; i < s_CustomExclude.Count; i++)
+            {
+                if (fullName.Contains(s_CustomExclude[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         [LuaCallCSharp]
         public static IEnumerable<Type> s_LuaCallCSharp
         {
             get
             {
+                List<string> namespaces = new List<string>() // 在这里添加名字空间
+                {
+                    "UnityEngine",
+                    "UnityEngine.UI"
+                };
                 var unityTypes = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                     where !(assembly.ManifestModule is System.Reflection.Emit.ModuleBuilder)
                     from type in assembly.GetExportedTypes()
-                    where type.Namespace != null && type.Namespace.StartsWith("UnityEngine") && !SIsUnityExcluded(type)
+                    where type.Namespace != null && namespaces.Contains(type.Namespace) && !IsUnityExcluded(type)
                           && type.BaseType != typeof(MulticastDelegate) && !type.IsInterface && !type.IsEnum
                     select type);
 
@@ -159,7 +183,7 @@ namespace U3dClient.GameTools
                 };
                 var customTypes = (from assembly in customAssemblys.Select(Assembly.Load)
                     from type in assembly.GetExportedTypes()
-                    where type.Namespace == null || !type.Namespace.StartsWith("XLua")
+                    where type.Namespace == null || !type.Namespace.StartsWith("XLua") && !IsCustomExcluded(type)
                           && type.BaseType != typeof(MulticastDelegate) && !type.IsInterface && !type.IsEnum
                     select type);
                 return unityTypes.Concat(customTypes);
@@ -212,79 +236,79 @@ namespace U3dClient.GameTools
         //--------------end 纯lua编程配置参考----------------------------
 
         /***************热补丁可以参考这份自动化配置***************/
-        [Hotfix]
-        static IEnumerable<Type> s_HotfixInject
-        {
-            get
-            {
-                return (from type in Assembly.Load("Assembly-CSharp").GetExportedTypes()
-                    where type.Namespace == null || !type.Namespace.StartsWith("XLua")
-                    select type);
-            }
-        }
-
-        //--------------begin 热补丁自动化配置-------------------------
-        static bool SHasGenericParameter(Type type)
-        {
-            if (type.IsGenericTypeDefinition) return true;
-            if (type.IsGenericParameter) return true;
-            if (type.IsByRef || type.IsArray)
-            {
-                return SHasGenericParameter(type.GetElementType());
-            }
-
-            if (type.IsGenericType)
-            {
-                foreach (var typeArg in type.GetGenericArguments())
-                {
-                    if (SHasGenericParameter(typeArg))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        // 配置某Assembly下所有涉及到的delegate到CSharpCallLua下，Hotfix下拿不准那些delegate需要适配到lua function可以这么配置
-        [CSharpCallLua]
-        static IEnumerable<Type> s_AllDelegate
-        {
-            get
-            {
-                BindingFlags flag = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static |
-                                    BindingFlags.Public;
-                List<Type> allTypes = new List<Type>();
-                var allAssemblys = new Assembly[]
-                {
-                    Assembly.Load("Assembly-CSharp")
-                };
-                foreach (var t in (from assembly in allAssemblys from type in assembly.GetTypes() select type))
-                {
-                    var p = t;
-                    while (p != null)
-                    {
-                        allTypes.Add(p);
-                        p = p.BaseType;
-                    }
-                }
-
-                allTypes = allTypes.Distinct().ToList();
-                var allMethods = from type in allTypes
-                    from method in type.GetMethods(flag)
-                    select method;
-                var returnTypes = from method in allMethods
-                    select method.ReturnType;
-                var paramTypes = allMethods.SelectMany(m => m.GetParameters()).Select(pinfo =>
-                    pinfo.ParameterType.IsByRef ? pinfo.ParameterType.GetElementType() : pinfo.ParameterType);
-                var fieldTypes = from type in allTypes
-                    from field in type.GetFields(flag)
-                    select field.FieldType;
-                return (returnTypes.Concat(paramTypes).Concat(fieldTypes))
-                    .Where(t => t.BaseType == typeof(MulticastDelegate) && !SHasGenericParameter(t)).Distinct();
-            }
-        }
+//        [Hotfix]
+//        static IEnumerable<Type> s_HotfixInject
+//        {
+//            get
+//            {
+//                return (from type in Assembly.Load("Assembly-CSharp").GetExportedTypes()
+//                    where type.Namespace == null || !type.Namespace.StartsWith("XLua")
+//                    select type);
+//            }
+//        }
+//
+//        //--------------begin 热补丁自动化配置-------------------------
+//        static bool HasGenericParameter(Type type)
+//        {
+//            if (type.IsGenericTypeDefinition) return true;
+//            if (type.IsGenericParameter) return true;
+//            if (type.IsByRef || type.IsArray)
+//            {
+//                return HasGenericParameter(type.GetElementType());
+//            }
+//
+//            if (type.IsGenericType)
+//            {
+//                foreach (var typeArg in type.GetGenericArguments())
+//                {
+//                    if (HasGenericParameter(typeArg))
+//                    {
+//                        return true;
+//                    }
+//                }
+//            }
+//
+//            return false;
+//        }
+//
+//        // 配置某Assembly下所有涉及到的delegate到CSharpCallLua下，Hotfix下拿不准那些delegate需要适配到lua function可以这么配置
+//        [CSharpCallLua]
+//        static IEnumerable<Type> s_AllDelegate
+//        {
+//            get
+//            {
+//                BindingFlags flag = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static |
+//                                    BindingFlags.Public;
+//                List<Type> allTypes = new List<Type>();
+//                var allAssemblys = new Assembly[]
+//                {
+//                    Assembly.Load("Assembly-CSharp")
+//                };
+//                foreach (var t in (from assembly in allAssemblys from type in assembly.GetTypes() select type))
+//                {
+//                    var p = t;
+//                    while (p != null)
+//                    {
+//                        allTypes.Add(p);
+//                        p = p.BaseType;
+//                    }
+//                }
+//
+//                allTypes = allTypes.Distinct().ToList();
+//                var allMethods = from type in allTypes
+//                    from method in type.GetMethods(flag)
+//                    select method;
+//                var returnTypes = from method in allMethods
+//                    select method.ReturnType;
+//                var paramTypes = allMethods.SelectMany(m => m.GetParameters()).Select(pinfo =>
+//                    pinfo.ParameterType.IsByRef ? pinfo.ParameterType.GetElementType() : pinfo.ParameterType);
+//                var fieldTypes = from type in allTypes
+//                    from field in type.GetFields(flag)
+//                    select field.FieldType;
+//                return (returnTypes.Concat(paramTypes).Concat(fieldTypes))
+//                    .Where(t => t.BaseType == typeof(MulticastDelegate) && !HasGenericParameter(t)).Distinct();
+//            }
+//        }
         //--------------end 热补丁自动化配置-------------------------
 
         //黑名单
@@ -336,6 +360,16 @@ namespace U3dClient.GameTools
             },
             new List<string>() {"System.IO.DirectoryInfo", "Create", "System.Security.AccessControl.DirectorySecurity"},
             new List<string>() {"UnityEngine.MonoBehaviour", "runInEditMode"},
+            new List<string>() { "UnityEngine.AnimatorControllerParameter", "name"},
+            new List<string>() { "UnityEngine.Texture", "imageContentsHash"},
+            new List<string>() {"UnityEngine.CanvasRenderer", "OnRequestRebuild", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.AudioSettings", "GetSpatializerPluginNames", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.AudioSettings", "SetSpatializerPluginName", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.Caching", "SetNoBackupFlag", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.Caching", "ResetNoBackupFlag", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.Input", "IsJoystickPreconfigured", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.UI.Graphic", "OnRebuildRequested", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
+            new List<string>() { "UnityEngine.UI.Text", "OnRebuildRequested", CSObjectWrapEditor.GeneratorConfig.AllInBlackList},
         };
     }
 }

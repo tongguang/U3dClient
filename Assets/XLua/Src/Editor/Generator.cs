@@ -29,6 +29,8 @@ namespace CSObjectWrapEditor
         public static string common_path = Application.dataPath + "/XLua/Gen/";
 #endif
 
+        public static string AllInBlackList = "AllInBlackList";
+
         static GeneratorConfig()
         {
             foreach(var type in (from type in XLua.Utils.GetAllTypes()
@@ -527,6 +529,10 @@ namespace CSObjectWrapEditor
             {
                 if (mb.DeclaringType.FullName == exclude[0] && mb.Name == exclude[1])
                 {
+                    if (exclude.Count > 2 && exclude[2] == GeneratorConfig.AllInBlackList)
+                    {
+                        return true;
+                    }
                     var parameters = mb.GetParameters();
                     if (parameters.Length != exclude.Count - 2)
                     {
