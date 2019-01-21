@@ -199,7 +199,7 @@ namespace U3dClient.GameTools
 
         static bool IsDelegateExclude(Type type)
         {
-            var fullName = type.GetCompilableNiceFullName();
+            var fullName = type.GetNiceFullName();
             for (int i = 0; i < s_DelegateExclude.Count; i++)
             {
                 if (fullName.Contains(s_DelegateExclude[i]))
