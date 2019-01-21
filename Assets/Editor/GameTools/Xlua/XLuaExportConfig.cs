@@ -11,6 +11,8 @@ using System;
 using XLua;
 using System.Reflection;
 using System.Linq;
+using Sirenix.Utilities;
+using UnityEngine;
 
 namespace U3dClient.GameTools
 {
@@ -190,6 +192,24 @@ namespace U3dClient.GameTools
             }
         }
 
+        private static List<string> s_DelegateExclude = new List<string>
+        {
+            "UnityEngine.CanvasRenderer.OnRequestRebuild",
+        };
+
+        static bool IsDelegateExclude(Type type)
+        {
+            var fullName = type.GetCompilableNiceFullName();
+            for (int i = 0; i < s_DelegateExclude.Count; i++)
+            {
+                if (fullName.Contains(s_DelegateExclude[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
         ////自动把LuaCallCSharp涉及到的delegate加到CSharpCallLua列表，后续可以直接用lua函数做callback
         [CSharpCallLua]
         public static List<Type> s_CSharpCallLua
@@ -230,7 +250,16 @@ namespace U3dClient.GameTools
                     }
                 }
 
-                return delegate_types.Distinct().ToList();
+                var result_delegate_types = new List<Type>();
+                foreach (var delegateType in delegate_types)
+                {
+                    if (!IsDelegateExclude(delegateType))
+                    {
+                        result_delegate_types.Add(delegateType);
+                    }
+                }
+
+                return result_delegate_types.Distinct().ToList();
             }
         }
         //--------------end 纯lua编程配置参考----------------------------
