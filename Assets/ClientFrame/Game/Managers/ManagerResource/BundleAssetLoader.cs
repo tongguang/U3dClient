@@ -183,7 +183,7 @@ namespace U3dClient
             }
         }
 
-        private static string s_BundleANdAssetSpliteChar = "|";
+        private static string s_BundleAndAssetSpliteChar = "|";
 
         private static readonly ObjectPool<BundleAssetLoader> s_LoaderPool =
             new ObjectPool<BundleAssetLoader>(
@@ -198,13 +198,15 @@ namespace U3dClient
         private static readonly Dictionary<int, BundleAssetLoader> s_ResIndexToLoader =
             new Dictionary<int, BundleAssetLoader>();
 
+        private static StringBuilder s_AssetKeyStringBuilder = new StringBuilder();
+
         private static void CalculateAssetKey(string bundleName, string assetName, out string assetKey)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(bundleName);
-            stringBuilder.Append(s_BundleANdAssetSpliteChar);
-            stringBuilder.Append(assetName);
-            assetKey = stringBuilder.ToString();
+            s_AssetKeyStringBuilder.Clear();
+            s_AssetKeyStringBuilder.Append(bundleName);
+            s_AssetKeyStringBuilder.Append(s_BundleAndAssetSpliteChar);
+            s_AssetKeyStringBuilder.Append(assetName);
+            assetKey = s_AssetKeyStringBuilder.ToString();
         }
 
         public static int LoadAsync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)

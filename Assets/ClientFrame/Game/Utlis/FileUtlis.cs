@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace U3dClient
 {
-    public static class FileTool
+    public static class FileUtlis
     {
         public static string s_DataPath;
         public static string s_StreamingAssetsPath;
@@ -15,7 +15,7 @@ namespace U3dClient
         public static string s_WWWStreamingAssetsPath;
         public static string s_WWWPersistentDataPath;
 
-        static FileTool()
+        static FileUtlis()
         {
             
             s_StreamingAssetsPath = Application.streamingAssetsPath;
@@ -40,6 +40,7 @@ namespace U3dClient
 #endif
         }
 
+        private static Dictionary<string, string> s_BundleNameToPath = new Dictionary<string, string>();
         public static string GetBundlePath(string bundleName)
         {
             if (bundleName == "")
@@ -48,15 +49,24 @@ namespace U3dClient
             }
 
             {
-                var bundlePath = Path.Combine(s_PersistentDataPath, bundleName);
-                if (File.Exists(bundlePath))
+                string bundlePath = null;
+                s_BundleNameToPath.TryGetValue(bundleName, out bundlePath);
+                if (bundlePath != null)
                 {
                     return bundlePath;
                 }
             }
-
+            {
+                var bundlePath = Path.Combine(s_PersistentDataPath, bundleName);
+                if (File.Exists(bundlePath))
+                {
+                    s_BundleNameToPath.Add(bundleName, bundlePath);
+                    return bundlePath;
+                }
+            }
             {
                 var bundlePath = Path.Combine(s_StreamingAssetsPath, bundleName);
+                s_BundleNameToPath.Add(bundleName, bundlePath);
                 return bundlePath;
             }
         }

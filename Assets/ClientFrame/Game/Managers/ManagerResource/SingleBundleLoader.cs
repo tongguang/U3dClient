@@ -94,7 +94,7 @@ namespace U3dClient
             m_ResouceIndexSet.Add(index);
             if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
             {
-                var bundlePath = FileTool.GetBundlePath(m_BundleName);
+                var bundlePath = FileUtlis.GetBundlePath(m_BundleName);
                 m_Bundle = AssetBundle.LoadFromFile(bundlePath);
                 m_LoadState = LoadState.Complete;
                 loadedAction(m_Bundle != null, m_Bundle);
@@ -155,7 +155,7 @@ namespace U3dClient
             }
 
             m_LoadState = LoadState.Loading;
-            var bundlePath = FileTool.GetBundlePath(m_BundleName);
+            var bundlePath = FileUtlis.GetBundlePath(m_BundleName);
             var request = AssetBundle.LoadFromFileAsync(bundlePath);
             while (!request.isDone)
             {
