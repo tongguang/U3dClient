@@ -183,7 +183,7 @@ namespace U3dClient
         private static void CalculateAssetKey(string bundleName, string assetName, out string assetKey)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(CommonDefine.s_RelativeNormalResRawPath);
+            stringBuilder.Append(CommonDefine.s_RelativeNormalResReleasePath);
             stringBuilder.Append(s_PathSpliteChar);
             stringBuilder.Append(bundleName.Replace(s_BundleSuffix, ""));
             stringBuilder.Append(s_PathSpliteChar);

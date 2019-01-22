@@ -21,14 +21,14 @@ namespace U3dClient.GameTools
         protected override void Initialize()
         {
             AbsProjectPath = BuildAssetBundleProcess.s_AbsProjectPath;
-            RelativeNormalResRawPath = BuildAssetBundleProcess.s_RelativeNormalResRawPath;
+            RelativeNormalResReleasePath = BuildAssetBundleProcess.s_RelativeNormalResReleasePath;
             RelativeTempAssetBundlesPath = BuildAssetBundleProcess.s_RelativeTempAssetBundlesPath;
             AssetBundlesName = BuildAssetBundleProcess.s_AssetBundlesName;
             VersionFileName = BuildAssetBundleProcess.s_VersionFileName;
         }
 
         [ReadOnly] public string AbsProjectPath = "";
-        [ReadOnly] public string RelativeNormalResRawPath = "";
+        [ReadOnly] public string RelativeNormalResReleasePath = "";
         [ReadOnly] public string RelativeTempAssetBundlesPath = "";
         [ReadOnly] public string AssetBundlesName = "";
         [ReadOnly] public string VersionFileName = "";

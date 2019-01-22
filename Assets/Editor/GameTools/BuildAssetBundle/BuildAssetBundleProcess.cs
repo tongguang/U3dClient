@@ -11,7 +11,7 @@ namespace U3dClient.GameTools
     public static class BuildAssetBundleProcess
     {
         public static string s_AbsProjectPath = CommonHelper.NormalPath(System.Environment.CurrentDirectory);
-        public static string s_RelativeNormalResRawPath = CommonDefine.s_RelativeNormalResRawPath;
+        public static string s_RelativeNormalResReleasePath = CommonDefine.s_RelativeNormalResReleasePath;
         public static string s_RelativeTempAssetBundlesPath = CommonHelper.CombinePath("GameTemp", CommonDefine.s_AssetBundlesName);
         
 #if UNITY_STANDALONE
@@ -31,7 +31,7 @@ namespace U3dClient.GameTools
 
         private static void GenerateNormalResAssetBundleName()
         {
-            var filePaths = Directory.GetFiles(s_RelativeNormalResRawPath,
+            var filePaths = Directory.GetFiles(s_RelativeNormalResReleasePath,
                 "*.*", SearchOption.AllDirectories);
             foreach (var filePath in filePaths)
             {
@@ -45,7 +45,7 @@ namespace U3dClient.GameTools
                 if (dirName != null)
                 {
                     dirName = CommonHelper.NormalPath(dirName);
-                    var abName = dirName.Replace(s_RelativeNormalResRawPath + "/", "").ToLower();
+                    var abName = dirName.Replace(s_RelativeNormalResReleasePath + "/", "").ToLower();
                     var asset = AssetImporter.GetAtPath(assetPath);
                     if (asset)
                     {
@@ -58,7 +58,7 @@ namespace U3dClient.GameTools
 
         private static void ClearNormalResAssetBundleName()
         {
-            var filePaths = Directory.GetFiles(s_RelativeNormalResRawPath,
+            var filePaths = Directory.GetFiles(s_RelativeNormalResReleasePath,
                 "*.*", SearchOption.AllDirectories);
             foreach (var filePath in filePaths)
             {

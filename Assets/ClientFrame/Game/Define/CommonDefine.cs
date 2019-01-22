@@ -15,7 +15,7 @@ namespace U3dClient
 
         #region 编辑器游戏共用
 
-        public static string s_RelativeNormalResRawPath = "Assets/Resource";
+        public static string s_RelativeNormalResReleasePath = "Assets/ReleaseAssets";
         public static string s_RelativeScriptResRawPath = "Assets/Script";
 
         #endregion
