@@ -12,6 +12,13 @@ namespace U3dClient
             AssetBundleMode,
         }
 
+        public enum LuaScriptLoadModeEnum
+        {
+            RawFileMode,
+            AssetBundleMode,
+        }
+
         public AssetLoadModeEnum AssetLoadMode;
+        public LuaScriptLoadModeEnum LuaScriptLoadMode;
     }
 } 

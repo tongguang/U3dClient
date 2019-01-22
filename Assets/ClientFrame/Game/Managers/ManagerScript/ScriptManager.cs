@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using UnityEngine;
 using XLua;
@@ -57,15 +58,32 @@ namespace U3dClient
             m_LuaFileBytesDict = luaFileBytesDict;
         }
 
+        private byte[] OnBundleModeLoad(ref string filename)
+        {
+            LuaFileBytes fileBytes;
+            m_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
+            return fileBytes?.GetBytes();
+        }
+
+        private byte[] OnRawFileModeLoad(ref string filename)
+        {
+            var path = CommonUtlis.CombinePath(CommonDefine.s_RelativeScriptResRawPath, filename) + ".lua";
+            var texts = File.ReadAllText(path);
+            var bytes = Encoding.UTF8.GetBytes(texts);
+            return bytes;
+        }
+
         public void InitMainLuaRunner()
         {
             MainLuaRunner = new LuaRunner();
-            MainLuaRunner.Init((ref string filename) =>
+            if (GameCenter.s_ConfigManager.GlobalGameConfig.LuaScriptLoadMode == GameConfig.LuaScriptLoadModeEnum.RawFileMode)
             {
-                LuaFileBytes fileBytes;
-                m_LuaFileBytesDict.TryGetValue(filename, out fileBytes);
-                return fileBytes?.GetBytes();
-            });
+                MainLuaRunner.Init(OnRawFileModeLoad);
+            }
+            else
+            {
+                MainLuaRunner.Init(OnBundleModeLoad);
+            }
         }
 
         public void ReleaseMainLuaRunner()
