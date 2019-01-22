@@ -9,6 +9,8 @@ namespace U3dClient
         private static List<IGameFixedUpdate> m_FixedUpdateList = new List<IGameFixedUpdate>();
         private static Dictionary<string, IGameManager> m_ManagerDict = new Dictionary<string, IGameManager>();
 
+        public static ConfigManager s_ConfigManager { get; private set; }
+
         public static TimerManager s_TimerManager { get; private set; }
 
         public static EventManager s_EventManager { get; private set; }
@@ -25,6 +27,7 @@ namespace U3dClient
         {
             #region addManager
 
+            s_ConfigManager = AddManager<ConfigManager>();
             s_TimerManager = AddManager<TimerManager>();
             s_EventManager = AddManager<EventManager>();
             s_ResourceManager = AddManager<ResourceManager>();
