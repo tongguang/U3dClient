@@ -16,6 +16,7 @@ namespace U3dClient
             if (Instance == null)
             {
                 Instance = this;
+                DontDestroyOnLoad(this);
             }
             else
             {
@@ -23,7 +24,8 @@ namespace U3dClient
                 return;
             }
 
-           GameCenter.Awake();
+            GameCenter.s_StartCoroutineFunc = StartCoroutine;
+            GameCenter.Awake();
         }
 
         private void Start()

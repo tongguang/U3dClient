@@ -69,7 +69,7 @@ namespace U3dClient
             {
                 m_LoadedCallbackDict.Add(index, loadedAction);
                 m_LoadState = LoadState.WaitLoad;
-                MainThreadDispatcher.StartCoroutine(LoadFuncEnumerator());
+                GameCenter.s_StartCoroutineFunc(LoadFuncEnumerator());
             }
             else if (m_LoadState == LoadState.WaitLoad || m_LoadState == LoadState.Loading)
             {

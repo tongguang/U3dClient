@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace U3dClient
 {
@@ -8,6 +11,8 @@ namespace U3dClient
         private static List<IGameUpdate> m_UpdateList = new List<IGameUpdate>();
         private static List<IGameFixedUpdate> m_FixedUpdateList = new List<IGameFixedUpdate>();
         private static Dictionary<string, IGameManager> m_ManagerDict = new Dictionary<string, IGameManager>();
+
+        public static Func<IEnumerator, Coroutine> s_StartCoroutineFunc;
 
         public static ConfigManager s_ConfigManager { get; private set; }
 
