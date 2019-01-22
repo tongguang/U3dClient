@@ -5,6 +5,8 @@ namespace U3dClient
     public static class GameCenter
     {
         private static List<IGameManager> m_ManagerList = new List<IGameManager>();
+        private static List<IGameUpdate> m_UpdateList = new List<IGameUpdate>();
+        private static List<IGameFixedUpdate> m_FixedUpdateList = new List<IGameFixedUpdate>();
         private static Dictionary<string, IGameManager> m_ManagerDict = new Dictionary<string, IGameManager>();
 
         public static TimerManager s_TimerManager { get; private set; }
@@ -34,6 +36,19 @@ namespace U3dClient
 
             foreach (var manager in m_ManagerList)
             {
+                IGameUpdate gameUpdate = manager as IGameUpdate;
+                if (gameUpdate != null)
+                {
+                    m_UpdateList.Add(gameUpdate);
+                }
+                IGameFixedUpdate gameFixedUpdate = manager as IGameFixedUpdate;
+                if (gameFixedUpdate != null)
+                {
+                    m_FixedUpdateList.Add(gameFixedUpdate);
+                }
+            }
+            foreach (var manager in m_ManagerList)
+            {
                 manager.Awake();
             }
         }
@@ -48,17 +63,17 @@ namespace U3dClient
 
         public static void Update()
         {
-            foreach (var manager in m_ManagerList)
+            foreach (var gameUpdate in m_UpdateList)
             {
-                manager.Update();
+                gameUpdate.Update();
             }
         }
 
         public static void FixedUpdate()
         {
-            foreach (var manager in m_ManagerList)
+            foreach (var gameFixedUpdate in m_FixedUpdateList)
             {
-                manager.FixedUpdate();
+                gameFixedUpdate.FixedUpdate();
             }
         }
 

@@ -4,8 +4,6 @@
     {
         void Awake();
         void Start();
-        void Update();
-        void FixedUpdate();
         void OnApplicationFocus(bool hasFocus);
         void OnApplicationPause(bool pauseStatus);
         void OnDestroy();

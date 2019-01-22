@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace U3dClient
 {
-    public class EventManager : IGameManager
+    public class EventManager : IGameManager, IGameUpdate
     {
         private int m_EventIndex = 1;
         private Dictionary<string, Dictionary<int, Action<IEventMessage>>> m_NameToEventActions = new Dictionary<string, Dictionary<int, Action<IEventMessage>>>();
@@ -161,10 +161,6 @@ namespace U3dClient
         public void Update()
         {
             UpdateDelayFireEvents();
-        }
-
-        public void FixedUpdate()
-        {
         }
 
         public void OnApplicationFocus(bool hasFocus)

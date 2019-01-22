@@ -3,7 +3,7 @@ using U3dClient;
 
 namespace U3dClient
 {
-    public class GameFlowManager : IGameManager
+    public class GameFlowManager : IGameManager,IGameUpdate
     {
         public enum GameFlowState
         {
@@ -27,10 +27,6 @@ namespace U3dClient
         public void Update()
         {
             GameFlowFsm.Update();
-        }
-
-        public void FixedUpdate()
-        {
         }
 
         public void OnApplicationFocus(bool hasFocus)

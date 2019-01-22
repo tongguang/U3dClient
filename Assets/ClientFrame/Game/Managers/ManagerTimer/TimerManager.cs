@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace U3dClient
 {
-    public class TimerManager : IGameManager
+    public class TimerManager : IGameManager, IGameUpdate
     {
         private ObjectPool<Timer> m_TimerPool = new ObjectPool<Timer>((timer) => { timer.OnReuse();}, (timer) => { timer.OnRecycle(); });
 
@@ -145,10 +145,6 @@ namespace U3dClient
         public void Update()
         {
             UpdateAllTimers();
-        }
-
-        public void FixedUpdate()
-        {
         }
 
         public void OnApplicationFocus(bool hasFocus)

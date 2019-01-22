@@ -30,14 +30,6 @@ namespace U3dClient
         {
         }
 
-        public void Update()
-        {
-        }
-
-        public void FixedUpdate()
-        {
-        }
-
         public void OnApplicationFocus(bool hasFocus)
         {
         }
