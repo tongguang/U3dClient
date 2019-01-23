@@ -87,7 +87,7 @@ namespace U3dClient
             {
                 if (!m_ItemKeysToRemove.Contains(itemPair.Key))
                 {
-                    m_ForeachAction(itemPair.Value);
+                    m_ForeachAction?.Invoke(itemPair.Value);
                 }
             }
 
@@ -97,7 +97,7 @@ namespace U3dClient
                 m_Items.TryGetValue(itemKey, out item);
                 if (item != null)
                 {
-                    m_RemoveItemAction(item);
+                    m_RemoveItemAction?.Invoke(item);
                     m_Items.Remove(itemKey);
                 }
             }
@@ -122,7 +122,7 @@ namespace U3dClient
                 foreach (var itemKey in m_ItemKeysToRemove)
                 {
                     var item = m_Items[itemKey];
-                    m_RemoveItemAction(item);
+                    m_RemoveItemAction?.Invoke(item);
                     m_Items.Remove(itemKey);
                 }
 
