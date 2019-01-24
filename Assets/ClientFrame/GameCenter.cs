@@ -18,6 +18,8 @@ namespace U3dClient
 
         public static TimerManager s_TimerManager { get; private set; }
 
+        public static UpdateRunManager s_UpdateRunManager { get; private set; }
+
         public static EventManager s_EventManager { get; private set; }
 
         public static ResourceManager s_ResourceManager { get; private set; }
@@ -34,6 +36,7 @@ namespace U3dClient
 
             s_ConfigManager = AddManager<ConfigManager>();
             s_TimerManager = AddManager<TimerManager>();
+            s_UpdateRunManager = AddManager<UpdateRunManager>();
             s_EventManager = AddManager<EventManager>();
             s_ResourceManager = AddManager<ResourceManager>();
             s_UpgradeManager = AddManager<UpgradeManager>();
