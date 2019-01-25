@@ -1,16 +1,24 @@
-﻿using System.Collections.Generic;
-using U3dClient;
-
-namespace U3dClient
+﻿namespace U3dClient
 {
     public class GameFlowManager : IGameManager
     {
+        #region Enum
+
         public enum GameFlowState
         {
             EnterGame,
-            LuaLoop,
+            LuaLoop
         }
+
+        #endregion
+
+        #region PublicVal
+
         public Fsm<GameFlowState> GameFlowFsm;
+
+        #endregion
+
+        #region IGameManager
 
         public void Awake()
         {
@@ -45,5 +53,7 @@ namespace U3dClient
         public void OnApplicationQuit()
         {
         }
+
+        #endregion
     }
 }

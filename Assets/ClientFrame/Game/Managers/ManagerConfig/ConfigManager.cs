@@ -2,9 +2,16 @@
 
 namespace U3dClient
 {
-    public class ConfigManager :IGameManager
+    public class ConfigManager : IGameManager
     {
+        #region PublicVal
+
         public GameConfig GlobalGameConfig;
+
+        #endregion
+
+        #region IGameManager
+
         public void Awake()
         {
             var configTextAsset = Resources.Load<TextAsset>("gameConfig");
@@ -31,5 +38,7 @@ namespace U3dClient
         public void OnApplicationQuit()
         {
         }
+
+        #endregion
     }
 }

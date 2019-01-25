@@ -9,6 +9,7 @@ namespace U3dClient
         Loading,
         Complete
     }
+
     public abstract class BaseLoader
     {
         protected abstract void OnReuse();

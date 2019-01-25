@@ -1,5 +1,5 @@
-﻿using System;
-using XLua;
+﻿using XLua;
+
 namespace U3dClient
 {
     public class LuaRunner
@@ -12,8 +12,14 @@ namespace U3dClient
             void Release();
         }
 
-        private LuaEnv m_LuaEnv = null;
+        #region PrivateVal
+
+        private LuaEnv m_LuaEnv;
         private ICallLuaLoopMap m_CallLuaLoopMap;
+
+        #endregion
+
+        #region PublicFunc
 
         public void Init(LuaEnv.CustomLoader loader)
         {
@@ -47,5 +53,7 @@ namespace U3dClient
         {
             m_CallLuaLoopMap.Release();
         }
+
+        #endregion
     }
 }

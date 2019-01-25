@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace U3dClient
 {
@@ -8,12 +6,11 @@ namespace U3dClient
     {
         private static ObjectPool<T> m_Pool;
 
+        #region PublicStaticFunc
+
         public static T GetEventMessage()
         {
-            if (m_Pool == null)
-            {
-                m_Pool = new ObjectPool<T>(null, (eventMessage) => { eventMessage.OnRecycle(); });
-            }
+            if (m_Pool == null) m_Pool = new ObjectPool<T>(null, eventMessage => { eventMessage.OnRecycle(); });
 
             var message = m_Pool.Get();
             return message;
@@ -26,7 +23,10 @@ namespace U3dClient
 
         public static void DebugPoolData()
         {
-            Debug.Log(string.Format("poolType:{0} countAll:{1} countActive:{2} countInactive:{3}", typeof(T), m_Pool.countAll, m_Pool.countActive, m_Pool.countInactive));
+            Debug.Log(string.Format("poolType:{0} countAll:{1} countActive:{2} countInactive:{3}", typeof(T),
+                m_Pool.countAll, m_Pool.countActive, m_Pool.countInactive));
         }
+
+        #endregion
     }
 }

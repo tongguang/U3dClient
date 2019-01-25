@@ -1,14 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using U3dClient;
 using UnityEngine;
 
 namespace U3dClient
 {
-    public class EnterGameState:IFsmState
+    public class EnterGameState : IFsmState
     {
-        private int m_Step;
+        #region PrivateInt
+
         private int m_LuaFileResIndex = -1;
+        private int m_Step;
+
+        #endregion
+
+
+        #region IFsmState
+
         public void OnEnter()
         {
             Debug.Log("EnterGameState OnEnter");
@@ -22,24 +29,27 @@ namespace U3dClient
         {
             if (m_Step == 1)
             {
-                if (GameCenter.s_ConfigManager.GlobalGameConfig.LuaScriptLoadMode == GameConfig.LuaScriptLoadModeEnum.RawFileMode)
+                if (GameCenter.s_ConfigManager.GlobalGameConfig.LuaScriptLoadMode ==
+                    GameConfig.LuaScriptLoadModeEnum.RawFileMode)
                 {
                     m_Step = 4;
                 }
                 else
                 {
                     m_Step = 2;
-                    m_LuaFileResIndex = BundleAssetLoader.LoadAsync<LuaFileRef>(CommonDefine.s_ScriptAssetBundleName + "." + CommonDefine.s_BundleSuffixName,
+                    m_LuaFileResIndex = BundleAssetLoader.LoadAsync<LuaFileRef>(
+                        CommonDefine.s_ScriptAssetBundleName + "." + CommonDefine.s_BundleSuffixName,
                         CommonDefine.s_ScriptFileDescName, (b, fileRef) =>
                         {
                             m_Step = 3;
-                            Dictionary<string, ScriptManager.LuaFileBytes> fileBytesDict = new Dictionary<string, ScriptManager.LuaFileBytes>();
+                            var fileBytesDict = new Dictionary<string, ScriptManager.LuaFileBytes>();
                             foreach (var asset in fileRef.AssetsRefDict)
                             {
-                                ScriptManager.LuaFileBytes fileBytes = new ScriptManager.LuaFileBytes();
+                                var fileBytes = new ScriptManager.LuaFileBytes();
                                 fileBytes.SetBytes(Encoding.UTF8.GetBytes(asset.Value.text));
                                 fileBytesDict.Add(asset.Key, fileBytes);
                             }
+
                             GameCenter.s_ScriptManager.SetLuaFileBytesDict(fileBytesDict);
                         }
                     );
@@ -50,20 +60,12 @@ namespace U3dClient
             }
             else if (m_Step == 3)
             {
-                if (m_LuaFileResIndex != -1)
-                {
-                    BundleAssetLoader.UnLoad(m_LuaFileResIndex);
-                }
+                if (m_LuaFileResIndex != -1) BundleAssetLoader.UnLoad(m_LuaFileResIndex);
                 m_Step = 4;
-                return;
             }
             else if (m_Step == 4)
             {
                 GameCenter.s_GameFlowManager.GameFlowFsm.ChangeState(GameFlowManager.GameFlowState.LuaLoop);
-            }
-            else
-            {
-                
             }
         }
 
@@ -71,5 +73,7 @@ namespace U3dClient
         {
             Debug.Log("EnterGameState OnExit");
         }
+
+        #endregion
     }
 }

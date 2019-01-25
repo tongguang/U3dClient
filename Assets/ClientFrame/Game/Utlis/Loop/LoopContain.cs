@@ -5,11 +5,17 @@ namespace U3dClient
 {
     public class LoopContain<T1, T2>
     {
-        private Dictionary<T1, T2> m_Items = new Dictionary<T1, T2>();
-        private Dictionary<T1, T2> m_ItemsToAdd = new Dictionary<T1, T2>();
-        private HashSet<T1> m_ItemKeysToRemove = new HashSet<T1>();
-        private Action<T2> m_ForeachAction = null;
-        private Action<T2> m_RemoveItemAction = null;
+        #region PrivateVal
+
+        private readonly Dictionary<T1, T2> m_Items = new Dictionary<T1, T2>();
+        private readonly Dictionary<T1, T2> m_ItemsToAdd = new Dictionary<T1, T2>();
+        private readonly HashSet<T1> m_ItemKeysToRemove = new HashSet<T1>();
+        private Action<T2> m_ForeachAction;
+        private Action<T2> m_RemoveItemAction;
+
+        #endregion
+
+        #region PublicFunc
 
         public void SetForeachAction(Action<T2> action)
         {
@@ -23,15 +29,9 @@ namespace U3dClient
 
         public bool TryAddLoop(T1 key, T2 value)
         {
-            if (m_Items.ContainsKey(key))
-            {
-                return false;
-            }
+            if (m_Items.ContainsKey(key)) return false;
 
-            if (m_ItemsToAdd.ContainsKey(key))
-            {
-                return false;
-            }
+            if (m_ItemsToAdd.ContainsKey(key)) return false;
 
             m_ItemsToAdd.Add(key, value);
             return true;
@@ -61,35 +61,22 @@ namespace U3dClient
         {
             T2 item;
             m_Items.TryGetValue(key, out item);
-            if (item != null)
-            {
-                return item;
-            }
+            if (item != null) return item;
 
             m_ItemsToAdd.TryGetValue(key, out item);
-            if (item != null)
-            {
-                return item;
-            }
+            if (item != null) return item;
 
             return item;
         }
 
         public void Foreach()
         {
-            foreach (var itemPair in m_ItemsToAdd)
-            {
-                m_Items.Add(itemPair.Key, itemPair.Value);
-            }
+            foreach (var itemPair in m_ItemsToAdd) m_Items.Add(itemPair.Key, itemPair.Value);
 
             m_ItemsToAdd.Clear();
             foreach (var itemPair in m_Items)
-            {
                 if (!m_ItemKeysToRemove.Contains(itemPair.Key))
-                {
                     m_ForeachAction?.Invoke(itemPair.Value);
-                }
-            }
 
             foreach (var itemKey in m_ItemKeysToRemove)
             {
@@ -107,15 +94,9 @@ namespace U3dClient
 
         public void Clear(bool isImmediate = true)
         {
-            foreach (var itemPair in m_ItemsToAdd)
-            {
-                TryRemoveLoop(itemPair.Key);
-            }
+            foreach (var itemPair in m_ItemsToAdd) TryRemoveLoop(itemPair.Key);
 
-            foreach (var itemPair in m_Items)
-            {
-                TryRemoveLoop(itemPair.Key);
-            }
+            foreach (var itemPair in m_Items) TryRemoveLoop(itemPair.Key);
 
             if (isImmediate)
             {
@@ -130,5 +111,7 @@ namespace U3dClient
                 m_Items.Clear();
             }
         }
+
+        #endregion
     }
 }

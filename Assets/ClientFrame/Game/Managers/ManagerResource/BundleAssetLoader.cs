@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,16 +9,19 @@ namespace U3dClient
 {
     public class BundleAssetLoader : BaseLoader
     {
-        private string m_BundleName = null;
-        private string m_AssetName = null;
-        private string m_AssetKeyName = null;
-        private LoadState m_LoadState = LoadState.Init;
-        private int m_BundleIndex = -1;
-        private Object m_AssetObject = null;
-        private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
+        #region PrivateVar
 
-        private readonly Dictionary<int, Action<bool, Object>> m_LoadedCallbackDict =
-            new Dictionary<int, Action<bool, Object>>();
+        private readonly HashSet<int> m_ResouceIndexSet = new HashSet<int>();
+        private string m_AssetKeyName;
+        private string m_AssetName;
+        private Object m_AssetObject;
+        private int m_BundleIndex = -1;
+        private string m_BundleName;
+        private LoadState m_LoadState = LoadState.Init;
+
+        #endregion
+
+        #region BaseLoader
 
         protected override void OnReuse()
         {
@@ -28,10 +30,7 @@ namespace U3dClient
 
         protected override void OnRecycle()
         {
-            if (m_BundleIndex != -1)
-            {
-                FullBundleLoader.UnLoad(m_BundleIndex);
-            }
+            if (m_BundleIndex != -1) FullBundleLoader.UnLoad(m_BundleIndex);
             ResetData();
         }
 
@@ -47,6 +46,36 @@ namespace U3dClient
             m_LoadedCallbackDict.Clear();
         }
 
+        protected override IEnumerator LoadFuncEnumerator()
+        {
+            if (m_LoadState != LoadState.WaitLoad) yield break;
+
+            m_LoadState = LoadState.Loading;
+            m_BundleIndex = FullBundleLoader.LoadAsync(m_BundleName, null);
+            var bundleLoader = FullBundleLoader.GetLoader(m_BundleIndex);
+            while (!bundleLoader.IsComplate) yield return null;
+
+            var bundle = bundleLoader.GetAssetBundle();
+            var request = bundle.LoadAssetAsync<Object>(m_AssetName);
+            while (!request.isDone) yield return null;
+
+            m_AssetObject = request.asset;
+            m_LoadState = LoadState.Complete;
+
+            foreach (var action in m_LoadedCallbackDict)
+            {
+                var callback = action.Value;
+                callback(m_AssetObject != null, m_AssetObject);
+            }
+
+            m_LoadedCallbackDict.Clear();
+            TryUnLoadByAssetKey(m_AssetKeyName);
+        }
+
+        #endregion
+
+        #region PrivateFunc
+
         private void Init(string bundleName, string assetName, string assetKey)
         {
             m_BundleName = bundleName;
@@ -54,12 +83,9 @@ namespace U3dClient
             m_AssetKeyName = assetKey;
         }
 
-        private int InternalLoadAsync(Action<bool, Object> loadedAction)
+        private int InternalLoadAsync(System.Action<bool, Object> loadedAction)
         {
-            if (loadedAction == null)
-            {
-                loadedAction = s_DefaultLoadedCallback;
-            }
+            if (loadedAction == null) loadedAction = s_DefaultLoadedCallback;
 
             var index = ResourceManager.GetNewResourceIndex();
             m_ResouceIndexSet.Add(index);
@@ -81,12 +107,9 @@ namespace U3dClient
             return index;
         }
 
-        private int InternalLoadSync(Action<bool, Object> loadedAction)
+        private int InternalLoadSync(System.Action<bool, Object> loadedAction)
         {
-            if (loadedAction == null)
-            {
-                loadedAction = s_DefaultLoadedCallback;
-            }
+            if (loadedAction == null) loadedAction = s_DefaultLoadedCallback;
 
             var index = ResourceManager.GetNewResourceIndex();
             m_ResouceIndexSet.Add(index);
@@ -112,85 +135,38 @@ namespace U3dClient
             return index;
         }
 
-        protected override IEnumerator LoadFuncEnumerator()
-        {
-            if (m_LoadState != LoadState.WaitLoad)
-            {
-                yield break;
-            }
-
-            m_LoadState = LoadState.Loading;
-            m_BundleIndex = FullBundleLoader.LoadAsync(m_BundleName, null);
-            var bundleLoader = FullBundleLoader.GetLoader(m_BundleIndex);
-            while (!bundleLoader.IsComplate)
-            {
-                yield return null;
-            }
-
-            var bundle = bundleLoader.GetAssetBundle();
-            var request = bundle.LoadAssetAsync<Object>(m_AssetName);
-            while (!request.isDone)
-            {
-                yield return null;
-            }
-
-            m_AssetObject = request.asset;
-            m_LoadState = LoadState.Complete;
-
-            foreach (var action in m_LoadedCallbackDict)
-            {
-                var callback = action.Value;
-                callback(m_AssetObject != null, m_AssetObject);
-            }
-
-            m_LoadedCallbackDict.Clear();
-            TryUnLoadByAssetKey(m_AssetKeyName);
-        }
-
         private void InternalUnload(int resourceIndex)
         {
-            if (m_LoadedCallbackDict.ContainsKey(resourceIndex))
-            {
-                m_LoadedCallbackDict.Remove(resourceIndex);
-            }
+            if (m_LoadedCallbackDict.ContainsKey(resourceIndex)) m_LoadedCallbackDict.Remove(resourceIndex);
 
-            if (m_ResouceIndexSet.Contains(resourceIndex))
-            {
-                m_ResouceIndexSet.Remove(resourceIndex);
-            }
+            if (m_ResouceIndexSet.Contains(resourceIndex)) m_ResouceIndexSet.Remove(resourceIndex);
 
             TryUnLoadByAssetKey(m_AssetKeyName);
         }
 
         private bool CanRealUnload()
         {
-            if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
-            {
-                return true;
-            }
-            else if (m_LoadState == LoadState.Loading)
-            {
-                return false;
-            }
-            else
-            {
-                if (m_ResouceIndexSet.Count > 0)
-                {
-                    return false;
-                }
+            if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad) return true;
 
-                return true;
-            }
+            if (m_LoadState == LoadState.Loading) return false;
+
+            if (m_ResouceIndexSet.Count > 0) return false;
+
+            return true;
         }
 
-        private static string s_BundleAndAssetSpliteChar = "|";
+        #endregion
+
+        #region StaticPrivateVar
+
+        private static readonly string s_BundleAndAssetSpliteChar = "|";
 
         private static readonly ObjectPool<BundleAssetLoader> s_LoaderPool =
             new ObjectPool<BundleAssetLoader>(
-                (loader) => { loader.OnReuse(); },
-                (loader) => { loader.OnRecycle(); });
+                loader => { loader.OnReuse(); },
+                loader => { loader.OnRecycle(); });
 
-        private static readonly Action<bool, Object> s_DefaultLoadedCallback = (isOk, Object) => { };
+        private static readonly System.Action<bool, Object> s_DefaultLoadedCallback = (isOk, Object) => { };
 
         private static readonly Dictionary<string, BundleAssetLoader> s_NameToLoader =
             new Dictionary<string, BundleAssetLoader>();
@@ -198,7 +174,14 @@ namespace U3dClient
         private static readonly Dictionary<int, BundleAssetLoader> s_ResIndexToLoader =
             new Dictionary<int, BundleAssetLoader>();
 
-        private static StringBuilder s_AssetKeyStringBuilder = new StringBuilder();
+        private static readonly StringBuilder s_AssetKeyStringBuilder = new StringBuilder();
+
+        private readonly Dictionary<int, System.Action<bool, Object>> m_LoadedCallbackDict =
+            new Dictionary<int, System.Action<bool, Object>>();
+
+        #endregion
+
+        #region StaticPrivateFunc
 
         private static void CalculateAssetKey(string bundleName, string assetName, out string assetKey)
         {
@@ -208,6 +191,28 @@ namespace U3dClient
             s_AssetKeyStringBuilder.Append(assetName);
             assetKey = s_AssetKeyStringBuilder.ToString();
         }
+
+        private static void TryUnLoadByName(string bundleName, string assetName)
+        {
+            string assetKey;
+            CalculateAssetKey(bundleName, assetName, out assetKey);
+            TryUnLoadByAssetKey(assetKey);
+        }
+
+        private static void TryUnLoadByAssetKey(string assetKey)
+        {
+            BundleAssetLoader loader;
+            s_NameToLoader.TryGetValue(assetKey, out loader);
+            if (loader != null && loader.CanRealUnload())
+            {
+                s_NameToLoader.Remove(assetKey);
+                s_LoaderPool.Release(loader);
+            }
+        }
+
+        #endregion
+
+        #region PublicStaticFunc
 
         public static int LoadAsync<T>(string bundleName, string assetName, Action<bool, T> loadedAction)
             where T : Object
@@ -281,22 +286,6 @@ namespace U3dClient
             }
         }
 
-        private static void TryUnLoadByName(string bundleName, string assetName)
-        {
-            string assetKey;
-            CalculateAssetKey(bundleName, assetName, out assetKey);
-            TryUnLoadByAssetKey(assetKey);
-        }
-
-        private static void TryUnLoadByAssetKey(string assetKey)
-        {
-            BundleAssetLoader loader;
-            s_NameToLoader.TryGetValue(assetKey, out loader);
-            if (loader != null && loader.CanRealUnload())
-            {
-                s_NameToLoader.Remove(assetKey);
-                s_LoaderPool.Release(loader);
-            }
-        }
+        #endregion
     }
 }

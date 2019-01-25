@@ -5,12 +5,18 @@ namespace U3dClient
 {
     public class Timer
     {
+        #region PrivateVal
+
         private Action m_OnComplete;
         private Action<float> m_OnUpdate;
         private float m_StartTime;
         private float m_LastUpdateTime;
         private float? m_TimeElapsedBeforeCancel;
         private float? m_TimeElapsedBeforePause;
+
+        #endregion
+
+        #region PublicVal
 
         public int TimerIndex { get; private set; }
 
@@ -22,27 +28,19 @@ namespace U3dClient
 
         public bool UsesRealTime { get; private set; }
 
-        public bool IsPaused
-        {
-            get { return m_TimeElapsedBeforePause.HasValue; }
-        }
+        public bool IsPaused => m_TimeElapsedBeforePause.HasValue;
 
-        public bool IsCancelled
-        {
-            get { return m_TimeElapsedBeforeCancel.HasValue; }
-        }
+        public bool IsCancelled => m_TimeElapsedBeforeCancel.HasValue;
 
-        public bool IsDone
-        {
-            get { return IsCompleted || IsCancelled; }
-        }
+        public bool IsDone => IsCompleted || IsCancelled;
+
+        #endregion
+
+        #region PublicFunc
 
         public void Cancel()
         {
-            if (IsDone)
-            {
-                return;
-            }
+            if (IsDone) return;
 
             m_TimeElapsedBeforeCancel = GetTimeElapsed();
             m_TimeElapsedBeforePause = null;
@@ -50,30 +48,21 @@ namespace U3dClient
 
         public void Pause()
         {
-            if (IsPaused || IsDone)
-            {
-                return;
-            }
+            if (IsPaused || IsDone) return;
 
             m_TimeElapsedBeforePause = GetTimeElapsed();
         }
 
         public void Resume()
         {
-            if (!IsPaused || IsDone)
-            {
-                return;
-            }
+            if (!IsPaused || IsDone) return;
 
             m_TimeElapsedBeforePause = null;
         }
 
         public float GetTimeElapsed()
         {
-            if (IsCompleted || GetWorldTime() >= GetFireTime())
-            {
-                return Duration;
-            }
+            if (IsCompleted || GetWorldTime() >= GetFireTime()) return Duration;
 
             return m_TimeElapsedBeforeCancel ??
                    m_TimeElapsedBeforePause ??
@@ -137,27 +126,9 @@ namespace U3dClient
             m_LastUpdateTime = m_StartTime;
         }
 
-        private float GetWorldTime()
-        {
-            return UsesRealTime ? Time.realtimeSinceStartup : Time.time;
-        }
-
-        private float GetFireTime()
-        {
-            return m_StartTime + Duration;
-        }
-
-        private float GetTimeDelta()
-        {
-            return GetWorldTime() - m_LastUpdateTime;
-        }
-
         public void Update()
         {
-            if (IsDone)
-            {
-                return;
-            }
+            if (IsDone) return;
 
             if (IsPaused)
             {
@@ -175,14 +146,31 @@ namespace U3dClient
                 m_OnComplete?.Invoke();
 
                 if (IsLooped)
-                {
                     m_StartTime = GetWorldTime();
-                }
                 else
-                {
                     IsCompleted = true;
-                }
             }
         }
+
+        #endregion
+
+        #region PrivateFunc
+
+        private float GetWorldTime()
+        {
+            return UsesRealTime ? Time.realtimeSinceStartup : Time.time;
+        }
+
+        private float GetFireTime()
+        {
+            return m_StartTime + Duration;
+        }
+
+        private float GetTimeDelta()
+        {
+            return GetWorldTime() - m_LastUpdateTime;
+        }
+
+        #endregion
     }
 }

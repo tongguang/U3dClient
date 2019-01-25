@@ -2,29 +2,64 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace U3dClient
 {
     public class TimerManager : IGameManager, IGameUpdate
     {
-        private ObjectPool<Timer> m_TimerPool = new ObjectPool<Timer>((timer) => { timer.OnReuse();}, (timer) => { timer.OnRecycle(); });
+
+        #region PrivateVal
+
+        private readonly ObjectPool<Timer> m_TimerPool =
+            new ObjectPool<Timer>(timer => { timer.OnReuse(); }, timer => { timer.OnRecycle(); });
 
         private int m_TimerIndex = 1;
-        private Dictionary<int, Timer> m_Timers = new Dictionary<int, Timer>();
-        private Dictionary<int, Timer> m_TimersToAdd = new Dictionary<int, Timer>();
-        private List<Timer> m_TimersDone = new List<Timer>();
+        private readonly Dictionary<int, Timer> m_Timers = new Dictionary<int, Timer>();
+        private readonly Dictionary<int, Timer> m_TimersToAdd = new Dictionary<int, Timer>();
+        private readonly List<Timer> m_TimersDone = new List<Timer>();
+
+        #endregion
+
+        #region PrivateFunc
 
         private int GetNewTimerIndex()
         {
             return m_TimerIndex++;
         }
 
+        private void UpdateAllTimers()
+        {
+            if (m_TimersToAdd.Count > 0)
+            {
+                foreach (var timerPair in m_TimersToAdd) m_Timers.Add(timerPair.Key, timerPair.Value);
+                m_TimersToAdd.Clear();
+            }
+
+            foreach (var timerPair in m_Timers)
+            {
+                var timer = timerPair.Value;
+                timer.Update();
+                if (timer.IsDone) m_TimersDone.Add(timer);
+            }
+
+            foreach (var timer in m_TimersDone)
+            {
+                m_TimerPool.Release(timer);
+                m_Timers.Remove(timer.TimerIndex);
+            }
+
+            m_TimersDone.Clear();
+        }
+
+        #endregion
+
+        #region PublicFunc
+
         public int RegisterTimer(float duration, Action onComplete, Action<float> onUpdate = null,
             bool isLooped = false, bool useRealTime = false)
         {
             var index = GetNewTimerIndex();
-            Timer timer = m_TimerPool.Get();
+            var timer = m_TimerPool.Get();
             timer.Init(index, duration, onComplete, onUpdate, isLooped, useRealTime);
             m_TimersToAdd.Add(index, timer);
             return index;
@@ -40,10 +75,7 @@ namespace U3dClient
         {
             Timer timer;
             m_Timers.TryGetValue(timerIndex, out timer);
-            if (timer == null)
-            {
-                m_TimersToAdd.TryGetValue(timerIndex, out timer);
-            }
+            if (timer == null) m_TimersToAdd.TryGetValue(timerIndex, out timer);
             return timer;
         }
 
@@ -61,78 +93,32 @@ namespace U3dClient
 
         public void UnRegisterAllTimers(bool isImmediate = true)
         {
-            foreach (var timerPair in m_Timers)
-            {
-                timerPair.Value.Cancel();
-            }
-            foreach (var timerPair in m_TimersToAdd)
-            {
-                m_TimerPool.Release(timerPair.Value);
-            }
+            foreach (var timerPair in m_Timers) timerPair.Value.Cancel();
+            foreach (var timerPair in m_TimersToAdd) m_TimerPool.Release(timerPair.Value);
             m_TimersToAdd.Clear();
 
             if (isImmediate)
             {
-                foreach (var timerPair in m_Timers)
-                {
-                    m_TimerPool.Release(timerPair.Value);
-                }
+                foreach (var timerPair in m_Timers) m_TimerPool.Release(timerPair.Value);
                 m_Timers.Clear();
             }
         }
 
         public void PauseAllTimers()
         {
-            foreach (var timerPair in m_Timers)
-            {
-                timerPair.Value.Pause();
-            }
-            foreach (var timerPair in m_TimersToAdd)
-            {
-                timerPair.Value.Pause();
-            }
+            foreach (var timerPair in m_Timers) timerPair.Value.Pause();
+            foreach (var timerPair in m_TimersToAdd) timerPair.Value.Pause();
         }
 
         public void ResumeAllTimers()
         {
-            foreach (var timerPair in m_Timers)
-            {
-                timerPair.Value.Resume();
-            }
-            foreach (var timerPair in m_TimersToAdd)
-            {
-                timerPair.Value.Resume();
-            }
+            foreach (var timerPair in m_Timers) timerPair.Value.Resume();
+            foreach (var timerPair in m_TimersToAdd) timerPair.Value.Resume();
         }
 
-        private void UpdateAllTimers()
-        {
-            if (m_TimersToAdd.Count > 0)
-            {
-                foreach (var timerPair in m_TimersToAdd)
-                {
-                    m_Timers.Add(timerPair.Key, timerPair.Value);
-                }
-                m_TimersToAdd.Clear();
-            }
+        #endregion
 
-            foreach (var timerPair in m_Timers)
-            {
-                var timer = timerPair.Value;
-                timer.Update();
-                if (timer.IsDone)
-                {
-                    m_TimersDone.Add(timer);
-                }
-            }
-
-            foreach (var timer in m_TimersDone)
-            {
-                m_TimerPool.Release(timer);
-                m_Timers.Remove(timer.TimerIndex);
-            }
-            m_TimersDone.Clear();
-        }
+        #region IGameManager
 
         public void Awake()
         {
@@ -142,10 +128,6 @@ namespace U3dClient
         {
         }
 
-        public void Update()
-        {
-            UpdateAllTimers();
-        }
 
         public void OnApplicationFocus(bool hasFocus)
         {
@@ -162,6 +144,16 @@ namespace U3dClient
         public void OnApplicationQuit()
         {
         }
-    }
 
+        #endregion
+
+        #region IGameUpdate
+
+        public void Update()
+        {
+            UpdateAllTimers();
+        }
+
+        #endregion
+    }
 }

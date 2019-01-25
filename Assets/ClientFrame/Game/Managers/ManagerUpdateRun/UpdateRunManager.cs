@@ -1,13 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace U3dClient
 {
-    public class UpdateRunManager:IGameManager, IGameUpdate
+    public class UpdateRunManager : IGameManager, IGameUpdate
     {
-        private LoopContain<int, Action> m_Runners = new LoopContain<int, Action>();
+        #region PrivateVal
+
+        private readonly LoopContain<int, Action> m_Runners = new LoopContain<int, Action>();
         private int m_NowIndex = 1;
+
+        #endregion
+
+        #region PrivateFunc
+
+        private int GetNewIndex()
+        {
+            return m_NowIndex++;
+        }
+
+        private void UpdateRunner(Action action)
+        {
+            action();
+        }
+
+        #endregion
+
+        #region PublicFunc
 
         public int AddRun(Action action)
         {
@@ -21,15 +39,9 @@ namespace U3dClient
             m_Runners.TryRemoveLoop(index);
         }
 
-        private int GetNewIndex()
-        {
-            return m_NowIndex++;
-        }
+        #endregion
 
-        private void UpdateRunner(Action action)
-        {
-            action();
-        }
+        #region IGameManager
 
         public void Awake()
         {
@@ -56,9 +68,15 @@ namespace U3dClient
         {
         }
 
+        #endregion
+
+        #region IGameUpdate
+
         public void Update()
         {
             m_Runners.Foreach();
         }
+
+        #endregion
     }
 }

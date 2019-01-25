@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace U3dClient
@@ -10,12 +7,7 @@ namespace U3dClient
     {
         private static int s_ResourceIndex = 1;
 
-        public static int GetNewResourceIndex()
-        {
-            return s_ResourceIndex++;
-        }
-
-//        private GameConfig.AssetLoadModeEnum AssetLoadMode;
+        #region PublicFunc
 
         public void InitBundleManifest()
         {
@@ -27,14 +19,9 @@ namespace U3dClient
             var assetLoadMode = GameCenter.s_ConfigManager.GlobalGameConfig.AssetLoadMode;
 #if UNITY_EDITOR
             if (assetLoadMode == GameConfig.AssetLoadModeEnum.EditMode)
-            {
-                return EditorModeAssetLoader.LoadAsync<T>(bundleName, assetName, loadedAction);
-            }
-            else
+                return EditorModeAssetLoader.LoadAsync(bundleName, assetName, loadedAction);
 #endif
-            {
-                return BundleAssetLoader.LoadAsync<T>(bundleName, assetName, loadedAction);
-            }
+            return BundleAssetLoader.LoadAsync(bundleName, assetName, loadedAction);
         }
 
         public int LoadAssetSync<T>(string bundleName, string assetName, Action<bool, T> loadedAction) where T : Object
@@ -42,14 +29,9 @@ namespace U3dClient
             var assetLoadMode = GameCenter.s_ConfigManager.GlobalGameConfig.AssetLoadMode;
 #if UNITY_EDITOR
             if (assetLoadMode == GameConfig.AssetLoadModeEnum.EditMode)
-            {
-                return EditorModeAssetLoader.LoadSync<T>(bundleName, assetName, loadedAction);
-            }
-            else
+                return EditorModeAssetLoader.LoadSync(bundleName, assetName, loadedAction);
 #endif
-            {
-                return BundleAssetLoader.LoadSync<T>(bundleName, assetName, loadedAction);
-            }
+            return BundleAssetLoader.LoadSync(bundleName, assetName, loadedAction);
         }
 
         public void UnLoadAsset(int resourceIndex)
@@ -57,15 +39,15 @@ namespace U3dClient
             var assetLoadMode = GameCenter.s_ConfigManager.GlobalGameConfig.AssetLoadMode;
 #if UNITY_EDITOR
             if (assetLoadMode == GameConfig.AssetLoadModeEnum.EditMode)
-            {
                 EditorModeAssetLoader.UnLoad(resourceIndex);
-            }
             else
 #endif
-            {
                 BundleAssetLoader.UnLoad(resourceIndex);
-            }
         }
+
+        #endregion
+
+        #region IGameManager
 
         public void Awake()
         {
@@ -90,5 +72,16 @@ namespace U3dClient
         public void OnApplicationQuit()
         {
         }
+
+        #endregion
+
+        #region PublicStaticFunc
+
+        public static int GetNewResourceIndex()
+        {
+            return s_ResourceIndex++;
+        }
+
+        #endregion
     }
 }

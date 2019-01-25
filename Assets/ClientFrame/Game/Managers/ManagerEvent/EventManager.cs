@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,17 +6,27 @@ namespace U3dClient
 {
     public class EventManager : IGameManager, IGameUpdate
     {
-        private int m_EventIndex = 1;
-        private Dictionary<string, Dictionary<int, Action<IEventMessage>>> m_NameToEventActions = new Dictionary<string, Dictionary<int, Action<IEventMessage>>>();
-        private Dictionary<int, string> m_EventIndexToName = new Dictionary<int, string>();
-        private Dictionary<string, List<IEventMessage>> m_DelayEventMessages = new Dictionary<string, List<IEventMessage>>();
-        private Dictionary<string, List<IEventMessage>> m_TempDelayEventMessages = new Dictionary<string, List<IEventMessage>>();
-        private Dictionary<int, Action<IEventMessage>> m_TempIndexToEventActions = new Dictionary<int, Action<IEventMessage>>();
+        #region PrivateVal
 
-        private int GetNewEventIndex()
-        {
-            return m_EventIndex++;
-        }
+        private readonly Dictionary<string, List<IEventMessage>> m_DelayEventMessages =
+            new Dictionary<string, List<IEventMessage>>();
+
+        private readonly Dictionary<int, string> m_EventIndexToName = new Dictionary<int, string>();
+
+        private readonly Dictionary<string, Dictionary<int, Action<IEventMessage>>> m_NameToEventActions =
+            new Dictionary<string, Dictionary<int, Action<IEventMessage>>>();
+
+        private readonly Dictionary<string, List<IEventMessage>> m_TempDelayEventMessages =
+            new Dictionary<string, List<IEventMessage>>();
+
+        private readonly Dictionary<int, Action<IEventMessage>> m_TempIndexToEventActions =
+            new Dictionary<int, Action<IEventMessage>>();
+
+        private int m_EventIndex = 1;
+
+        #endregion
+
+        #region PublicFunc
 
         public int RegisterEvent(string eventName, Action<IEventMessage> action)
         {
@@ -26,10 +35,10 @@ namespace U3dClient
             m_NameToEventActions.TryGetValue(eventName, out actions);
             if (actions == null)
             {
-
                 actions = DictionaryPool<int, Action<IEventMessage>>.Get();
                 m_NameToEventActions.Add(eventName, actions);
             }
+
             actions.Add(index, action);
             m_EventIndexToName.Add(index, eventName);
             return index;
@@ -68,19 +77,11 @@ namespace U3dClient
                 m_NameToEventActions.TryGetValue(eventName, out actions);
                 m_TempIndexToEventActions.Clear();
                 if (actions != null)
-                {
                     foreach (var actionPair in actions)
-                    {
                         m_TempIndexToEventActions.Add(actionPair.Key, actionPair.Value);
-                    }
-                }
                 foreach (var actionPair in m_TempIndexToEventActions)
-                {
                     if (m_EventIndexToName.ContainsKey(actionPair.Key))
-                    {
                         actionPair.Value?.Invoke(eventMessage);
-                    }
-                }
                 eventMessage?.ReleaseSelf();
                 m_TempIndexToEventActions.Clear();
             }
@@ -93,8 +94,18 @@ namespace U3dClient
                     eventMessages = ListPool<IEventMessage>.Get();
                     m_DelayEventMessages.Add(eventName, eventMessages);
                 }
+
                 eventMessages.Add(eventMessage);
             }
+        }
+
+        #endregion
+
+        #region PrivateFunc
+
+        private int GetNewEventIndex()
+        {
+            return m_EventIndex++;
         }
 
         private void UpdateDelayFireEvents()
@@ -107,6 +118,7 @@ namespace U3dClient
                     var eventMessages = eventMessagesPair.Value;
                     ListPool<IEventMessage>.Release(eventMessages);
                 }
+
                 m_TempDelayEventMessages.Clear();
 
                 foreach (var eventMessagesPair in m_DelayEventMessages)
@@ -114,8 +126,8 @@ namespace U3dClient
                     var eventName = eventMessagesPair.Key;
                     var eventMessages = eventMessagesPair.Value;
                     m_TempDelayEventMessages.Add(eventName, eventMessages);
-
                 }
+
                 m_DelayEventMessages.Clear();
 
                 foreach (var eventMessagesPair in m_TempDelayEventMessages)
@@ -126,29 +138,27 @@ namespace U3dClient
                     m_NameToEventActions.TryGetValue(eventName, out actions);
                     m_TempIndexToEventActions.Clear();
                     if (actions != null)
-                    {
                         foreach (var actionPair in actions)
-                        {
                             m_TempIndexToEventActions.Add(actionPair.Key, actionPair.Value);
-                        }
-                    }
                     foreach (var eventMessage in eventMessages)
                     {
                         foreach (var actionPair in m_TempIndexToEventActions)
-                        {
                             if (m_EventIndexToName.ContainsKey(actionPair.Key))
-                            {
                                 actionPair.Value?.Invoke(eventMessage);
-                            }
-                        }
                         eventMessage?.ReleaseSelf();
                     }
+
                     m_TempIndexToEventActions.Clear();
                     ListPool<IEventMessage>.Release(eventMessages);
                 }
+
                 m_TempDelayEventMessages.Clear();
             }
         }
+
+        #endregion
+
+        #region IGameManager
 
         public void Awake()
         {
@@ -156,11 +166,6 @@ namespace U3dClient
 
         public void Start()
         {
-        }
-
-        public void Update()
-        {
-            UpdateDelayFireEvents();
         }
 
         public void OnApplicationFocus(bool hasFocus)
@@ -178,6 +183,16 @@ namespace U3dClient
         public void OnApplicationQuit()
         {
         }
+
+        #endregion
+
+        #region IGameUpdate
+
+        public void Update()
+        {
+            UpdateDelayFireEvents();
+        }
+
+        #endregion
     }
 }
-

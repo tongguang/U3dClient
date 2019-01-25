@@ -1,10 +1,9 @@
-﻿using U3dClient;
-using UnityEngine;
-
-namespace U3dClient
+﻿namespace U3dClient
 {
     public class LuaLoopState : IFsmState
     {
+        #region IFsmState
+
         public void OnEnter()
         {
             GameCenter.s_ScriptManager.InitMainLuaRunner();
@@ -21,5 +20,7 @@ namespace U3dClient
             GameCenter.s_ScriptManager.MainLuaRunner.DoRelease();
             GameCenter.s_ScriptManager.ReleaseMainLuaRunner();
         }
+
+        #endregion
     }
 }

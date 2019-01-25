@@ -4,11 +4,25 @@ namespace U3dClient
 {
     public class Fsm<T>
     {
-        public int LoopIndex = -1;
-        private Dictionary<T, IFsmState> m_StateDict = new Dictionary<T, IFsmState>();
+        #region PrivateVal
+
+        private readonly Dictionary<T, IFsmState> m_StateDict = new Dictionary<T, IFsmState>();
         private T m_CurStateID;
         private IFsmState m_CurState;
-        private int m_RunIndex = 0;
+        private int m_RunIndex;
+
+        #endregion
+
+        #region PrivateFunc
+
+        private void Update()
+        {
+            m_CurState?.OnUpdate();
+        }
+
+        #endregion
+
+        #region PublicFunc
 
         public void Init()
         {
@@ -17,17 +31,9 @@ namespace U3dClient
 
         public void Release()
         {
-            if (m_RunIndex!=0)
-            {
-                GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
-            }
+            if (m_RunIndex != 0) GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
             m_CurState?.OnExit();
             m_CurState = null;
-        }
-
-        public void Update()
-        {
-            m_CurState?.OnUpdate();
         }
 
         public void AddState(T stateKey, IFsmState state)
@@ -42,5 +48,7 @@ namespace U3dClient
             m_CurState = m_StateDict[stateKey];
             m_CurState.OnEnter();
         }
+
+        #endregion
     }
 }
