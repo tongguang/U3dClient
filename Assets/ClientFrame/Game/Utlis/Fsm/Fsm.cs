@@ -8,10 +8,19 @@ namespace U3dClient
         private Dictionary<T, IFsmState> m_StateDict = new Dictionary<T, IFsmState>();
         private T m_CurStateID;
         private IFsmState m_CurState;
+        private int m_RunIndex = 0;
 
-       
+        public void Init()
+        {
+            m_RunIndex = GameCenter.s_UpdateRunManager.AddRun(Update);
+        }
+
         public void Release()
         {
+            if (m_RunIndex!=0)
+            {
+                GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
+            }
             m_CurState?.OnExit();
             m_CurState = null;
         }

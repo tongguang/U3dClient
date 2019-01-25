@@ -8,7 +8,7 @@ namespace U3dClient
 {
     public class ResourceManager : IGameManager
     {
-        private static int s_ResourceIndex = 0;
+        private static int s_ResourceIndex = 1;
 
         public static int GetNewResourceIndex()
         {

@@ -3,7 +3,7 @@ using U3dClient;
 
 namespace U3dClient
 {
-    public class GameFlowManager : IGameManager,IGameUpdate
+    public class GameFlowManager : IGameManager
     {
         public enum GameFlowState
         {
@@ -15,6 +15,7 @@ namespace U3dClient
         public void Awake()
         {
             GameFlowFsm = new Fsm<GameFlowState>();
+            GameFlowFsm.Init();
             GameFlowFsm.AddState(GameFlowState.EnterGame, new EnterGameState());
             GameFlowFsm.AddState(GameFlowState.LuaLoop, new LuaLoopState());
             GameFlowFsm.ChangeState(GameFlowState.EnterGame);
@@ -22,11 +23,6 @@ namespace U3dClient
 
         public void Start()
         {
-        }
-
-        public void Update()
-        {
-            GameFlowFsm.Update();
         }
 
         public void OnApplicationFocus(bool hasFocus)
