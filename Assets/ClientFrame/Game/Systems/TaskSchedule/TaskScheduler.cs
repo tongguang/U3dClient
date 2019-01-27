@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 namespace U3dClient
 {
-    public interface ITask
-    {
-        bool Exec();
-    }
     public class TaskScheduler
     {
         private Queue<ITask> m_WillDoTasks;
