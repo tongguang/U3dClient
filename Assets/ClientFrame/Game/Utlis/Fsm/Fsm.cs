@@ -31,7 +31,11 @@ namespace U3dClient
 
         public void Release()
         {
-            if (m_RunIndex != 0) GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
+            if (m_RunIndex != 0)
+            {
+                GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
+                m_RunIndex = 0;
+            }
             m_CurState?.OnExit();
             m_CurState = null;
         }
