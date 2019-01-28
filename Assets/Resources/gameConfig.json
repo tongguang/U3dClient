@@ -1,3 +1,4 @@
 {
-    "AssetLoadMode": 1
+  "AssetLoadMode": 0,
+  "LuaScriptLoadMode": 0  
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace U3dClient
 {
-    public class LoopContain<T1, T2>
+    public class LoopDictContain<T1, T2>
     {
         #region PrivateVal
 
@@ -12,6 +12,38 @@ namespace U3dClient
         private readonly HashSet<T1> m_ItemKeysToRemove = new HashSet<T1>();
         private Action<T2> m_ForeachAction;
         private Action<T2> m_RemoveItemAction;
+
+        #endregion
+
+        #region PrivateFunc
+
+        private void ForeachToAdd()
+        {
+            foreach (var itemPair in m_ItemsToAdd) m_Items.Add(itemPair.Key, itemPair.Value);
+            m_ItemsToAdd.Clear();
+        }
+
+        private void ForeachToRemove()
+        {
+            foreach (var itemKey in m_ItemKeysToRemove)
+            {
+                T2 item;
+                m_Items.TryGetValue(itemKey, out item);
+                if (item != null)
+                {
+                    m_RemoveItemAction?.Invoke(item);
+                    m_Items.Remove(itemKey);
+                }
+            }
+            m_ItemKeysToRemove.Clear();
+        }
+
+        private void ForeachItems()
+        {
+            foreach (var itemPair in m_Items)
+                if (!m_ItemKeysToRemove.Contains(itemPair.Key))
+                    m_ForeachAction?.Invoke(itemPair.Value);
+        }
 
         #endregion
 
@@ -66,30 +98,14 @@ namespace U3dClient
             m_ItemsToAdd.TryGetValue(key, out item);
             if (item != null) return item;
 
-            return item;
+            return default(T2);
         }
 
         public void Foreach()
         {
-            foreach (var itemPair in m_ItemsToAdd) m_Items.Add(itemPair.Key, itemPair.Value);
-
-            m_ItemsToAdd.Clear();
-            foreach (var itemPair in m_Items)
-                if (!m_ItemKeysToRemove.Contains(itemPair.Key))
-                    m_ForeachAction?.Invoke(itemPair.Value);
-
-            foreach (var itemKey in m_ItemKeysToRemove)
-            {
-                T2 item;
-                m_Items.TryGetValue(itemKey, out item);
-                if (item != null)
-                {
-                    m_RemoveItemAction?.Invoke(item);
-                    m_Items.Remove(itemKey);
-                }
-            }
-
-            m_ItemKeysToRemove.Clear();
+            ForeachToAdd();
+            ForeachItems();
+            ForeachToRemove();
         }
 
         public void Clear(bool isImmediate = true)
@@ -100,15 +116,7 @@ namespace U3dClient
 
             if (isImmediate)
             {
-                foreach (var itemKey in m_ItemKeysToRemove)
-                {
-                    var item = m_Items[itemKey];
-                    m_RemoveItemAction?.Invoke(item);
-                    m_Items.Remove(itemKey);
-                }
-
-                m_ItemKeysToRemove.Clear();
-                m_Items.Clear();
+                ForeachToRemove();
             }
         }
 
