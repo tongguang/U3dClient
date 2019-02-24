@@ -120,6 +120,25 @@ namespace U3dClient
             }
         }
 
+        public int GetItemCount()
+        {
+            return m_ItemsToAdd.Count + m_Items.Count;
+        }
+
+        public bool IsContainItem(T1 key)
+        {
+            if (m_Items.ContainsKey(key))
+            {
+                return true;
+            }
+            if (m_ItemsToAdd.ContainsKey(key))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         #endregion
     }
 }

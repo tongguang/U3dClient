@@ -6,10 +6,10 @@ namespace U3dClient
 {
     public class TaskScheduler
     {
-        private Queue<ITask> m_WillDoTasks = new Queue<ITask>();
-        private LoopSetContain<ITask> m_DoingTasks = new LoopSetContain<ITask>();
-        private HashSet<ITask> m_WillRemoveTasks = new HashSet<ITask>();
-        private int m_RunIndex = 0;
+        private SortedSet<TaskBase> m_WillDoTasks = new SortedSet<TaskBase>();
+        private LoopSetContain<TaskBase> m_DoingTasks = new LoopSetContain<TaskBase>();
+        private int m_UpdateRunIndex = 0;
+        private int m_NowTaskIndex = 1;
 
         public int MaxDoingTask = -1;
 
@@ -17,15 +17,32 @@ namespace U3dClient
 
         private void UpdateRunTask()
         {
+            if (MaxDoingTask == -1)
+            {
+                foreach (var willDoTask in m_WillDoTasks)
+                {
+                    m_DoingTasks.TryAddLoop(willDoTask);
+                }
+                m_WillDoTasks.Clear();
+            }
+            else if (m_DoingTasks.GetItemCount() < MaxDoingTask)
+            {
+                while ((m_DoingTasks.GetItemCount() < MaxDoingTask) && m_WillDoTasks.Count > 0 )
+                {
+                    var task = m_WillDoTasks.Min;
+                    m_WillDoTasks.Remove(task);
+                    m_DoingTasks.TryAddLoop(task);
+                }
+            }
             m_DoingTasks.Foreach();
         }
 
-        private void ForeachDoingTask(ITask task)
+        private void DoingTask(TaskBase taskBase)
         {
-            var result = task.Exec();
+            var result = taskBase.Execute();
             if (!result)
             {
-                RemoveTask(task);
+                RemoveTask(taskBase);
             }
         }
 
@@ -33,32 +50,39 @@ namespace U3dClient
 
         #region PublicFunc
 
-        public void Init(int maxDoingTask, Action<ITask> removeItemAction)
+        public void Init(int maxDoingTask, Action<TaskBase> removeItemAction)
         {
             MaxDoingTask = maxDoingTask;
             m_DoingTasks.SetRemoveItemAction(removeItemAction);
-            m_DoingTasks.SetForeachAction(ForeachDoingTask);
+            m_DoingTasks.SetForeachAction(DoingTask);
 
-            m_RunIndex = GameCenter.s_UpdateRunManager.AddRun(UpdateRunTask);
+            m_UpdateRunIndex = GameCenter.s_UpdateRunManager.AddRun(UpdateRunTask);
         }
 
         public void Release()
         {
-            if (m_RunIndex != 0)
+            if (m_UpdateRunIndex != 0)
             {
-                GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
-                m_RunIndex = 0;
+                GameCenter.s_UpdateRunManager.RemoveRun(m_UpdateRunIndex);
+                m_UpdateRunIndex = 0;
             }
         }
 
-        public void AddTask(ITask task)
+        public void AddTask(TaskBase task)
         {
-            m_WillDoTasks.Enqueue(task);
+            task.Index = m_NowTaskIndex++;
+            m_WillDoTasks.Add(task);
         }
 
-        public void RemoveTask(ITask task)
+        public void RemoveTask(TaskBase task)
         {
-            m_WillRemoveTasks.Add(task);
+            if (m_WillDoTasks.Contains(task))
+            {
+                m_WillDoTasks.Remove(task);
+                return;
+            }
+
+            m_DoingTasks.TryRemoveLoop(task);
         }
 
         #endregion
