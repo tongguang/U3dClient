@@ -27,6 +27,7 @@ namespace U3dClient
         {
             foreach (var item in m_ItemsToRemove)
             {
+                m_RemoveItemAction?.Invoke(item);
                 m_Items.Remove(item);
             }
             m_ItemsToRemove.Clear();
@@ -55,14 +56,27 @@ namespace U3dClient
 
         public bool TryAddLoop(T value)
         {
-            m_ItemsToAdd.Add(value);
-            return true;
+            if (!IsContainItem(value))
+            {
+                m_ItemsToAdd.Add(value);
+                return true;
+            }
+            return false;
         }
 
         public bool TryRemoveLoop(T value)
         {
-            m_ItemsToRemove.Add(value);
-            return true;
+            if (m_Items.Contains(value))
+            {
+                m_ItemsToRemove.Add(value);
+                return true;
+            }
+            if (m_ItemsToAdd.Contains(value))
+            {
+                m_ItemsToAdd.Remove(value);
+                return true;
+            }
+            return false;
         }
 
         public void Foreach()
@@ -82,6 +96,25 @@ namespace U3dClient
             {
                ForeachToRemove();
             }
+        }
+
+        public int GetItemCount()
+        {
+            return m_ItemsToAdd.Count + m_Items.Count;
+        }
+
+        public bool IsContainItem(T value)
+        {
+            if (m_Items.Contains(value))
+            {
+                return true;
+            }
+            if (m_ItemsToAdd.Contains(value))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
