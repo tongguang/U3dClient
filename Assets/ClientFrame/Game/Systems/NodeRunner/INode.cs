@@ -2,6 +2,8 @@
 {
     public interface INode
     {
-        
+        void OnStart();
+        bool Execute();
+        void OnEnd();
     }
 }
