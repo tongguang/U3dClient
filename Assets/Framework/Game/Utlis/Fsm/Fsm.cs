@@ -9,8 +9,8 @@ namespace U3dClient
         private readonly Dictionary<T, IFsmState> m_StateDict = new Dictionary<T, IFsmState>();
         private T m_CurStateID;
         private IFsmState m_CurState;
-        private int m_RunIndex;
-        private bool m_IsAutoRun = false;
+        private int m_UpdateIndex;
+        private bool m_IsExecute = false;
 
         #endregion
 
@@ -25,35 +25,35 @@ namespace U3dClient
 
         #region PublicFunc
 
-        public void Init(bool isAutoRun)
+        public void Init(bool isExecute)
         {
-            SetAutoRun(isAutoRun);
+            SetExecute(isExecute);
         }
 
         public void Release()
         {
-            SetAutoRun(false);
+            SetExecute(false);
             m_CurState?.OnExit();
             m_CurState = null;
         }
 
-        public void SetAutoRun(bool isAuto)
+        public void SetExecute(bool isExecute)
         {
-            if (m_IsAutoRun == isAuto)
+            if (m_IsExecute == isExecute)
             {
                 return;
             }
 
-            m_IsAutoRun = isAuto;
-            if (isAuto)
+            m_IsExecute = isExecute;
+            if (isExecute)
             {
-                m_RunIndex = GameCenter.s_UpdateRunManager.AddRun(Update);
+                m_UpdateIndex = GameCenter.s_UpdateRunManager.AddRun(Update);
             }
             else
             {
-                if (m_RunIndex == 0) return;
-                GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
-                m_RunIndex = 0;
+                if (m_UpdateIndex == 0) return;
+                GameCenter.s_UpdateRunManager.RemoveRun(m_UpdateIndex);
+                m_UpdateIndex = 0;
             }
         }
 
