@@ -7,7 +7,7 @@ namespace U3dClient
     public class TaskScheduler
     {
         private SortedSet<TaskBase> m_WillDoTasks = new SortedSet<TaskBase>();
-        private LoopSetContain<TaskBase> m_DoingTasks = new LoopSetContain<TaskBase>();
+        private SafeSetContain<TaskBase> m_DoingTasks = new SafeSetContain<TaskBase>();
         private int m_UpdateRunIndex = 0;
         private int m_NowTaskIndex = 1;
 

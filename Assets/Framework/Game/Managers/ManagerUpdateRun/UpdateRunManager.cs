@@ -6,7 +6,7 @@ namespace U3dClient
     {
         #region PrivateVal
 
-        private readonly LoopDictContain<int, Action> m_Runners = new LoopDictContain<int, Action>();
+        private readonly SafeDictContain<int, Action> m_Runners = new SafeDictContain<int, Action>();
         private int m_NowIndex = 1;
 
         #endregion

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace U3dClient
 {
-    public class LoopSetContain<T>
+    public class SafeSetContain<T>
     {
         #region PrivateVal
 
