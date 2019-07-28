@@ -25,9 +25,9 @@ namespace U3dClient
 
         #region PublicFunc
 
-        public void Init(bool isExecute)
+        public void Init(bool isAutoRun)
         {
-            SetExecute(isExecute);
+            SetExecute(isAutoRun);
         }
 
         public void Release()
@@ -35,6 +35,11 @@ namespace U3dClient
             SetExecute(false);
             m_CurState?.OnExit();
             m_CurState = null;
+        }
+
+        public void Start()
+        {
+            SetExecute(true);
         }
 
         public void SetExecute(bool isExecute)
