@@ -23,7 +23,7 @@
         public void Awake()
         {
             GameFlowFsm = new Fsm<GameFlowState>();
-            GameFlowFsm.Init();
+            GameFlowFsm.Init(true);
             GameFlowFsm.AddState(GameFlowState.EnterGame, new EnterGameState());
             GameFlowFsm.AddState(GameFlowState.LuaLoop, new LuaLoopState());
             GameFlowFsm.ChangeState(GameFlowState.EnterGame);

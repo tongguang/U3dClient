@@ -10,6 +10,7 @@ namespace U3dClient
         private T m_CurStateID;
         private IFsmState m_CurState;
         private int m_RunIndex;
+        private bool m_IsAutoRun = false;
 
         #endregion
 
@@ -24,20 +25,36 @@ namespace U3dClient
 
         #region PublicFunc
 
-        public void Init()
+        public void Init(bool isAutoRun)
         {
-            m_RunIndex = GameCenter.s_UpdateRunManager.AddRun(Update);
+            SetAutoRun(isAutoRun);
         }
 
         public void Release()
         {
-            if (m_RunIndex != 0)
+            SetAutoRun(false);
+            m_CurState?.OnExit();
+            m_CurState = null;
+        }
+
+        public void SetAutoRun(bool isAuto)
+        {
+            if (m_IsAutoRun == isAuto)
             {
+                return;
+            }
+
+            m_IsAutoRun = isAuto;
+            if (isAuto)
+            {
+                m_RunIndex = GameCenter.s_UpdateRunManager.AddRun(Update);
+            }
+            else
+            {
+                if (m_RunIndex == 0) return;
                 GameCenter.s_UpdateRunManager.RemoveRun(m_RunIndex);
                 m_RunIndex = 0;
             }
-            m_CurState?.OnExit();
-            m_CurState = null;
         }
 
         public void AddState(T stateKey, IFsmState state)
