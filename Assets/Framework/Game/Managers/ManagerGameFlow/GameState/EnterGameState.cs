@@ -21,7 +21,7 @@ namespace U3dClient
             Debug.Log("EnterGameState OnEnter");
             m_Step = 1;
             GameCenter.s_ResourceManager.InitBundleManifest();
-            GameCenter.s_UpgradeManager.SetResUrl("http://111.231.215.248/AssetBundles1/");
+            GameCenter.s_UpgradeManager.SetResUrl(GameCenter.s_ConfigManager.GlobalGameConfig.ResRootUrl);
             //            UpdateMgr.StartUpdate(() => {Debug.Log("下载结束");});
         }
 

@@ -23,6 +23,7 @@
 
         public AssetLoadModeEnum AssetLoadMode;
         public LuaScriptLoadModeEnum LuaScriptLoadMode;
+        public string ResRootUrl;
 
         #endregion
     }
