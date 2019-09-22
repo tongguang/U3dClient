@@ -10,12 +10,12 @@ namespace U3dClient.GameTools
     {
         public static string NormalPath(string path)
         {
-            return CommonUtlis.NormalPath(path);
+            return CommonUtils.NormalPath(path);
         }
 
         public static string CombinePath(string path1, string path2)
         {
-            return CommonUtlis.CombinePath(path1, path2);
+            return CommonUtils.CombinePath(path1, path2);
         }
 
         public static string GetFileMD5(string path)

@@ -54,7 +54,7 @@ namespace U3dClient
 
             var baseVersionDatas = new Dictionary<string, FileData>();
             using (var www =
-                UnityWebRequest.Get(Path.Combine(FileUtlis.s_WWWStreamingAssetsPath, versionFileName)))
+                UnityWebRequest.Get(Path.Combine(FileUtils.s_WWWStreamingAssetsPath, versionFileName)))
             {
                 yield return www.SendWebRequest();
                 if (www.isNetworkError || www.isHttpError)
@@ -100,7 +100,7 @@ namespace U3dClient
             {
                 var newFileData = data.Value;
 
-                var oldFileInfoPath = Path.Combine(FileUtlis.s_PersistentDataPath,
+                var oldFileInfoPath = Path.Combine(FileUtils.s_PersistentDataPath,
                     newFileData.filePath.Replace(m_BundleDotSuffixName, "") + resInfoFileExten);
                 var oldFileData = new FileData {filePath = null};
                 if (File.Exists(oldFileInfoPath))
@@ -144,7 +144,7 @@ namespace U3dClient
                     }
                     else
                     {
-                        var fullFilePath = Path.Combine(FileUtlis.s_PersistentDataPath, filePath);
+                        var fullFilePath = Path.Combine(FileUtils.s_PersistentDataPath, filePath);
                         var fullFileInfoPath = fullFilePath.Replace(m_BundleDotSuffixName, "") + resInfoFileExten;
                         var dirName = Path.GetDirectoryName(fullFilePath);
                         if (!Directory.Exists(dirName)) Directory.CreateDirectory(dirName);

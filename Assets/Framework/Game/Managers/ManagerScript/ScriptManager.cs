@@ -72,7 +72,7 @@ namespace U3dClient
 
         private byte[] OnRawFileModeLoad(ref string filename)
         {
-            var path = CommonUtlis.CombinePath(CommonDefine.s_RelativeScriptResRawPath, filename) + ".lua";
+            var path = CommonUtils.CombinePath(CommonDefine.s_RelativeScriptResRawPath, filename) + ".lua";
             var texts = File.ReadAllText(path);
             var bytes = Encoding.UTF8.GetBytes(texts);
             return bytes;

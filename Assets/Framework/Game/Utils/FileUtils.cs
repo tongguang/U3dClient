@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace U3dClient
 {
-    public static class FileUtlis
+    public static class FileUtils
     {
         public static string s_DataPath;
         public static string s_StreamingAssetsPath;
@@ -15,7 +15,7 @@ namespace U3dClient
         public static string s_WWWStreamingAssetsPath;
         public static string s_WWWPersistentDataPath;
 
-        static FileUtlis()
+        static FileUtils()
         {
             
             s_StreamingAssetsPath = Application.streamingAssetsPath;

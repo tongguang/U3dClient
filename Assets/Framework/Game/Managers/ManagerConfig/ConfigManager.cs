@@ -61,7 +61,7 @@ namespace U3dClient
                 }
             }
             {
-                var bundlePath = Path.Combine(FileUtlis.s_PersistentDataPath, bundleName);
+                var bundlePath = Path.Combine(FileUtils.s_PersistentDataPath, bundleName);
                 if (File.Exists(bundlePath))
                 {
                     s_BundleNameToPath.Add(bundleName, bundlePath);
@@ -69,7 +69,7 @@ namespace U3dClient
                 }
             }
             {
-                var bundlePath = Path.Combine(FileUtlis.s_StreamingAssetsPath, bundleName);
+                var bundlePath = Path.Combine(FileUtils.s_StreamingAssetsPath, bundleName);
                 s_BundleNameToPath.Add(bundleName, bundlePath);
                 return bundlePath;
             }

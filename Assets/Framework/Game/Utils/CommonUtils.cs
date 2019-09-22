@@ -2,7 +2,7 @@
 
 namespace U3dClient
 {
-    public class CommonUtlis
+    public class CommonUtils
     {
         public static string NormalPath(string path)
         {
