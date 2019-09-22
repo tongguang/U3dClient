@@ -39,36 +39,5 @@ namespace U3dClient
             s_WWWPersistentDataPath = "file://" + s_PersistentDataPath;
 #endif
         }
-
-        private static Dictionary<string, string> s_BundleNameToPath = new Dictionary<string, string>();
-        public static string GetBundlePath(string bundleName)
-        {
-            if (bundleName == "")
-            {
-                return "";
-            }
-
-            {
-                string bundlePath = null;
-                s_BundleNameToPath.TryGetValue(bundleName, out bundlePath);
-                if (bundlePath != null)
-                {
-                    return bundlePath;
-                }
-            }
-            {
-                var bundlePath = Path.Combine(s_PersistentDataPath, bundleName);
-                if (File.Exists(bundlePath))
-                {
-                    s_BundleNameToPath.Add(bundleName, bundlePath);
-                    return bundlePath;
-                }
-            }
-            {
-                var bundlePath = Path.Combine(s_StreamingAssetsPath, bundleName);
-                s_BundleNameToPath.Add(bundleName, bundlePath);
-                return bundlePath;
-            }
-        }
     }
 }

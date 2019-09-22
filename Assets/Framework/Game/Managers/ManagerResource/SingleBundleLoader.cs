@@ -56,7 +56,7 @@ namespace U3dClient
             if (m_LoadState != LoadState.WaitLoad) yield break;
 
             m_LoadState = LoadState.Loading;
-            var bundlePath = FileUtlis.GetBundlePath(m_BundleName);
+            var bundlePath = GameCenter.s_ConfigManager.GetBundlePath(m_BundleName);
             var request = AssetBundle.LoadFromFileAsync(bundlePath);
             while (!request.isDone) yield return null;
 
@@ -114,7 +114,7 @@ namespace U3dClient
             m_ResouceIndexSet.Add(index);
             if (m_LoadState == LoadState.Init || m_LoadState == LoadState.WaitLoad)
             {
-                var bundlePath = FileUtlis.GetBundlePath(m_BundleName);
+                var bundlePath = GameCenter.s_ConfigManager.GetBundlePath(m_BundleName);
                 m_Bundle = AssetBundle.LoadFromFile(bundlePath);
                 m_LoadState = LoadState.Complete;
                 loadedAction(m_Bundle != null, m_Bundle);

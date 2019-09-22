@@ -111,6 +111,17 @@ namespace U3dClient
                 var manager = m_ManagerList[i];
                 manager.OnDestroy();
             }
+            m_ManagerList.Clear();
+            m_UpdateList.Clear();
+            m_FixedUpdateList.Clear();
+            s_ConfigManager = null;
+            s_TimerManager = null;
+            s_UpdateRunManager = null;
+            s_EventManager = null;
+            s_ResourceManager = null;
+            s_UpgradeManager = null;
+            s_ScriptManager = null;
+            s_GameFlowManager = null;
         }
 
         public static void OnApplicationQuit()

@@ -44,8 +44,8 @@ namespace U3dClient
 
             foreach (var timer in m_TimersDone)
             {
-                m_TimerPool.Release(timer);
                 m_Timers.Remove(timer.TimerIndex);
+                m_TimerPool.Release(timer);
             }
 
             m_TimersDone.Clear();
